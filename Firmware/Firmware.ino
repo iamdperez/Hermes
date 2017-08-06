@@ -112,7 +112,24 @@ void setValue(){
 }
 
 void getValue(){
-    
+    int commandType = getCommandType();
+    int pin = getPinNumber();
+    int value = 0;
+    if(commandType == DIGITAL){
+        value = digitalRead(pin);
+        if(value == HIGH){
+            Serial.write(RESP_ON);
+        }else if(value == LOW){
+            Serial.write(RESP_OFF);
+        }else {
+            Serial.write(RESP_ERROR);
+        }
+    }else if(commandType == ANALOG){
+        value = analogRead(pin);
+        Serial.write(value);
+    }else{
+        Serial.write(RESP_ERROR);
+    }
 }
 
 void processCommand(){
