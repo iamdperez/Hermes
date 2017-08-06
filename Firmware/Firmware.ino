@@ -63,9 +63,21 @@ void resetValues(){
     command.charAt(1) = '0';
 }
 
+int getCommandValueType(){
+    return parseCommandValue(command.charAt(1),HIGH_BIT_PART);
+}
+
+int getPinNumber(){
+    return parseCommandValue(command.charAt(1), LOW_BIT_PART);
+}
+
+int getCommandType(){
+    return parseCommandValue(command.charAt(0), LOW_BIT_PART);
+}
+
 void setMode(){
-    int type = parseCommandValue(command.charAt(1),HIGH_BIT_PART);
-    int pin = parseCommandValue(command.charAt(1), LOW_BIT_PART);
+    int type = getCommandValueType();
+    int pin = getPinNumber();
     if(type == VALUE_INPUT){
         pinMode(pin,INPUT);
         Serial.write(RESP_SUCCESS);
@@ -77,6 +89,32 @@ void setMode(){
     }
 }
 
+void setValue(){
+    int commandType = getCommandType();
+    int valueType = getCommandValueType();
+    int pin = getPinNumber();
+    if(commandType == DIGITAL){
+        if(valueType == VALUE_HIGH){
+            digitalWrite(pin, HIGH);
+        }else if(valueType == VALUE_LOW){
+            digitalWrite(pin, LOW);
+        }else {
+            Serial.write(RESP_ERROR);
+            return;
+        }
+        Serial.write(RESP_SUCCESS);
+    }else if(commandType == ANALOG){
+        analogWrite(pin, valueType);
+        Serial.write(RESP_SUCCESS);
+    }else{
+        Serial.write(RESP_ERROR);
+    }
+}
+
+void getValue(){
+    
+}
+
 void processCommand(){
     int op  = parseCommandValue(command.charAt(0),HIGH_BIT_PART);
     switch(op){
@@ -84,13 +122,16 @@ void processCommand(){
             setMode();
         break;
         case OP_SETVALUE:
+            setValue();
         break;
         case OP_GETVALUE:
+            getValue();
         break;
         default:
             Serial.write(RESP_ERROR);
     }
     resetValues();
+    Serial.flush();
 }
 
 void setup() {
