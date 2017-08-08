@@ -34,7 +34,7 @@ int parseBinaryStringToInt(char * s){
         if(*currentOffset++ == '1')
             result ^= 1;
     }
-    return result;
+    return (byte)result;
 }
 
 int parseCommandValue(char c, int bitOffset){
@@ -74,11 +74,12 @@ void resetValues(){
 }
 
 int getCommandValue(){
-    return command[1];
+    return (byte)command[1];
 }
 
 int getPinNumber(){
-    return command[2];
+    return (byte)command[2];
+ 
 }
 
 int getOperationType(){
@@ -162,7 +163,7 @@ void processCommand(){
             Serial.write(RESP_ERROR);
     }
     resetValues();
-    Serial.flush();
+   // Serial.flush();
 }
 
 void setup() {
@@ -173,10 +174,11 @@ void setup() {
 void loop() {
     if(Serial.available() > 0){
         getIncomingBytes();
+        Serial.flush();
     }
 
     if(commandComplete == true){
         processCommand();
     }
-
+//Serial.println("loop");
 }
