@@ -5,25 +5,25 @@
 #define DIGITAL 1
 #define ANALOG 0
 
-#define VALUE_INPUT 1
-#define VALUE_OUTPUT 0
-
-#define VALUE_HIGH 1
-#define VALUE_LOW 0
+#define VALUE_INPUT 0
+#define VALUE_OUTPUT 1
+#define VALUE_HIGH 2
+#define VALUE_LOW 3
 
 #define RESP_ERROR 3
 #define RESP_SUCCESS 2
 #define RESP_ON 1
 #define RESP_OFF 0
 
-#define COMMAND_TERMINATOR 59
-#define COMMAND_START 36
+#define COMMAND_TERMINATOR 59 //;
+#define COMMAND_START 36 //$
+
 #define HIGH_BIT_PART 1
 #define LOW_BIT_PART 0
 
 boolean commandComplete = false;
 boolean startCopy = false;
-char command [2];
+char command [3];
 int commandOffset = 0;
 
 int parseBinaryStringToInt(char * s){
@@ -37,11 +37,11 @@ int parseBinaryStringToInt(char * s){
     return result;
 }
 
-int parseCommandValue(char c, int byteOffset){
+int parseCommandValue(char c, int bitOffset){
     char s[4];
     int i, x = 0;
-    int offSet = byteOffset == HIGH_BIT_PART ? 7 : 3;
-    int limit = byteOffset == HIGH_BIT_PART ? 4 : 0;
+    int offSet = bitOffset == HIGH_BIT_PART ? 7 : 3;
+    int limit = bitOffset == HIGH_BIT_PART ? 4 : 0;
     for(i = offSet; limit <= i; i--){
         s[x] = ((c >>i)&0x01) == 0x01 ? '1' : '0';
         x++;
@@ -56,11 +56,10 @@ void getIncomingBytes(){
         commandComplete = true;
         startCopy = false;
         commandOffset = 0;
-        Serial.flush();
     } else if(startCopy) {
         command[commandOffset] = inChar;
         commandOffset++;
-    }else if(inChar == COMMAND_START){
+    }else if(inChar == COMMAND_START && !startCopy){
       startCopy = true;
       commandOffset = 0;
     }
@@ -71,29 +70,32 @@ void resetValues(){
     startCopy = false;
     command[0] = '0';
     command[1] = '0';
+    command[2] = '0';
 }
 
-int getCommandValueType(){
-    return parseCommandValue(command[1],HIGH_BIT_PART);
+int getCommandValue(){
+    return command[1];
 }
 
 int getPinNumber(){
-    return parseCommandValue(command[1], LOW_BIT_PART);
+    return command[2];
 }
 
-int getCommandType(){
+int getOperationType(){
     return parseCommandValue(command[0], LOW_BIT_PART);
 }
 
+int getOperation(){
+    return parseCommandValue(command[0],HIGH_BIT_PART);
+}
+
 void setMode(){
-    int type = getCommandValueType();
-    Serial.write(type);
+    int value = getCommandValue();
     int pin = getPinNumber();
-    //Serial.write(pin);
-    if(type == VALUE_INPUT){
+    if(value == VALUE_INPUT){
         pinMode(pin,INPUT);
         Serial.write(RESP_SUCCESS);
-    } else if(type == VALUE_OUTPUT){
+    } else if(value == VALUE_OUTPUT){
         pinMode(pin,OUTPUT);
         Serial.write(RESP_SUCCESS);
     }else{
@@ -102,24 +104,21 @@ void setMode(){
 }
 
 void setValue(){
-    int commandType = getCommandType();
-    Serial.write(commandType);
-    int valueType = getCommandValueType();
-    Serial.write(valueType);
+    int opType = getOperationType();
+    int value = getCommandValue();
     int pin = getPinNumber();
-    Serial.write(pin);
-    if(commandType == DIGITAL){
-        if(valueType == VALUE_HIGH){
+    if(opType == DIGITAL){
+        if(value == VALUE_HIGH){
             digitalWrite(pin, HIGH);
-        }else if(valueType == VALUE_LOW){
+        }else if(value == VALUE_LOW){
             digitalWrite(pin, LOW);
         }else {
             Serial.write(RESP_ERROR);
             return;
         }
         Serial.write(RESP_SUCCESS);
-    }else if(commandType == ANALOG){
-        analogWrite(pin, valueType);
+    }else if(opType == ANALOG){
+        analogWrite(pin, value);
         Serial.write(RESP_SUCCESS);
     }else{
         Serial.write(RESP_ERROR);
@@ -127,10 +126,10 @@ void setValue(){
 }
 
 void getValue(){
-    int commandType = getCommandType();
+    int opType = getOperationType();
     int pin = getPinNumber();
     int value = 0;
-    if(commandType == DIGITAL){
+    if(opType == DIGITAL){
         value = digitalRead(pin);
         if(value == HIGH){
             Serial.write(RESP_ON);
@@ -139,7 +138,7 @@ void getValue(){
         }else {
             Serial.write(RESP_ERROR);
         }
-    }else if(commandType == ANALOG){
+    }else if(opType == ANALOG){
         value = analogRead(pin);
         Serial.write(value);
     }else{
@@ -148,7 +147,7 @@ void getValue(){
 }
 
 void processCommand(){
-    int op  = parseCommandValue(command[0],HIGH_BIT_PART);
+    int op  = getOperation();
     switch(op){
         case OP_SETMODE:
             setMode();
