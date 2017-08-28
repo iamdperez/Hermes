@@ -1,9 +1,7 @@
 #define OP_SETMODE 1
 #define OP_SETVALUE 2
 #define OP_GETVALUE 3
-
-#define DIGITAL 1
-#define ANALOG 0
+#define OP_GETARDUINO_MODEL 4
 
 #define VALUE_INPUT 0
 #define VALUE_OUTPUT 1
@@ -18,6 +16,10 @@
 #define COMMAND_TERMINATOR 0x7e //~
 #define COMMAND_START 0x7f      //DEL
 
+#include "ArduinoBoardManager.h"
+
+
+ArduinoBoardManager arduino = ArduinoBoardManager();
 boolean commandComplete = false;
 boolean startCopy = false;
 char command[2];
@@ -124,6 +126,10 @@ void getValue()
     }
 }
 
+void getArduinoModel(){
+    Serial.print(arduino.BOARD_NAME);
+}
+
 void processCommand()
 {
     int op = getOperation();
@@ -137,6 +143,9 @@ void processCommand()
         break;
     case OP_GETVALUE:
         getValue();
+        break;
+    case OP_GETARDUINO_MODEL:
+        getArduinoModel();
         break;
     default:
         Serial.write(RESP_ERROR);
