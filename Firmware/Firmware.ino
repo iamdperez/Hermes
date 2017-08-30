@@ -127,7 +127,7 @@ void getValue()
 }
 
 void getArduinoModel(){
-    Serial.print(arduino.BOARD_NAME);
+    Serial.write(arduino.BOARD_NAME);
 }
 
 void processCommand()
