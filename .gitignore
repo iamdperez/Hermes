@@ -48,24 +48,24 @@ hs_err_pid*
 **/.idea/**/libraries
 
 # CMake
-cmake-build-debug/
+Hermes_daq/cmake-build-debug/
 
 # Mongo Explorer plugin:
 **/.idea/**/mongoSettings.xml
 
 ## File-based project format:
-*.iws
+Hermes_daq/*.iws
 
 ## Plugin-specific files:
 
 # IntelliJ
-out/
+Hermes_daq/out/
 
 # mpeltonen/sbt-idea plugin
 **/.idea_modules/
 
 # JIRA plugin
-atlassian-ide-plugin.xml
+Hermes_daq/atlassian-ide-plugin.xml
 
 # Cursive Clojure plugin
 **/.idea/replstate.xml
@@ -75,3 +75,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Parser
+Hermes_daq/src/parser/Lexer.*
+Hermes_daq/src/parser/parser.java
+Hermes_daq/src/parser/sym.java

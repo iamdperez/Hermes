@@ -1,0 +1,163 @@
+package parser;
+
+import java_cup.runtime.ComplexSymbolFactory;
+import java.util.*;
+
+parser code {:
+
+    public parser(Lexer lex, ComplexSymbolFactory sf) {
+        super(lex,sf);
+    }
+
+    public void report_error(String message, Object info) {
+
+        StringBuilder m = new StringBuilder("Error");
+
+        if (info instanceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+            if (s.left >= 0) {
+                m.append(" in line "+(s.left+1));
+                if (s.right >= 0)
+                    m.append(", column "+(s.right+1));
+            }
+        }
+        m.append(" : "+message);
+        System.err.println(m);
+        System.out.println("puto");
+    }
+
+
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+:};
+
+
+terminal            COMMA, TERNARY_OP, COLON, OR_OP, AND_OP, OR, XOR, AND, EQUAL_OP, NOT_EQUAL_OP;
+terminal            LSHIFT_OP, RSHIFT_OP, LESS_EQUAL_OP, GREATER_EQUAL_OP, LESS_OP, GREATER_OP;
+terminal            INC_OP, DEC_OP, PLUS, MINUS, TIMES, DIV, MOD, RSQUARE_BRACKET, LSQUARE_BRACKET;
+terminal            NOT, NOT_OP, LPARENTHESIS, RPARENTHESIS, ASSIGNMENT_OP;
+
+terminal    Integer    INT_LITERAL;
+// terminal String     STRING_LITERAL;
+terminal    IdNode     ID;
+
+/* expression */
+non terminal    ExpressionNode  expression, assignment_expression, conditional_expression, unary_expression;   
+non terminal    ExpressionNode  assignment_operator, logical_or_expression, logical_and_expression, inclusive_or_expression;   
+non terminal    ExpressionNode  exclusive_or_expression, and_expression, equality_expression, relational_expression;   
+non terminal    ExpressionNode  shift_expression, additive_expression, multiplicative_expression;
+non terminal    ExpressionNode  postfix_expression, unary_operator, primary_expression, argument_expression_list;
+non terminal    ArrayList<IdNode>      id_list, opt_comma;   
+
+
+expression ::= assignment_expression:ae {:RESULT = ae;:}
+    |   expression:e COMMA assignment_expression:ae {:InLineExpressionNode ilen =  new InLineExpressionNode(e, ae); RESULT ilen;:} 
+    ;
+
+assignment_expression ::= conditional_expression:ce {:RESULT ce;:}
+    |   unary_expression:ue assignment_operator:ao assignment_expression:ae 
+        {: ao.setLeft(ue); ao.setRight(ae); RESULT = ao; :} 
+    ;
+
+conditional_expression ::= logical_or_expression:loe {:RESULT = loe;:}
+    |   logical_or_expression:loe TERNARY_OP expression:e COLON conditional_expression:ce
+        {: TernaryOperatorNode ton = new TernaryOperatorNode(loe, e, ce); RESULT = ton;:} 
+    ;
+
+logical_or_expression ::= logical_and_expression:lae = {:RESULT = lae;:}
+    |   logical_or_expression:loe OR_OP logical_and_expression:lae
+        {:OrOperatorNode oon = new OrOperatorNode(loe, lae); RESULT = oon; :}
+    ;
+
+logical_and_expression ::= inclusive_or_expression:ioe {:RESULT = ioe; :}
+    |   logical_and_expression:lae AND_OP inclusive_or_expression:ioe
+        {:AndOperatorNode aon = new AndOperatorNode(lae, ioe); RESULT = aon; :}
+    ;
+
+inclusive_or_expression ::= exclusive_or_expression:eoe {:RESULT = eoe; :}
+    |   inclusive_or_expression:ioe OR exclusive_or_expression:eoe
+        {:OrNode on = OrNode(ioe, eoe); RESULT = on;:}
+    ;
+
+exclusive_or_expression ::= and_expression:ae {:RESULT = ae;:}
+    |   exclusive_or_expression:eoe XOR and_expression:ae
+        {:XorNode xn = new XorNode(eoe,ae); RESULT = xn;:}
+    ;
+
+and_expression ::= equality_expression:ee {:RESULT = ee;:}
+    |   and_expression:ae AND equality_expression:ee
+        {:AndNode an = new AndNode(ae, ee); RESULT = an:}
+    ;
+
+equality_expression ::= relational_expression:re {:RESULT = re;:}
+    |   equality_expression:ee EQUAL_OP relational_expression:re {:EqualOperatorNode eon = new EqualOperatorNode(ee,re); RESULT = eon;:}
+    |   equality_expression:ee NOT_EQUAL_OP relational_expression:re {:NotEqualOperatorNode neon = new NotEqualOperatorNode(ee,re); RESULT = neon;:}
+    ;
+
+relational_expression ::= shift_expression:se {:RESULT = se;:}
+    |   relational_expression:re LESS_OP shift_expression:se {:LessOperatorNode lon = new LessOperatorNode(re,se); RESULT = lon;:}
+    |   relational_expression:re GREATER_OP shift_expression:se {:GreaterOperatorNode gon = new GreaterOperatorNode(re,se); RESULT = gon;:}
+    |   relational_expression:re LESS_EQUAL_OP shift_expression:se {:LessEqualOperatorNode leon = new LessEqualOperatorNode(re,se); RESULT = leon;:}
+    |   relational_expression:re GREATER_EQUAL_OP shift_expression:se {:GreaterEqualOperatorNode geon = new GreaterEqualOperatorNode(re,se); RESULT = geon;:}
+    ;
+
+shift_expression ::= additive_expression:ae {:RESULT = ae;:}
+    |   shift_expression:se LSHIFT_OP additive_expression:ae {:LeftShiftOperatorNode lson = new LeftShiftOperatorNode(se,ae); RESULT = lson;:}
+    |   shift_expression:se RSHIFT_OP additive_expression:ae {:RightShiftOperatorNode rson = new RightShiftOperatorNode(se,ae); RESULT = rson;:}
+    ;
+
+additive_expression ::= multiplicative_expression:me {:RESULT = me;:}
+    |   additive_expression:ae PLUS multiplicative_expression:me {:PlusOperatorNode pon = new PlusOperatorNode(ae,me); RESULT = pon;:}
+    |   additive_expression:ae MINUS multiplicative_expression:me {:MinusOperatorNode mon = new MinusOperatorNode(ae,me); RESULT = mon;:}
+    ;
+
+multiplicative_expression ::= unary_expression:ue {:RESULT = ue;:}
+    |   multiplicative_expression:me TIMES unary_expression:ue {:TimesOperatorNode ton = new TimesOperatorNode(me, ue); RESULT = ton;:}
+    |   multiplicative_expression:me DIV unary_expression:ue {:DivOperatorNode don = new DivOperatorNode(me, ue); RESULT = don;:}
+    |   multiplicative_expression:me MOD unary_expression:ue {:ModOperatorNode mon = new ModOperatorNode(me, ue); RESULT = mon;:}
+    ;
+
+unary_expression ::= postfix_expression:pe {:RESULT = pe;:}
+    |   INC_OP unary_expression:ue {:PreIncrementOperatorNode pion = PreIncrementOperatorNode(ue); RESULT = pion;:}
+    |   DEC_OP unary_expression:ue {:PreDecrementOperatorNode pdon = PreDecrementOperatorNode(ue); RESULT = pdon;:}
+    |   AND  LSQUARE_BRACKET id_list:il RSQUARE_BRACKET {:AndReductionNode arn = new AndReductionNode(il); RESULT = il;:}
+    | unary_operator:op unary_expression:ue {:op.setRight(ue); RESULT = op;:} 
+    ;
+
+id_list ::= ID:i opt_comma:oc {:oc.add(0, i); RESULT = oc;:}
+    ;
+
+opt_comma ::= COMMA id_list:il {:RESULT = il;:} 
+    | /* empty */ {:RESULT = new ArrayList<IdNode>();:}
+    ;
+
+unary_operator ::= MINUS {:RESULT =  new MinusNode();:}
+    |   NOT {:RESULT = new NotNode();:}
+    |   NOT_OP {:RESULT = new NotOperatorNode();:}
+    ;
+    
+postfix_expression ::= primary_expression:pe {:RESULT = pe;:}
+    |   postfix_expression:pe LPARENTHESIS RPARENTHESIS {:FunctionCallNode fcn = new FunctionCallNode(pe); RESULT = fcn;:}
+    |   postfix_expression:pe LPARENTHESIS argument_expression_list:ael RPARENTHESIS 
+        {:FunctionCallNode fcn = new FunctionCallNode(pe, ael); RESULT = fcn;:}
+    |   postfix_expression:pe INC_OP {:PosIncrementOperatorNode pion = new PosIncrementOperatorNode(pe); RESULT = pion;:} 
+    |   postfix_expression:pe DEC_OP {:PosDecrementOperatorNode pdon = new PosDecrementOperatorNode(pe); RESULT = pdon;:}
+    ;
+
+argument_expression_list::= assignment_expression:ae {:RESULT = ae;:}
+    |   argument_expression_list:ael COMMA assignment_expression:ae 
+        {:ArrayList<ExpressionNode> aeln = new ArrayList<>();
+          if(ael != null)
+            aeln.addAll(ael);
+          aeln.add(ae); RESULT = aeln; :}
+    ;
+
+primary_expression ::= ID:i {:IdNode idn = new IdNode(i); RESULT = idn;:} 
+    |   INT_LITERAL:il {:RESULT = il;:}
+    |   LPARENTHESIS expression:e RPARENTHESIS {:RESULT = e;:} 
+    ;
+
+assignment_operator ::= ASSIGNMENT_OP:ao {:AssignmentOperatorNode aon = new AssignmentOperatorNode(); RESULT = aon;:}
+    ;
