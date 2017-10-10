@@ -69,7 +69,7 @@ expression ::= assignment_expression:ae {:RESULT = ae;:}
     |   expression:e COMMA assignment_expression:ae 
         {:  Location l = new Location(eleft, eright);
             InLineExpressionNode ilen =  new InLineExpressionNode(l,e, ae); 
-            RESULT ilen;:} 
+            RESULT = ilen;:} 
     ;
 
 assignment_expression ::= conditional_expression:ce {:RESULT = ce;:}
@@ -113,7 +113,7 @@ exclusive_or_expression ::= and_expression:ae {:RESULT = ae;:}
 and_expression ::= equality_expression:ee {:RESULT = ee;:}
     |   and_expression:ae AND:a equality_expression:ee
         {:  Location l = new Location(aleft, aright);
-            AndNode an = new AndNode(l,ae, ee); RESULT = an:}
+            AndNode an = new AndNode(l,ae, ee); RESULT = an;:}
     ;
 
 equality_expression ::= relational_expression:re {:RESULT = re;:}
@@ -183,7 +183,10 @@ unary_expression ::= postfix_expression:pe {:RESULT = pe;:}
     | unary_operator:op unary_expression:ue {:op.setExpression(ue); RESULT = op;:} 
     ;
 
-id_list ::= ID:i opt_comma:oc {:oc.add(0, i); RESULT = oc;:}
+id_list ::= ID:i opt_comma:oc 
+        {:   Location l = new Location(ileft,iright);
+            IdNode id = new IdNode(l,i);
+            oc.add(0, id); RESULT = oc;:}
     ;
 
 opt_comma ::= COMMA id_list:il {:RESULT = il;:} 
@@ -193,17 +196,20 @@ opt_comma ::= COMMA id_list:il {:RESULT = il;:}
 unary_operator ::= MINUS:m 
     {:  Location l = new Location(mleft, mright);
         RESULT =  new MinusNode(l);:}
-    |   NOT:n {:  Location l = new Location(nleft, nright); RESULT = new NotNode(l);:}
+    |   NOT:n {:  
+        Location l = new Location(nleft, nright); RESULT = new NotNode(l);:}
     |   NOT_OP:no {:    Location l = new Location(noleft, noright); RESULT = new NotOperatorNode(l);:}
     ;
     
 postfix_expression ::= primary_expression:pe {:RESULT = pe;:}
     |   postfix_expression:pe LPARENTHESIS RPARENTHESIS 
         {:  Location l = new Location(peleft, peright);
-            FunctionCallNode fcn = new FunctionCallNode(l,pe); RESULT = fcn;:}
+            IdNode id = (IdNode)pe;
+            FunctionCallNode fcn = new FunctionCallNode(l,id); RESULT = fcn;:}
     |   postfix_expression:pe LPARENTHESIS argument_expression_list:ael RPARENTHESIS 
         {:  Location l = new Location(peleft, peright);
-            FunctionCallNode fcn = new FunctionCallNode(l,pe, ael); RESULT = fcn;:}
+        IdNode id = (IdNode)pe;
+            FunctionCallNode fcn = new FunctionCallNode(l,id, ael); RESULT = fcn;:}
     |   postfix_expression:pe INC_OP:i
         {: Location l = new Location(ileft, iright);
            PosIncrementOperatorNode pion = new PosIncrementOperatorNode(l,pe); RESULT = pion;:}

@@ -11,6 +11,10 @@ public class NotOperatorNode extends UnaryOperator {
         super(location, expression);
     }
 
+    public NotOperatorNode(Location location){
+        super(location );
+    }
+
     @Override
     public Value Interpret() {
         return null;
