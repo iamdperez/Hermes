@@ -1,7 +1,12 @@
 package parser.tree.Values;
 
 public abstract class Value {
+    private Object value;
+    public Value(Object value){
+        this.value = value;
+    }
     public abstract Value clone();
-    public abstract void setValue(Object value);
-    public abstract Object getValue();
+    public Object getValue(){
+        return value;
+    }
 }
