@@ -7,7 +7,9 @@ import parser.tree.expression.ExpressionNode;
 public abstract class AssignmentOperator extends ExpressionNode {
     private Variable variable;
     private ExpressionNode rightNode;
-
+     public AssignmentOperator(Location location){
+         super(location);
+     }
     public AssignmentOperator(Location location, Variable variable, ExpressionNode rightNode){
         super(location);
         this.variable = variable;
