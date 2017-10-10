@@ -4,11 +4,15 @@ import java_cup.runtime.ComplexSymbolFactory;
 import java.util.*;
 import parser.tree.*;
 import parser.tree.expression.*;
+import parser.tree.expression.operators.*;
+import parser.tree.expression.literals.*;
 import parser.tree.expression.operators.arithmetic.*;
 import parser.tree.expression.operators.assignment.*;
 import parser.tree.expression.operators.relational.*;
 import parser.tree.expression.operators.logical.*;
 import parser.tree.expression.operators.bits.*;
+import parser.tree.expression.operators.unary.*;
+import parser.tree.expression.operators.reduction.*;
 parser code {:
 
     public parser(Lexer lex, ComplexSymbolFactory sf) {
@@ -51,10 +55,12 @@ terminal    String     ID;
 
 /* expression */
 non terminal    ExpressionNode  expression, assignment_expression, conditional_expression, unary_expression;   
-non terminal    ExpressionNode  assignment_operator, logical_or_expression, logical_and_expression, inclusive_or_expression;   
+non terminal    ExpressionNode  logical_or_expression, logical_and_expression, inclusive_or_expression;   
+non terminal    AssignmentOperator  assignment_operator;
 non terminal    ExpressionNode  exclusive_or_expression, and_expression, equality_expression, relational_expression;   
 non terminal    ExpressionNode  shift_expression, additive_expression, multiplicative_expression;
-non terminal    ExpressionNode  postfix_expression, unary_operator, primary_expression;
+non terminal    ExpressionNode  postfix_expression, primary_expression;
+non terminal    UnaryOperator   unary_operator;
 non terminal    ArrayList<ExpressionNode>   argument_expression_list;
 non terminal    ArrayList<IdNode>      id_list, opt_comma;   
 
@@ -66,9 +72,10 @@ expression ::= assignment_expression:ae {:RESULT = ae;:}
             RESULT ilen;:} 
     ;
 
-assignment_expression ::= conditional_expression:ce {:RESULT ce;:}
+assignment_expression ::= conditional_expression:ce {:RESULT = ce;:}
     |   unary_expression:ue assignment_operator:ao assignment_expression:ae 
-        {: ao.setVariable(ue); ao.setExpression(ae); RESULT = ao; :} 
+        {:  Variable va = (Variable)ue;
+            ao.setVariable(va); ao.setRightNode(ae); RESULT = ao; :} 
     ;
 
 conditional_expression ::= logical_or_expression:loe {:RESULT = loe;:}
@@ -119,14 +126,14 @@ equality_expression ::= relational_expression:re {:RESULT = re;:}
     ;
 
 relational_expression ::= shift_expression:se {:RESULT = se;:}
-    |   relational_expression:re LESS_OP:l shift_expression:se 
-        {:  Location l = new Location(lleft, lright);
+    |   relational_expression:re LESS_OP:lo shift_expression:se 
+        {:  Location l = new Location(loleft, loright);
             LessOperatorNode lon = new LessOperatorNode(l,re,se); RESULT = lon;:}
     |   relational_expression:re GREATER_OP:g shift_expression:se 
         {:  Location l = new Location(gleft, gright);
             GreaterOperatorNode gon = new GreaterOperatorNode(l,re,se); RESULT = gon;:}
-    |   relational_expression:re LESS_EQUAL_OP:l shift_expression:se 
-        {:  Location l = new Location(lleft, lright);
+    |   relational_expression:re LESS_EQUAL_OP:lo shift_expression:se 
+        {:  Location l = new Location(loleft, loright);
             LessEqualOperatorNode leon = new LessEqualOperatorNode(l,re,se); RESULT = leon;:}
     |   relational_expression:re GREATER_EQUAL_OP:g shift_expression:se 
         {:  Location l = new Location(gleft, gright);
@@ -134,8 +141,8 @@ relational_expression ::= shift_expression:se {:RESULT = se;:}
     ;
 
 shift_expression ::= additive_expression:ae {:RESULT = ae;:}
-    |   shift_expression:se LSHIFT_OP:l additive_expression:ae 
-        {:  Location l = new Location(lleft, lright);
+    |   shift_expression:se LSHIFT_OP:ls additive_expression:ae 
+        {:  Location l = new Location(lsleft, lsright);
             LeftShiftOperatorNode lson = new LeftShiftOperatorNode(l,se,ae); RESULT = lson;:}
     |   shift_expression:se RSHIFT_OP:r additive_expression:ae 
         {:  Location l = new Location(rleft, rright);
@@ -166,14 +173,14 @@ multiplicative_expression ::= unary_expression:ue {:RESULT = ue;:}
 unary_expression ::= postfix_expression:pe {:RESULT = pe;:}
     |   INC_OP:i unary_expression:ue 
         {:  Location l = new Location(ileft, iright);
-            PreIncrementOperatorNode pion = PreIncrementOperatorNode(l,ue); RESULT = pion;:}
+            PreIncrementOperatorNode pion = new PreIncrementOperatorNode(l,ue); RESULT = pion;:}
     |   DEC_OP:d unary_expression:ue 
         {:  Location l = new Location(dleft, dright);
-            PreDecrementOperatorNode pdon = PreDecrementOperatorNode(l,ue); RESULT = pdon;:}
+            PreDecrementOperatorNode pdon = new PreDecrementOperatorNode(l,ue); RESULT = pdon;:}
     |   AND:a  LSQUARE_BRACKET id_list:il RSQUARE_BRACKET 
         {:  Location l = new Location(aleft, aright);
-            AndReductionNode arn = new AndReductionNode(l,il); RESULT = il;:}
-    | unary_operator:op unary_expression:ue {:op.setRight(ue); RESULT = op;:} 
+            AndReductionNode arn = new AndReductionNode(l,il); RESULT = arn;:}
+    | unary_operator:op unary_expression:ue {:op.setExpression(ue); RESULT = op;:} 
     ;
 
 id_list ::= ID:i opt_comma:oc {:oc.add(0, i); RESULT = oc;:}
@@ -205,7 +212,9 @@ postfix_expression ::= primary_expression:pe {:RESULT = pe;:}
            PosDecrementOperatorNode pdon = new PosDecrementOperatorNode(l,pe); RESULT = pdon;:}
     ;
 
-argument_expression_list::= assignment_expression:ae {:RESULT = ae;:}
+argument_expression_list::= assignment_expression:ae 
+        {:  ArrayList<ExpressionNode> aeln = new ArrayList<>();
+            aeln.add(ae); RESULT = aeln;:}
     |   argument_expression_list:ael COMMA assignment_expression:ae 
         {:ArrayList<ExpressionNode> aeln = new ArrayList<>();
           if(ael != null)
