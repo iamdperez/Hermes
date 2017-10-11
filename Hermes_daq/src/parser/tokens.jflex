@@ -25,12 +25,13 @@ import java_cup.runtime.ComplexSymbolFactory.Location;
         ComplexSymbolFactory symbolFactory;
 
       private Symbol symbol(String name, int sym) {
-          return symbolFactory.newSymbol(name, sym, new Location(yyline,yycolumn,yyline), new Location(yyline,yycolumn,yycolumn));
+          return symbolFactory.newSymbol(name, sym, new Location(yyline+1,yycolumn+1,yyline+1),
+          new Location(yyline+1,yycolumn+1,yycolumn+1));
       }
 
       private Symbol symbol(String name, int sym, Object val) {
-          Location left = new Location(yyline,yycolumn,yyline);
-          Location right= new Location(yyline,yycolumn, yycolumn);
+          Location left = new Location(yyline+1,yycolumn+1,yyline+1);
+          Location right= new Location(yyline+1,yycolumn+1, yycolumn+1);
           return symbolFactory.newSymbol(name, sym, left, right,val);
       }
 
@@ -116,8 +117,8 @@ id                      =       [A-Za-z_][A-Za-z_0-9]*
     "*"             {   return symbol("times",sym.TIMES);   }    
     "/"             {   return symbol("div",sym.DIV);   }    
     "%"             {   return symbol("mod",sym.MOD);   }    
-    "["             {   return symbol("right square bracket",sym.RSQUARE_BRACKET); }    
-    "]"             {   return symbol("left square bracket",sym.LSQUARE_BRACKET);   }
+    "]"             {   return symbol("right square bracket",sym.RSQUARE_BRACKET); }    
+    "["             {   return symbol("left square bracket",sym.LSQUARE_BRACKET);   }
     "~"             {   return symbol("not",sym.NOT);   }
     "!"             {   return symbol("not operator",sym.NOT_OP);   }
     "("             {   return symbol("left parenthesis",sym.LPARENTHESIS); }
