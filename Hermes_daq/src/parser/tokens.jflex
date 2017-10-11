@@ -61,7 +61,7 @@ int_lit                 =       0 | [1-9][0-9]*
 id                      =       [A-Za-z_][A-Za-z_0-9]*
 
 /*%state STRING*/
-
+device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
 %%
 
 /*keywords*//*
@@ -92,6 +92,8 @@ id                      =       [A-Za-z_][A-Za-z_0-9]*
 
     /* literals */
     {int_lit}       {   return symbol("int literal",sym.INT_LITERAL, new Integer(Integer.parseInt(yytext())));   }
+    
+    {device}        {   return symbol("device model",sym.DEVICE_MODEL, yytext());}
 
     /* operators */
     ","             {   return symbol("comma", sym.COMMA);  }
@@ -124,6 +126,7 @@ id                      =       [A-Za-z_][A-Za-z_0-9]*
     "("             {   return symbol("left parenthesis",sym.LPARENTHESIS); }
     ")"             {   return symbol("right parenthesis",sym.RPARENTHESIS);   }
     "="             {   return symbol("assignment operator",sym.ASSIGNMENT_OP); }
+    ";"             {   return symbol("semicolon",sym.SEMICOLON); }
 
     {Comment}       {   /* ignore */    }
     {WhiteSpace}    {   /* ignore */    }

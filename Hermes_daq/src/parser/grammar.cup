@@ -46,7 +46,7 @@ parser code {:
 terminal            COMMA, TERNARY_OP, COLON, OR_OP, AND_OP, OR, XOR, AND, EQUAL_OP, NOT_EQUAL_OP;
 terminal            LSHIFT_OP, RSHIFT_OP, LESS_EQUAL_OP, GREATER_EQUAL_OP, LESS_OP, GREATER_OP;
 terminal            INC_OP, DEC_OP, PLUS, MINUS, TIMES, DIV, MOD, RSQUARE_BRACKET, LSQUARE_BRACKET;
-terminal            NOT, NOT_OP, LPARENTHESIS, RPARENTHESIS, ASSIGNMENT_OP;
+terminal            NOT, NOT_OP, LPARENTHESIS, RPARENTHESIS, ASSIGNMENT_OP, SEMICOLON;
 
 terminal    Integer    INT_LITERAL;
 // terminal String     STRING_LITERAL;
@@ -63,7 +63,9 @@ non terminal    UnaryOperator   unary_operator;
 non terminal    ArrayList<ExpressionNode>   argument_expression_list;
 non terminal    ArrayList<IdNode>      id_list, opt_comma;   
 
+start with program;
 
+/* expression */
 expression ::= assignment_expression:ae {:RESULT = ae;:}
     |   expression:e COMMA assignment_expression:ae 
         {:  Location l = new Location(eleft, eright);
@@ -241,3 +243,75 @@ assignment_operator ::= ASSIGNMENT_OP:ao
     {: Location l = new Location(aoleft, aoright);
        AssignmentOperatorNode aon = new AssignmentOperatorNode(l); RESULT = aon;:}
     ;
+
+program ::= 'module' ID SEMICOLON initial_begin functions_list 'enmodule'
+    ;
+
+initial_begin ::= 'initial' 'device' DEVICE_MODEL SEMICOLON global_variables 'endinitial'
+    | /* empty */
+    ;
+
+global_variables ::= global_variables pin_declaration
+    | global_variables pin_definition
+    | global_variables set_declaration
+    | global_variables set_assignation_statement
+    | /* empty */
+    ;
+
+pin_declaration ::= id_list 'pin' pin_list SEMICOLON
+
+pin_list ::= INT_LITERAL pin_listp
+    ;
+
+pin_listp ::= COMMA pin_list
+    | /* empty */
+    ;
+
+pin_definition ::= id_list 'istype' pin_type SEMICOLON
+    ;
+
+pin_type ::= 'output'
+    |   'input'
+    ;
+
+set_declaration ::= ID EQUAL_OP LSQUARE_BRACKET id_list RSQUARE_BRACKET SEMICOLON
+    ;
+
+set_assignation_statement ::= LSQUARE_BRACKET id_list RSQUARE_BRACKET EQUAL_OP expression SEMICOLON
+    ;
+
+functions_list ::= function
+    | functions_list function
+    | /* empty */
+    ;
+
+function ::= 'function' ID LPARENTHESIS id_list RPARENTHESIS statement_list 'endfunction'
+    ; // TODO: add variable declaration 
+
+statement_list ::= statement
+    | statement_list statement
+    ;
+
+statement ::= expression_statement
+    |   set_assignation_statement
+    |   if_statement
+    |   iteration_statement
+    |   jump_statement
+    ;
+
+jump_statement ::= 'break' SEMICOLON
+    |   'return' SEMICOLON
+    |   'return' expression SEMICOLON
+    ;
+
+iteration_statement ::= 'while' LPARENTHESIS expression RPARENTHESIS statement
+    |   'for' LPARENTHESIS expression_statement expression_statement expression RPARENTHESIS statement    
+    ;
+
+if_statement ::= 'if' LPARENTHESIS expression RPARENTHESIS statement
+    | 'if' LPARENTHESIS expression RPARENTHESIS statement_or_null 'else' statement
+    ;
+
+expression_statement ::= SEMICOLON
+    |   expression SEMICOLON
+    ;       
