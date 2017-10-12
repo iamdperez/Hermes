@@ -236,6 +236,8 @@ primary_expression ::= ID:i
         {: Location l = new Location(illeft, ilright);
            IntLiteralNode iln = new IntLiteralNode(l, il);
            RESULT =iln;:}
+    |   STRING_LITERAL:sl
+        {:  Location l = new Location(slleft,slright); RESULT = new StringLiteralNode(l,sl);:}
     |   LPARENTHESIS expression:e RPARENTHESIS {:RESULT = e;:} 
     ;
 
@@ -297,6 +299,7 @@ statement ::= expression_statement
     |   if_statement
     |   iteration_statement
     |   jump_statement
+    |   'print' expression SEMICOLON
     ;
 
 jump_statement ::= 'break' SEMICOLON
