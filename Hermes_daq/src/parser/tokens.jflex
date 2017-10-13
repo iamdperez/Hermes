@@ -64,12 +64,14 @@ id                      =       [A-Za-z_][A-Za-z_0-9]*
 device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
 %%
 
-/*keywords*//*
+/*keywords*/
 <YYINITIAL> "module"        { return symbol(sym.MODULE); }
 <YYINITIAL> "endmodule"     { return symbol(sym.MODULE_END); }
+<YYINITIAL> "initial"        { return symbol(sym.INITIAL); }
+<YYINITIAL> "endinitial"     { return symbol(sym.INITIAL_END); }
 <YYINITIAL> "main"          { return symbol(sym.MAIN); }
 <YYINITIAL> "endmain"       { return symbol(sym.MAIN_END); }
-<YYINITIAL> "if"            { return symbol(sym.I); }
+<YYINITIAL> "if"            { return symbol(sym.IF); }
 <YYINITIAL> "endif"         { return symbol(sym.IF_END); }
 <YYINITIAL> "while"         { return symbol(sym.WHILE); }
 <YYINITIAL> "endwhile"      { return symbol(sym.WHILE_END); }
@@ -83,7 +85,9 @@ device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
 <YYINITIAL> "device"        { return symbol(sym.DEVICE); }
 <YYINITIAL> "istype"        { return symbol(sym.ISTYPE); }
 <YYINITIAL> "input"         { return symbol(sym.INPUT); }
-<YYINITIAL> "output"        { return symbol(sym.OUTPUT); }*/
+<YYINITIAL> "output"        { return symbol(sym.OUTPUT); }
+<YYINITIAL> "break"         { return symbol(sym.BREAK); }
+<YYINITIAL> "return"        { return symbol(sym.RETURN); }
 
 
 <YYINITIAL> {

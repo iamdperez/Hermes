@@ -246,10 +246,10 @@ assignment_operator ::= ASSIGNMENT_OP:ao
        AssignmentOperatorNode aon = new AssignmentOperatorNode(l); RESULT = aon;:}
     ;
 
-program ::= 'module' ID SEMICOLON initial_begin functions_list 'enmodule'
+program ::= MODULE ID SEMICOLON initial_begin functions_list MODULE_END
     ;
 
-initial_begin ::= 'initial' 'device' DEVICE_MODEL SEMICOLON global_variables 'endinitial'
+initial_begin ::= INITIAL DEVICE DEVICE_MODEL SEMICOLON global_variables INITIAL_END
     | /* empty */
     ;
 
@@ -260,7 +260,7 @@ global_variables ::= global_variables pin_declaration
     | /* empty */
     ;
 
-pin_declaration ::= id_list 'pin' pin_list SEMICOLON
+pin_declaration ::= id_list PIN pin_list SEMICOLON
 
 pin_list ::= INT_LITERAL pin_listp
     ;
@@ -269,11 +269,11 @@ pin_listp ::= COMMA pin_list
     | /* empty */
     ;
 
-pin_definition ::= id_list 'istype' pin_type SEMICOLON
+pin_definition ::= id_list ISTYPE pin_type SEMICOLON
     ;
 
-pin_type ::= 'output'
-    |   'input'
+pin_type ::= OUTPUT
+    |   INPUT
     ;
 
 set_declaration ::= ID EQUAL_OP LSQUARE_BRACKET id_list RSQUARE_BRACKET SEMICOLON
@@ -287,9 +287,12 @@ functions_list ::= function
     | /* empty */
     ;
 
-function ::= 'function' ID LPARENTHESIS id_list RPARENTHESIS statement_list 'endfunction'
-    ; // TODO: add variable declaration 
+function ::= FUNCTION ID LPARENTHESIS id_list RPARENTHESIS variable_declaration statement_list FUNCTION_END
+    ;  
 
+variable_declaration ::= VAR id_list SEMICOLON
+    ;
+    
 statement_list ::= statement
     | statement_list statement
     ;
@@ -299,20 +302,20 @@ statement ::= expression_statement
     |   if_statement
     |   iteration_statement
     |   jump_statement
-    |   'print' expression SEMICOLON
+    |   PRINT expression SEMICOLON
     ;
 
-jump_statement ::= 'break' SEMICOLON
-    |   'return' SEMICOLON
-    |   'return' expression SEMICOLON
+jump_statement ::= BREAK SEMICOLON
+    |   RETURN SEMICOLON
+    |   RETURN expression SEMICOLON
     ;
 
-iteration_statement ::= 'while' LPARENTHESIS expression RPARENTHESIS statement
-    |   'for' LPARENTHESIS expression_statement expression_statement expression RPARENTHESIS statement    
+iteration_statement ::= WHILE LPARENTHESIS expression RPARENTHESIS statement WHILE_END
+    |   FOR LPARENTHESIS expression_statement expression_statement expression RPARENTHESIS statement FOR_END    
     ;
 
-if_statement ::= 'if' LPARENTHESIS expression RPARENTHESIS statement
-    | 'if' LPARENTHESIS expression RPARENTHESIS statement_or_null 'else' statement
+if_statement ::= IF LPARENTHESIS expression RPARENTHESIS statement IF_END
+    | IF LPARENTHESIS expression RPARENTHESIS statement_or_null ELSE statement IF_END
     ;
 
 expression_statement ::= SEMICOLON
