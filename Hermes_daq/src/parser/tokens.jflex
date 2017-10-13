@@ -60,34 +60,35 @@ CommentContent          =       ( [^*] | \*+ [^/*] )*
 int_lit                 =       0 | [1-9][0-9]*
 id                      =       [A-Za-z_][A-Za-z_0-9]*
 
-/*%state STRING*/
+%state STRING
 device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
 %%
 
 /*keywords*/
-<YYINITIAL> "module"        { return symbol(sym.MODULE); }
-<YYINITIAL> "endmodule"     { return symbol(sym.MODULE_END); }
-<YYINITIAL> "initial"        { return symbol(sym.INITIAL); }
-<YYINITIAL> "endinitial"     { return symbol(sym.INITIAL_END); }
-<YYINITIAL> "main"          { return symbol(sym.MAIN); }
-<YYINITIAL> "endmain"       { return symbol(sym.MAIN_END); }
-<YYINITIAL> "if"            { return symbol(sym.IF); }
-<YYINITIAL> "endif"         { return symbol(sym.IF_END); }
-<YYINITIAL> "while"         { return symbol(sym.WHILE); }
-<YYINITIAL> "endwhile"      { return symbol(sym.WHILE_END); }
-<YYINITIAL> "for"           { return symbol(sym.FOR); }
-<YYINITIAL> "endfor"        { return symbol(sym.FOR_END); }
-<YYINITIAL> "function"      { return symbol(sym.FUNCTION); }
-<YYINITIAL> "endfunction"   { return symbol(sym.FUNCTION_END); }
-<YYINITIAL> "print"         { return symbol(sym.PRINT); }
-<YYINITIAL> "var"           { return symbol(sym.VAR); }
-<YYINITIAL> "pin"           { return symbol(sym.PIN); }
-<YYINITIAL> "device"        { return symbol(sym.DEVICE); }
-<YYINITIAL> "istype"        { return symbol(sym.ISTYPE); }
-<YYINITIAL> "input"         { return symbol(sym.INPUT); }
-<YYINITIAL> "output"        { return symbol(sym.OUTPUT); }
-<YYINITIAL> "break"         { return symbol(sym.BREAK); }
-<YYINITIAL> "return"        { return symbol(sym.RETURN); }
+<YYINITIAL> "module"        { return symbol("module",sym.MODULE); }
+<YYINITIAL> "endmodule"     { return symbol("endmodule",sym.MODULE_END); }
+<YYINITIAL> "initial"       { return symbol("initial",sym.INITIAL); }
+<YYINITIAL> "endinitial"    { return symbol("endinitial",sym.INITIAL_END); }
+<YYINITIAL> "main"          { return symbol("main",sym.MAIN); }
+<YYINITIAL> "endmain"       { return symbol("endmain",sym.MAIN_END); }
+<YYINITIAL> "if"            { return symbol("if",sym.IF); }
+<YYINITIAL> "else"            { return symbol("else",sym.ELSE); }
+<YYINITIAL> "endif"         { return symbol("endif",sym.IF_END); }
+<YYINITIAL> "while"         { return symbol("while",sym.WHILE); }
+<YYINITIAL> "endwhile"      { return symbol("endwhile",sym.WHILE_END); }
+<YYINITIAL> "for"           { return symbol("for",sym.FOR); }
+<YYINITIAL> "endfor"        { return symbol("endfor",sym.FOR_END); }
+<YYINITIAL> "function"      { return symbol("function",sym.FUNCTION); }
+<YYINITIAL> "endfunction"   { return symbol("endfunction",sym.FUNCTION_END); }
+<YYINITIAL> "print"         { return symbol("print",sym.PRINT); }
+<YYINITIAL> "var"           { return symbol("var",sym.VAR); }
+<YYINITIAL> "pin"           { return symbol("pin",sym.PIN); }
+<YYINITIAL> "device"        { return symbol("device",sym.DEVICE); }
+<YYINITIAL> "istype"        { return symbol("istype",sym.ISTYPE); }
+<YYINITIAL> "input"         { return symbol("input",sym.INPUT); }
+<YYINITIAL> "output"        { return symbol("output",sym.OUTPUT); }
+<YYINITIAL> "break"         { return symbol("break",sym.BREAK); }
+<YYINITIAL> "return"        { return symbol("return",sym.RETURN); }
 
 
 <YYINITIAL> {
@@ -136,10 +137,10 @@ device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
     {WhiteSpace}    {   /* ignore */    }
 }
 
-/*string literal*//*
+/*string literal*/
 <STRING> {
     \"                             { yybegin(YYINITIAL); 
-                                    return symbol(sym.STRING_LITERAL, string.toString()); }
+                                    return symbol(string.toString(),sym.STRING_LITERAL, string.toString()); }
     [^\n\r\"\\]+                   { string.append( yytext() ); }
     \\t                            { string.append('\t'); }
     \\n                            { string.append('\n'); }
@@ -147,7 +148,7 @@ device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
     \\r                            { string.append('\r'); }
     \\\"                           { string.append('\"'); }
     \\                             { string.append('\\'); }
-}*/
+}
 
 
 [^]                    { throw new Error("Illegal character <"+yytext()+">"); }

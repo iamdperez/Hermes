@@ -43,14 +43,19 @@ parser code {:
 :};
 
 
-terminal            COMMA, TERNARY_OP, COLON, OR_OP, AND_OP, OR, XOR, AND, EQUAL_OP, NOT_EQUAL_OP;
-terminal            LSHIFT_OP, RSHIFT_OP, LESS_EQUAL_OP, GREATER_EQUAL_OP, LESS_OP, GREATER_OP;
-terminal            INC_OP, DEC_OP, PLUS, MINUS, TIMES, DIV, MOD, RSQUARE_BRACKET, LSQUARE_BRACKET;
-terminal            NOT, NOT_OP, LPARENTHESIS, RPARENTHESIS, ASSIGNMENT_OP, SEMICOLON;
+terminal    COMMA, TERNARY_OP, COLON, OR_OP, AND_OP, OR, XOR, AND, EQUAL_OP, NOT_EQUAL_OP;
+terminal    LSHIFT_OP, RSHIFT_OP, LESS_EQUAL_OP, GREATER_EQUAL_OP, LESS_OP, GREATER_OP;
+terminal    INC_OP, DEC_OP, PLUS, MINUS, TIMES, DIV, MOD, RSQUARE_BRACKET, LSQUARE_BRACKET;
+terminal    NOT, NOT_OP, LPARENTHESIS, RPARENTHESIS, ASSIGNMENT_OP, SEMICOLON;
 
-terminal    Integer    INT_LITERAL;
-// terminal String     STRING_LITERAL;
-terminal    String     ID;
+terminal    MODULE, MODULE_END, INITIAL, INITIAL_END, MAIN, MAIN_END, IF, IF_END;
+terminal    WHILE, WHILE_END, FOR, FOR_END, FUNCTION, FUNCTION_END, PRINT, VAR;       
+terminal    PIN, DEVICE, ISTYPE, INPUT, OUTPUT, BREAK, RETURN, ELSE;     
+
+terminal    Integer     INT_LITERAL;
+terminal    String      STRING_LITERAL;
+terminal    String      ID;
+terminal    String      DEVICE_MODEL;
 
 /* expression */
 non terminal    ExpressionNode  expression, assignment_expression, conditional_expression, unary_expression;   
@@ -63,6 +68,26 @@ non terminal    UnaryOperator   unary_operator;
 non terminal    ArrayList<ExpressionNode>   argument_expression_list;
 non terminal    ArrayList<IdNode>      id_list, opt_comma;   
 
+/* statement */
+non terminal    ProgramNode                         program;
+non terminal    InitialNode                         initial_begin;
+non terminal    GlobalVariableNode                  global_variables;   
+non terminal    PinDeclarationNode                  pin_declaration;
+non terminal    ArrayList<Integer>                  pin_list, pin_listp;
+non terminal    PinDefinitionNode                   pin_definition;
+non terminal    PinType                             pin_type;
+non terminal    SetDeclarationNode                  set_declaration;
+non terminal    SetAssignationStatementNode         set_assignation_statement;
+non terminal    ArrayList<FunctionDeclarationNode>  functions_list;
+non terminal    FunctionDeclarationNode             function;
+non terminal    VariableDeclarationNode             variable_declaration;
+non terminal    ArrayList<StatementNode>            statement_list;
+non terminal    StatementNode                       statement;
+non terminal    ExpressionStatementNode             expression_statement;
+non terminal    IfStatementNode                     if_statement;
+non terminal    IterationStatementNode              iteration_statement;
+non terminal    JumpStatementNode                   jump_statement;
+non terminal    PrintStatementNode                  print_statement;	  
 start with program;
 
 /* expression */
@@ -246,6 +271,8 @@ assignment_operator ::= ASSIGNMENT_OP:ao
        AssignmentOperatorNode aon = new AssignmentOperatorNode(l); RESULT = aon;:}
     ;
 
+
+/* statement */
 program ::= MODULE ID SEMICOLON initial_begin functions_list MODULE_END
     ;
 
@@ -261,6 +288,7 @@ global_variables ::= global_variables pin_declaration
     ;
 
 pin_declaration ::= id_list PIN pin_list SEMICOLON
+    ;
 
 pin_list ::= INT_LITERAL pin_listp
     ;
@@ -282,8 +310,7 @@ set_declaration ::= ID EQUAL_OP LSQUARE_BRACKET id_list RSQUARE_BRACKET SEMICOLO
 set_assignation_statement ::= LSQUARE_BRACKET id_list RSQUARE_BRACKET EQUAL_OP expression SEMICOLON
     ;
 
-functions_list ::= function
-    | functions_list function
+functions_list ::= functions_list function
     | /* empty */
     ;
 
@@ -292,7 +319,7 @@ function ::= FUNCTION ID LPARENTHESIS id_list RPARENTHESIS variable_declaration 
 
 variable_declaration ::= VAR id_list SEMICOLON
     ;
-    
+
 statement_list ::= statement
     | statement_list statement
     ;
@@ -302,7 +329,10 @@ statement ::= expression_statement
     |   if_statement
     |   iteration_statement
     |   jump_statement
-    |   PRINT expression SEMICOLON
+    |   print_statement
+    ;
+
+print_statement ::= PRINT expression SEMICOLON
     ;
 
 jump_statement ::= BREAK SEMICOLON
@@ -310,14 +340,18 @@ jump_statement ::= BREAK SEMICOLON
     |   RETURN expression SEMICOLON
     ;
 
-iteration_statement ::= WHILE LPARENTHESIS expression RPARENTHESIS statement WHILE_END
-    |   FOR LPARENTHESIS expression_statement expression_statement expression RPARENTHESIS statement FOR_END    
+iteration_statement ::= WHILE LPARENTHESIS expression RPARENTHESIS statement_list WHILE_END
+    |   FOR LPARENTHESIS expression_statement expression_statement expression RPARENTHESIS statement_list FOR_END    
     ;
 
-if_statement ::= IF LPARENTHESIS expression RPARENTHESIS statement IF_END
-    | IF LPARENTHESIS expression RPARENTHESIS statement_or_null ELSE statement IF_END
+if_statement ::= IF LPARENTHESIS expression RPARENTHESIS statement_list IF_END
+    | IF LPARENTHESIS expression RPARENTHESIS statement_list ELSE statement_list IF_END
     ;
 
-expression_statement ::= SEMICOLON
-    |   expression SEMICOLON
+expression_statement ::= SEMICOLON:s 
+        {:  Location l = new Location(sleft, sright);
+            RESULT = new ExpressionStatementNode(l); :}
+    |   expression:e SEMICOLON
+        {:  Location l = new Location(lleft,lright);
+            RESULT = new ExpressionStatementNode(l,e):}
     ;       
