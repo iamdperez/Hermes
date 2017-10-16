@@ -71,7 +71,7 @@ non terminal    ArrayList<IdNode>      id_list, opt_comma;
 /* statement */
 non terminal    ProgramNode                         program;
 non terminal    InitialNode                         initial_begin;
-non terminal    GlobalVariableNode                  global_variables;   
+non terminal    ArrayList<GlobalVariablesNode>      global_variables;   
 non terminal    PinDeclarationNode                  pin_declaration;
 non terminal    ArrayList<Integer>                  pin_list, pin_listp;
 non terminal    PinDefinitionNode                   pin_definition;
@@ -273,71 +273,97 @@ assignment_operator ::= ASSIGNMENT_OP:ao
 
 
 /* statement */
-program ::= MODULE ID SEMICOLON initial_begin functions_list MODULE_END
+program ::= MODULE ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_END
+    {: RESULT = new Program(i,ib,fl);:}
     ;
 
-initial_begin ::= INITIAL DEVICE DEVICE_MODEL SEMICOLON global_variables INITIAL_END
-    | /* empty */
+initial_begin ::= INITIAL DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END
+    {:RESULT = new InitialBeginNode(dm, gv);:}
+    | /* empty */ {:RESULT = null;:}
     ;
 
-global_variables ::= global_variables pin_declaration
-    | global_variables pin_definition
-    | global_variables set_declaration
-    | global_variables set_assignation_statement
-    | /* empty */
+global_variables ::= global_variables:gv pin_declaration:pd
+        {:  gv.add(pd); RESULT = gv;:}
+    |   global_variables:gv pin_definition:pd
+        {:  gv.add(pd); RESULT= gv;:}
+    | global_variables:gv set_declaration:sd
+        {: gv.add(sd); RESULT = gv; :}
+    | global_variables:gv set_assignation_statement:sas
+        {:  gv.add(sas); RESULT = gv;:}
+    | /* empty */ {RESULT = new ArrayList<GlobalVariablesNode>();}
     ;
 
-pin_declaration ::= id_list PIN pin_list SEMICOLON
+pin_declaration ::= id_list:il PIN:p pin_list:pl SEMICOLON
+    {:  Location l = new Location(pleft,pright);
+        RESULT = new PinDeclarationNode(l,il,pl);:}
     ;
 
-pin_list ::= INT_LITERAL pin_listp
+pin_list ::= INT_LITERAL:il pin_listp:pl
+    {:  pl.add(0,il); RESULT = pl:}
     ;
 
-pin_listp ::= COMMA pin_list
-    | /* empty */
+pin_listp ::= COMMA pin_list:pl {:RESULT = pl;:}
+    | /* empty */ {: RESULT = new ArrayList<Integer>();:}
     ;
 
-pin_definition ::= id_list ISTYPE pin_type SEMICOLON
+pin_definition ::= id_list:il ISTYPE:i pin_type:pt SEMICOLON
+    {:  Location l = new Location(ileft,iright);
+        RESULT = new PinDefinitionNode(l,il,pt):}
     ;
 
-pin_type ::= OUTPUT
-    |   INPUT
+pin_type ::= OUTPUT {:RESULT = PinType.OUTPUT;:}
+    |   INPUT {:RESULT = PinType.INPUT;:}
     ;
 
-set_declaration ::= ID EQUAL_OP LSQUARE_BRACKET id_list RSQUARE_BRACKET SEMICOLON
+set_declaration ::= ID:i EQUAL_OP LSQUARE_BRACKET id_list:il RSQUARE_BRACKET SEMICOLON
+    {:  Location l = new Location(ileft,iright);
+        RESULT = new SetDeclarationNode(l, i, il);:}
     ;
 
-set_assignation_statement ::= LSQUARE_BRACKET id_list RSQUARE_BRACKET EQUAL_OP expression SEMICOLON
+set_assignation_statement ::= LSQUARE_BRACKET:ls id_list:il RSQUARE_BRACKET EQUAL_OP expression:e SEMICOLON
+    {:  Location l = new Location(lsleft,lsright);
+        RESULT = new SetAssignationStatementNode(l,il,e); :}
     ;
 
-functions_list ::= functions_list function
-    | /* empty */
+functions_list ::= functions_list:fl function:f
+    {:  fl.add(f); RESULT = fl;:}
+    | /* empty */ {:RESULT = new ArrayList<FunctionDeclarationNode>();:}
     ;
 
-function ::= FUNCTION ID LPARENTHESIS id_list RPARENTHESIS variable_declaration statement_list FUNCTION_END
+function ::= FUNCTION ID:i LPARENTHESIS id_list:il RPARENTHESIS variable_declaration:vd statement_list:sl FUNCTION_END
+    {:  Location l = new Location(ileft,iright);
+        RESULT = FunctionDeclarationNode(l,i,il,vd,sl);:}
     ;  
 
-variable_declaration ::= VAR id_list SEMICOLON
+variable_declaration ::= VAR:v id_list:il SEMICOLON
+    {:  Location l = new Location(vleft,vright);
+        RESULT = new VariableDeclarationNode(l,il);:}
     ;
 
-statement_list ::= statement
-    | statement_list statement
+statement_list ::= statement:s 
+    {:  ArrayList<StatementNode> sl = new ArrayList<>();
+        sl.add(0,s); RESULT = sl;:}
+    |   statement_list:sl statement:s
+    {:  sl.add(0,s); RESULT = sl;:}
     ;
 
-statement ::= expression_statement
-    |   set_assignation_statement
-    |   if_statement
-    |   iteration_statement
-    |   jump_statement
-    |   print_statement
+statement ::= expression_statement:es {:RESULT = es;:}
+    |   set_assignation_statement:sas {:RESULT = sas;:}
+    |   if_statement:is {:RESULT = is;:}
+    |   iteration_statement:is {:RESULT = is;:}
+    |   jump_statement:js {:RESULT = js;:}
+    |   print_statement:ps {:RESULT = ps;:}
     ;
 
-print_statement ::= PRINT expression SEMICOLON
+print_statement ::= PRINT:p expression; SEMICOLON
+    {:  Location l = new Location(pleft, pright);
+        RESULT = new PrintStatementNode(l,e);:}
     ;
 
-jump_statement ::= BREAK SEMICOLON
-    |   RETURN SEMICOLON
-    |   RETURN expression SEMICOLON
+jump_statement ::= BREAK:b SEMICOLON {:RESULT = new BreakNode(new Location(bleft,bright));:}
+    |   RETURN:r SEMICOLON
+        {:  RESULT = new ReturnNode(new Location(rleft,rright));:}
+    |   RETURN expression: SEMICOLON
     ;
 
 iteration_statement ::= WHILE LPARENTHESIS expression RPARENTHESIS statement_list WHILE_END
