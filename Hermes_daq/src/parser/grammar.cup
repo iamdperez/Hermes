@@ -273,12 +273,14 @@ assignment_operator ::= ASSIGNMENT_OP:ao
 
 
 /* statement */
-program ::= MODULE ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_END
-    {: RESULT = new Program(i,ib,fl);:}
+program ::= MODULE:m ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_END
+    {: Location l = new Location(mleft,mright);
+        RESULT = new Program(l,i,ib,fl);:}
     ;
 
-initial_begin ::= INITIAL DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END
-    {:RESULT = new InitialBeginNode(dm, gv);:}
+initial_begin ::= INITIAL:i DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END
+    {:  Location l = new Location(ileft,iright);
+        RESULT = new InitialBeginNode(l,dm, gv);:}
     | /* empty */ {:RESULT = null;:}
     ;
 
@@ -290,7 +292,7 @@ global_variables ::= global_variables:gv pin_declaration:pd
         {: gv.add(sd); RESULT = gv; :}
     | global_variables:gv set_assignation_statement:sas
         {:  gv.add(sas); RESULT = gv;:}
-    | /* empty */ {RESULT = new ArrayList<GlobalVariablesNode>();}
+    | /* empty */ {:RESULT = new ArrayList<GlobalVariablesNode>();:}
     ;
 
 pin_declaration ::= id_list:il PIN:p pin_list:pl SEMICOLON
@@ -333,6 +335,9 @@ functions_list ::= functions_list:fl function:f
 function ::= FUNCTION ID:i LPARENTHESIS id_list:il RPARENTHESIS variable_declaration:vd statement_list:sl FUNCTION_END
     {:  Location l = new Location(ileft,iright);
         RESULT = FunctionDeclarationNode(l,i,il,vd,sl);:}
+    | MAIN:m variable_declaration:vd statement_list:sl MAIN_END
+        {:  Location l = new Location(mleft,mright);
+            RESULT = new MainNode(l,vd,sl);:}
     ;  
 
 variable_declaration ::= VAR:v id_list:il SEMICOLON
@@ -355,7 +360,7 @@ statement ::= expression_statement:es {:RESULT = es;:}
     |   print_statement:ps {:RESULT = ps;:}
     ;
 
-print_statement ::= PRINT:p expression; SEMICOLON
+print_statement ::= PRINT:p expression:e SEMICOLON
     {:  Location l = new Location(pleft, pright);
         RESULT = new PrintStatementNode(l,e);:}
     ;
@@ -363,14 +368,22 @@ print_statement ::= PRINT:p expression; SEMICOLON
 jump_statement ::= BREAK:b SEMICOLON {:RESULT = new BreakNode(new Location(bleft,bright));:}
     |   RETURN:r SEMICOLON
         {:  RESULT = new ReturnNode(new Location(rleft,rright));:}
-    |   RETURN expression: SEMICOLON
+    |   RETURN:r expression:e SEMICOLON
+        {:  Location l = new Location(rleft,rright);
+            RESULT = new ReturnNode(l,e);:}
     ;
 
-iteration_statement ::= WHILE LPARENTHESIS expression RPARENTHESIS statement_list WHILE_END
-    |   FOR LPARENTHESIS expression_statement expression_statement expression RPARENTHESIS statement_list FOR_END    
+iteration_statement ::= WHILE:w LPARENTHESIS expression:e RPARENTHESIS statement_list:sl WHILE_END
+    {:  Location l = new Location(wleft,wright);
+        RESULT = new WhileStatementNode(l,e,sl);:}
+    |   FOR:f LPARENTHESIS expression_statement:e1 expression_statement:e2 expression:e3 RPARENTHESIS statement_list:sl FOR_END
+        {:  Location l = new Location(fleft,fright);
+            RESULT = new ForStatementNode(l,e1,e2,e3,sl);:}    
     ;
 
-if_statement ::= IF LPARENTHESIS expression RPARENTHESIS statement_list IF_END
+if_statement ::= IF:i LPARENTHESIS expression:e RPARENTHESIS statement_list:sl IF_END
+        {:  Location l = new Location(ileft,iright);
+            RESULT = new IfStatementNode(l,e,sl);:}
     | IF LPARENTHESIS expression RPARENTHESIS statement_list ELSE statement_list IF_END
     ;
 
