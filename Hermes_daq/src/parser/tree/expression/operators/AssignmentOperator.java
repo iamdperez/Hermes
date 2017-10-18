@@ -1,7 +1,7 @@
 package parser.tree.expression.operators;
 
 import parser.tree.Location;
-import parser.tree.Variable;
+import parser.tree.interfaces.Variable;
 import parser.tree.expression.ExpressionNode;
 
 public abstract class AssignmentOperator extends ExpressionNode {
