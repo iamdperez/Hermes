@@ -13,6 +13,11 @@ import parser.tree.expression.operators.logical.*;
 import parser.tree.expression.operators.bits.*;
 import parser.tree.expression.operators.unary.*;
 import parser.tree.expression.operators.reduction.*;
+import parser.tree.interfaces.*;
+import parser.tree.statements.*;
+import parser.tree.statements.globalVariables.*;
+import parser.tree.statements.iterationStatements.*;
+import parser.tree.statements.jumpStatements.*;
 parser code {:
 
     public parser(Lexer lex, ComplexSymbolFactory sf) {
@@ -78,8 +83,8 @@ non terminal    PinDefinitionNode                   pin_definition;
 non terminal    PinType                             pin_type;
 non terminal    SetDeclarationNode                  set_declaration;
 non terminal    SetAssignationStatementNode         set_assignation_statement;
-non terminal    ArrayList<FunctionDeclarationNode>  functions_list;
-non terminal    FunctionDeclarationNode             function;
+non terminal    ArrayList<FunctionDeclaration>  functions_list;
+non terminal    FunctionDeclaration             function;
 non terminal    VariableDeclarationNode             variable_declaration;
 non terminal    ArrayList<StatementNode>            statement_list;
 non terminal    StatementNode                       statement;
@@ -275,12 +280,12 @@ assignment_operator ::= ASSIGNMENT_OP:ao
 /* statement */
 program ::= MODULE:m ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_END
     {: Location l = new Location(mleft,mright);
-        RESULT = new Program(l,i,ib,fl);:}
+        RESULT = new ProgramNode(l,i,ib,fl);:}
     ;
 
 initial_begin ::= INITIAL:i DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END
     {:  Location l = new Location(ileft,iright);
-        RESULT = new InitialBeginNode(l,dm, gv);:}
+        RESULT = new InitialNode(l,dm, gv);:}
     | /* empty */ {:RESULT = null;:}
     ;
 
@@ -301,7 +306,7 @@ pin_declaration ::= id_list:il PIN:p pin_list:pl SEMICOLON
     ;
 
 pin_list ::= INT_LITERAL:il pin_listp:pl
-    {:  pl.add(0,il); RESULT = pl:}
+    {:  pl.add(0,il); RESULT = pl;:}
     ;
 
 pin_listp ::= COMMA pin_list:pl {:RESULT = pl;:}
@@ -310,7 +315,7 @@ pin_listp ::= COMMA pin_list:pl {:RESULT = pl;:}
 
 pin_definition ::= id_list:il ISTYPE:i pin_type:pt SEMICOLON
     {:  Location l = new Location(ileft,iright);
-        RESULT = new PinDefinitionNode(l,il,pt):}
+        RESULT = new PinDefinitionNode(l,il,pt);:}
     ;
 
 pin_type ::= OUTPUT {:RESULT = PinType.OUTPUT;:}
@@ -329,12 +334,12 @@ set_assignation_statement ::= LSQUARE_BRACKET:ls id_list:il RSQUARE_BRACKET EQUA
 
 functions_list ::= functions_list:fl function:f
     {:  fl.add(f); RESULT = fl;:}
-    | /* empty */ {:RESULT = new ArrayList<FunctionDeclarationNode>();:}
+    | /* empty */ {:RESULT = new ArrayList<FunctionDeclaration>();:}
     ;
 
 function ::= FUNCTION ID:i LPARENTHESIS id_list:il RPARENTHESIS variable_declaration:vd statement_list:sl FUNCTION_END
     {:  Location l = new Location(ileft,iright);
-        RESULT = FunctionDeclarationNode(l,i,il,vd,sl);:}
+        RESULT = new FunctionDeclarationNode(l,i,il,vd,sl);:}
     | MAIN:m variable_declaration:vd statement_list:sl MAIN_END
         {:  Location l = new Location(mleft,mright);
             RESULT = new MainNode(l,vd,sl);:}
@@ -384,13 +389,15 @@ iteration_statement ::= WHILE:w LPARENTHESIS expression:e RPARENTHESIS statement
 if_statement ::= IF:i LPARENTHESIS expression:e RPARENTHESIS statement_list:sl IF_END
         {:  Location l = new Location(ileft,iright);
             RESULT = new IfStatementNode(l,e,sl);:}
-    | IF LPARENTHESIS expression RPARENTHESIS statement_list ELSE statement_list IF_END
+    | IF:i LPARENTHESIS expression:e RPARENTHESIS statement_list:sl ELSE statement_list:esl IF_END
+        {:  Location l = new Location(ileft,iright);
+            RESULT = new IfStatementNode(l,e,sl,esl);:}
     ;
 
 expression_statement ::= SEMICOLON:s 
         {:  Location l = new Location(sleft, sright);
             RESULT = new ExpressionStatementNode(l); :}
     |   expression:e SEMICOLON
-        {:  Location l = new Location(lleft,lright);
-            RESULT = new ExpressionStatementNode(l,e):}
+        {:  Location l = new Location(eleft,eright);
+            RESULT = new ExpressionStatementNode(l,e);:}
     ;       
