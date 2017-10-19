@@ -348,13 +348,14 @@ function ::= FUNCTION ID:i LPARENTHESIS id_list:il RPARENTHESIS variable_declara
 variable_declaration ::= VAR:v id_list:il SEMICOLON
     {:  Location l = new Location(vleft,vright);
         RESULT = new VariableDeclarationNode(l,il);:}
+    | /* empty */ {:RESULT = null;:}
     ;
 
 statement_list ::= statement:s 
     {:  ArrayList<StatementNode> sl = new ArrayList<>();
-        sl.add(0,s); RESULT = sl;:}
+        sl.add(s); RESULT = sl;:}
     |   statement_list:sl statement:s
-    {:  sl.add(0,s); RESULT = sl;:}
+    {:  sl.add(s); RESULT = sl;:}
     ;
 
 statement ::= expression_statement:es {:RESULT = es;:}
