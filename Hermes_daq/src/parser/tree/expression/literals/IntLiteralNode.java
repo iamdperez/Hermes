@@ -18,12 +18,12 @@ public class IntLiteralNode extends LiteralNode {
     }
 
     @Override
-    public Value Interpret() {
+    public Value interpret() {
         return new IntValue((Integer) getValue());
     }
 
     @Override
-    public Type EvaluateSemantic() {
+    public Type evaluateSemantic() {
         return new IntType();
     }
 }

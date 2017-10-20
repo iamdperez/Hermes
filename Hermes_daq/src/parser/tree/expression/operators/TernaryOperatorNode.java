@@ -18,12 +18,12 @@ public class TernaryOperatorNode extends ExpressionNode {
     }
 
     @Override
-    public Value Interpret() {
+    public Value interpret() {
         return null;
     }
 
     @Override
-    public Type EvaluateSemantic() {
+    public Type evaluateSemantic() {
         return null;
     }
 

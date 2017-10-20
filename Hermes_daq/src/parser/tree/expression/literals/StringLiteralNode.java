@@ -17,12 +17,12 @@ public class StringLiteralNode extends LiteralNode {
     }
 
     @Override
-    public Value Interpret() {
+    public Value interpret() {
         return new StringValue("");
     }
 
     @Override
-    public Type EvaluateSemantic() {
+    public Type evaluateSemantic() {
         return new StringType();
     }
 }
