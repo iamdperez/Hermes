@@ -1,7 +1,9 @@
 package parser.tree.expression.operators.arithmetic;
 
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.Types.Type;
+import parser.tree.Values.IntValue;
 import parser.tree.Values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.BinaryOperator;
@@ -12,12 +14,14 @@ public class TimesOperatorNode extends BinaryOperator {
     }
 
     @Override
-    public Value Interpret() {
-        return null;
+    public Value interpret() {
+        Value left = getLeftNode().interpret();
+        Value right = getRightNode().interpret();
+        return new IntValue(((Integer)left.getValue()) * ((Integer)right.getValue()));
     }
 
     @Override
-    public Type EvaluateSemantic() {
-        return null;
+    public Type evaluateSemantic() throws SemanticException {
+        return evaluateIntSemantic("Multiplication");
     }
 }
