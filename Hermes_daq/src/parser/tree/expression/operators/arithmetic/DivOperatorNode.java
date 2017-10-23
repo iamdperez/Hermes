@@ -2,7 +2,6 @@ package parser.tree.expression.operators.arithmetic;
 
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
-import parser.tree.Types.IntType;
 import parser.tree.Types.Type;
 import parser.tree.Values.IntValue;
 import parser.tree.Values.Value;

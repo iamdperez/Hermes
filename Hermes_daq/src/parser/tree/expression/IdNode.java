@@ -7,7 +7,7 @@ import parser.tree.interfaces.Variable;
 
 public class IdNode extends ExpressionNode implements Variable {
     private final String name;
-
+    private Type type;
     public IdNode(Location location, String name) {
         super(location);
         this.name = name;
@@ -25,5 +25,13 @@ public class IdNode extends ExpressionNode implements Variable {
 
     public String getName() {
         return name;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }

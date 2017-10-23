@@ -7,13 +7,13 @@ import java.util.ArrayList;
 
 public class PinDefinitionNode extends GlobalVariablesNode {
     private final ArrayList<IdNode> idList;
-    private final PinType pinType;
+    private final IO IO;
 
     public PinDefinitionNode(Location location, ArrayList<IdNode> idList,
-                             PinType pinType) {
+                             IO IO) {
         super(location);
         this.idList = idList;
-        this.pinType = pinType;
+        this.IO = IO;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class PinDefinitionNode extends GlobalVariablesNode {
         return idList;
     }
 
-    public PinType getPinType() {
-        return pinType;
+    public IO getIO() {
+        return IO;
     }
 }

@@ -1,6 +1,6 @@
 package parser.tree.statements.globalVariables;
 
-public enum PinType {
+public enum IO {
     INPUT,
     OUTPUT
 }

@@ -3,6 +3,7 @@ package parser.tree.expression.operators;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.Types.IntType;
+import parser.tree.Types.SetType;
 import parser.tree.Types.StringType;
 import parser.tree.Types.Type;
 import parser.tree.expression.ExpressionNode;
@@ -39,6 +40,10 @@ public abstract class BinaryOperator extends ExpressionNode {
 
     protected boolean isIntType(Type t){
         return t instanceof IntType;
+    }
+
+    protected boolean isSetType(Type t){
+        return t instanceof SetType;
     }
 
     protected String getSemanticErrorMessage(String operation, Type left, Type right){

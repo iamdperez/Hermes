@@ -1,5 +1,6 @@
 package parser.tree.statements.globalVariables;
 
+import parser.ParserUtils;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.IdNode;
@@ -15,6 +16,11 @@ public class SetAssignationStatementNode extends GlobalVariablesNode {
         super(location);
         this.idList = idList;
         this.expression = expressionNode;
+
+        for (IdNode item: this.idList) {
+            item.setType(ParserUtils.getTypeNode("PinType"));
+        }
+
     }
 
     @Override
