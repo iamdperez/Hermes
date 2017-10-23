@@ -6,6 +6,10 @@ public class IntValue extends Value {
         super(value);
     }
 
+    public IntValue(){
+        super(0);
+    }
+
     @Override
     public Value clone() {
         return new IntValue((Integer) this.getValue());

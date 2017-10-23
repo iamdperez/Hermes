@@ -5,6 +5,10 @@ public class StringValue extends Value {
         super(value);
     }
 
+    public StringValue(){
+        super("");
+    }
+
     @Override
     public Value clone() {
         return new StringValue((String) this.getValue());
