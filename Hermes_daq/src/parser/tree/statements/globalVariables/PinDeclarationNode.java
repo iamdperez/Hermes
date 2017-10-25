@@ -1,6 +1,7 @@
 package parser.tree.statements.globalVariables;
 
 import parser.ParserUtils;
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.IdNode;
 
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 public class PinDeclarationNode extends GlobalVariablesNode {
     private final ArrayList<IdNode> idList;
     private final ArrayList<Integer> pinList;
-
     public PinDeclarationNode(Location location, ArrayList<IdNode> idList,
                               ArrayList<Integer> pinList) {
         super(location);
@@ -22,7 +22,12 @@ public class PinDeclarationNode extends GlobalVariablesNode {
     }
 
     @Override
-    public void validateSemantic() {
+    public void validateSemantic() throws SemanticException {
+        if(idList.size() != pinList.size()) {
+            throw new SemanticException(
+                    getLineErrorMessage("Id list must have the same size than " +
+                            "pin list."));
+        }
 
     }
 

@@ -1,9 +1,11 @@
 package parser.tree.expression;
 
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
-import parser.tree.Types.Type;
-import parser.tree.Values.Value;
+import parser.tree.types.Type;
+import parser.tree.values.Value;
 import parser.tree.interfaces.Variable;
+import parser.tree.symbolsTable.SymbolsTable;
 
 public class IdNode extends ExpressionNode implements Variable {
     private final String name;
@@ -14,13 +16,15 @@ public class IdNode extends ExpressionNode implements Variable {
     }
 
     @Override
-    public Value interpret() {
-        return null;
+    public Value interpret() throws SemanticException {
+        return SymbolsTable.getInstance().getValue(name);
     }
 
     @Override
-    public Type evaluateSemantic() {
-        return null;
+    public Type evaluateSemantic() throws SemanticException {
+        return SymbolsTable.getInstance().exist(name)
+                ? SymbolsTable.getInstance().getType(name)
+                : type;
     }
 
     public String getName() {

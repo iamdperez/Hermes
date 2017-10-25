@@ -2,8 +2,8 @@ package parser.tree.expression;
 
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
-import parser.tree.Types.Type;
-import parser.tree.Values.Value;
+import parser.tree.types.Type;
+import parser.tree.values.Value;
 
 public abstract class ExpressionNode {
 
@@ -11,7 +11,7 @@ public abstract class ExpressionNode {
     public ExpressionNode(Location location){
         this.location = location;
     }
-    public abstract Value interpret();
+    public abstract Value interpret() throws SemanticException;
     public abstract Type evaluateSemantic() throws SemanticException;
     public Location getLocation() {
         return location;
