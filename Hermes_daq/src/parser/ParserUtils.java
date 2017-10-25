@@ -1,9 +1,9 @@
 package parser;
 
-import parser.tree.Types.IntType;
-import parser.tree.Types.PinType;
-import parser.tree.Types.StringType;
-import parser.tree.Types.Type;
+import parser.tree.types.IntType;
+import parser.tree.types.PinType;
+import parser.tree.types.StringType;
+import parser.tree.types.Type;
 
 import java.util.HashMap;
 import java.util.Map;

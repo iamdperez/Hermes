@@ -1,8 +1,8 @@
 package parser.tree.symbolsTable;
 
 import parser.exeptions.SemanticException;
-import parser.tree.Types.Type;
-import parser.tree.Values.Value;
+import parser.tree.types.Type;
+import parser.tree.values.Value;
 
 import java.util.ArrayList;
 

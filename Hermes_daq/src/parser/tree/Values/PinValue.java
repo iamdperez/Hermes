@@ -1,4 +1,4 @@
-package parser.tree.Values;
+package parser.tree.values;
 
 public class PinValue extends Value {
     public PinValue(Object value) {

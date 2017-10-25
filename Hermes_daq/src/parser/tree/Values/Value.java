@@ -1,4 +1,4 @@
-package parser.tree.Values;
+package parser.tree.values;
 
 public abstract class Value {
     private Object value;

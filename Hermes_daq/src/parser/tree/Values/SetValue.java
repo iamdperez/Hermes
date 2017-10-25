@@ -1,4 +1,4 @@
-package parser.tree.Values;
+package parser.tree.values;
 
 import java.util.ArrayList;
 

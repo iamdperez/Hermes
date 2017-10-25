@@ -1,7 +1,7 @@
 package parser.tree.symbolsTable;
 
-import parser.tree.Types.Type;
-import parser.tree.Values.Value;
+import parser.tree.types.Type;
+import parser.tree.values.Value;
 
 import java.util.HashMap;
 import java.util.Map;

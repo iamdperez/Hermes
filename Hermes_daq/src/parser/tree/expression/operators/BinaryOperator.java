@@ -2,10 +2,10 @@ package parser.tree.expression.operators;
 
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
-import parser.tree.Types.IntType;
-import parser.tree.Types.SetType;
-import parser.tree.Types.StringType;
-import parser.tree.Types.Type;
+import parser.tree.types.IntType;
+import parser.tree.types.SetType;
+import parser.tree.types.StringType;
+import parser.tree.types.Type;
 import parser.tree.expression.ExpressionNode;
 
 public abstract class BinaryOperator extends ExpressionNode {

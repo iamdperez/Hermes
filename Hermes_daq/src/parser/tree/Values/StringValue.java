@@ -1,4 +1,4 @@
-package parser.tree.Values;
+package parser.tree.values;
 
 public class StringValue extends Value {
     public StringValue(String value) {

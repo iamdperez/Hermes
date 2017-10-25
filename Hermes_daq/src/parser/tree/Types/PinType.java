@@ -1,7 +1,7 @@
-package parser.tree.Types;
+package parser.tree.types;
 
-import parser.tree.Values.PinValue;
-import parser.tree.Values.Value;
+import parser.tree.values.PinValue;
+import parser.tree.values.Value;
 
 public class PinType extends Type {
     @Override

@@ -1,8 +1,8 @@
 package parser.tree.expression.operators.assignment;
 
 import parser.tree.Location;
-import parser.tree.Types.Type;
-import parser.tree.Values.Value;
+import parser.tree.types.Type;
+import parser.tree.values.Value;
 import parser.tree.interfaces.Variable;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.AssignmentOperator;
