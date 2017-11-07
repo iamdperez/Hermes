@@ -1,9 +1,14 @@
 package parser.tree.statements.globalVariables;
 
 import parser.ParserUtils;
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.IdNode;
+import parser.tree.symbolsTable.SymbolsTable;
+import parser.tree.types.IntType;
+import parser.tree.types.PinType;
+import parser.tree.types.Type;
 
 import java.util.ArrayList;
 
@@ -24,8 +29,12 @@ public class SetAssignationStatementNode extends GlobalVariablesNode {
     }
 
     @Override
-    public void validateSemantic() {
-
+    public void validateSemantic() throws SemanticException {
+        validateSetIdList(idList);
+        Type et = expression.evaluateSemantic();
+        if(!(et instanceof IntType))
+            throw new SemanticException(
+                    getLineErrorMessage("Expected `IntType` in expression", expression.getLocation()));
     }
 
     @Override

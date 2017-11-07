@@ -1,19 +1,16 @@
 package parser.tree.values;
 
-import java.util.ArrayList;
-
 public class SetValue extends Value {
-    public SetValue(ArrayList<String> value) {
+    public SetValue(int value) {
         super(value);
     }
 
     public SetValue(){
-        super(new ArrayList<String>());
-
+        super(0);
     }
 
     @Override
     public Value clone() {
-        return new SetValue((ArrayList<String>) getValue());
+        return new SetValue(0);
     }
 }
