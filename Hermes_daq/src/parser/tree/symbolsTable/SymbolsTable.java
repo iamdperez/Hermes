@@ -1,6 +1,7 @@
 package parser.tree.symbolsTable;
 
 import parser.exeptions.SemanticException;
+import parser.tree.statements.globalVariables.IO;
 import parser.tree.types.Type;
 import parser.tree.values.Value;
 
@@ -13,12 +14,14 @@ public class SymbolsTable {
         contexts = new ArrayList<>();
     }
     public static synchronized SymbolsTable getInstance(){
-        if (instance == null)
-            return new SymbolsTable();
+        if (instance == null) {
+            instance =  new SymbolsTable();
+            return instance;
+        }
         return instance;
     }
 
-    public boolean exist(String variableName){
+    public boolean variableExist(String variableName){
         for(int i = contexts.size() - 1; i >= 0; i--){
             if(contexts.get(i).exist(variableName))
                 return true;
@@ -26,7 +29,7 @@ public class SymbolsTable {
         return false;
     }
 
-    public Value getValue(String variableName) throws SemanticException {
+    public Value getVariableValue(String variableName) throws SemanticException {
         for(int i = contexts.size() - 1; i >= 0; i--){
             if(contexts.get(i).exist(variableName))
                 return contexts.get(i).getValue(variableName);
@@ -50,12 +53,12 @@ public class SymbolsTable {
         return contexts.get(contexts.size() - 1);
     }
 
-    public void declare(String variableName, Type type){
+    public void declareVariable(String variableName, Symbol symbol){
         ScopeContext sc = getCurrentContext();
-        sc.declare(variableName,type);
+        sc.declare(variableName,symbol);
     }
 
-    public Type getType(String variableName) throws SemanticException {
+    public Type getVariableType(String variableName) throws SemanticException {
         for(int i = contexts.size() - 1; i >= 0; i--){
             if(contexts.get(i).exist(variableName))
                 return contexts.get(i).getType(variableName);
@@ -63,7 +66,7 @@ public class SymbolsTable {
         throw new SemanticException("Not found variable `"+variableName+"`");
     }
 
-    public void setValue(String variableName, Value value){
+    public void setVariableValue(String variableName, Value value){
         for (int i = contexts.size() - 1; i >= 0; i--)
         {
             if (contexts.get(i).exist(variableName)){
@@ -71,5 +74,18 @@ public class SymbolsTable {
                 break;
             }
         }
+    }
+
+    public void setPinIO(String variableName, IO pinIO) {
+        ScopeContext sc = getCurrentContext();
+        sc.setPinIO(variableName, pinIO);
+    }
+
+    public Symbol getVariable(String variableName) throws SemanticException {
+        for(int i = contexts.size() - 1; i >= 0; i--){
+            if(contexts.get(i).exist(variableName))
+                return contexts.get(i).getVariable(variableName);
+        }
+        throw new SemanticException("Not found variable `"+variableName+"`");
     }
 }
