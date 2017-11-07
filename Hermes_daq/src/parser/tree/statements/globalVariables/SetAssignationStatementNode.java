@@ -34,7 +34,7 @@ public class SetAssignationStatementNode extends GlobalVariablesNode {
         Type et = expression.evaluateSemantic();
         if(!(et instanceof IntType))
             throw new SemanticException(
-                    getLineErrorMessage("Expected `IntType` in expression", expression.getLocation()));
+                    ParserUtils.getLineErrorMessage("Expected `IntType` in expression", expression.getLocation()));
     }
 
     @Override
