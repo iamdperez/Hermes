@@ -18,7 +18,7 @@ public class PlusOperatorNode extends BinaryOperator {
     }
 
     @Override
-    public Value interpret() {
+    public Value interpret() throws SemanticException {
         Value left = getLeftNode().interpret();
         Value right = getRightNode().interpret();
         switch (_returnValue){
