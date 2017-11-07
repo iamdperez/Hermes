@@ -80,7 +80,7 @@ non terminal    ArrayList<GlobalVariablesNode>      global_variables;
 non terminal    PinDeclarationNode                  pin_declaration;
 non terminal    ArrayList<Integer>                  pin_list, pin_listp;
 non terminal    PinDefinitionNode                   pin_definition;
-non terminal    PinType                             pin_type;
+non terminal    IO                                  pin_type;
 non terminal    SetDeclarationNode                  set_declaration;
 non terminal    SetAssignationStatementNode         set_assignation_statement;
 non terminal    ArrayList<FunctionDeclaration>  functions_list;
@@ -318,8 +318,8 @@ pin_definition ::= id_list:il ISTYPE:i pin_type:pt SEMICOLON
         RESULT = new PinDefinitionNode(l,il,pt);:}
     ;
 
-pin_type ::= OUTPUT {:RESULT = PinType.OUTPUT;:}
-    |   INPUT {:RESULT = PinType.INPUT;:}
+pin_type ::= OUTPUT {:RESULT = IO.OUTPUT;:}
+    |   INPUT {:RESULT = IO.INPUT;:}
     ;
 
 set_declaration ::= ID:i EQUAL_OP LSQUARE_BRACKET id_list:il RSQUARE_BRACKET SEMICOLON
