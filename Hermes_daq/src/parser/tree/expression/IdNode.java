@@ -17,13 +17,13 @@ public class IdNode extends ExpressionNode implements Variable {
 
     @Override
     public Value interpret() throws SemanticException {
-        return SymbolsTable.getInstance().getValue(name);
+        return SymbolsTable.getInstance().getVariableValue(name);
     }
 
     @Override
     public Type evaluateSemantic() throws SemanticException {
-        return SymbolsTable.getInstance().exist(name)
-                ? SymbolsTable.getInstance().getType(name)
+        return SymbolsTable.getInstance().variableExist(name)
+                ? SymbolsTable.getInstance().getVariableType(name)
                 : type;
     }
 
