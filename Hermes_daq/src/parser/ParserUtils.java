@@ -10,6 +10,9 @@ import java.util.Map;
 
 public final class ParserUtils {
     private static Map<String,Type> map;
+    public final static String pinType = "PinType";
+    public final static String intType = "IntType";
+    public final static String stringType = "StringType";
     private ParserUtils(){
         map = new HashMap<>();
         map.put("PinType", new PinType());
