@@ -1,5 +1,6 @@
 package parser;
 
+import parser.tree.Location;
 import parser.tree.types.IntType;
 import parser.tree.types.PinType;
 import parser.tree.types.StringType;
@@ -22,5 +23,10 @@ public final class ParserUtils {
 
     public static Type getTypeNode(String type){
         return map.get(type);
+    }
+
+    public static String getLineErrorMessage(String msg, Location location) {
+        return msg + " Line: "+
+                location.getLine() + " column: "+location.getColumn();
     }
 }
