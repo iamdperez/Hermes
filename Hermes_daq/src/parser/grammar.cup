@@ -322,12 +322,12 @@ pin_type ::= OUTPUT {:RESULT = IO.OUTPUT;:}
     |   INPUT {:RESULT = IO.INPUT;:}
     ;
 
-set_declaration ::= ID:i EQUAL_OP LSQUARE_BRACKET id_list:il RSQUARE_BRACKET SEMICOLON
+set_declaration ::= ID:i ASSIGNMENT_OP LSQUARE_BRACKET id_list:il RSQUARE_BRACKET SEMICOLON
     {:  Location l = new Location(ileft,iright);
         RESULT = new SetDeclarationNode(l, i, il);:}
     ;
 
-set_assignation_statement ::= LSQUARE_BRACKET:ls id_list:il RSQUARE_BRACKET EQUAL_OP expression:e SEMICOLON
+set_assignation_statement ::= LSQUARE_BRACKET:ls id_list:il RSQUARE_BRACKET ASSIGNMENT_OP expression:e SEMICOLON
     {:  Location l = new Location(lsleft,lsright);
         RESULT = new SetAssignationStatementNode(l,il,e); :}
     ;
