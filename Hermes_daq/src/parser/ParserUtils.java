@@ -1,6 +1,7 @@
 package parser;
 
 import parser.tree.Location;
+import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.IntType;
 import parser.tree.types.PinType;
 import parser.tree.types.StringType;
@@ -14,6 +15,15 @@ public final class ParserUtils {
     public final static String pinType = "PinType";
     public final static String intType = "IntType";
     public final static String stringType = "StringType";
+    private static ParserUtils instance;
+
+    public static synchronized ParserUtils getInstance(){
+        if (instance == null) {
+            instance =  new ParserUtils();
+            return instance;
+        }
+        return instance;
+    }
     private ParserUtils(){
         map = new HashMap<>();
         map.put("PinType", new PinType());
@@ -21,11 +31,11 @@ public final class ParserUtils {
         map.put("StringType", new StringType());
     }
 
-    public static Type getTypeNode(String type){
+    public Type getTypeNode(String type){
         return map.get(type);
     }
 
-    public static String getLineErrorMessage(String msg, Location location) {
+    public String getLineErrorMessage(String msg, Location location) {
         return msg + " Line: "+
                 location.getLine() + " column: "+location.getColumn();
     }

@@ -6,6 +6,7 @@ import parser.tree.Location;
 import parser.tree.expression.IdNode;
 import parser.tree.symbolsTable.Symbol;
 import parser.tree.symbolsTable.SymbolsTable;
+import parser.tree.types.SetType;
 import parser.tree.types.Type;
 import parser.tree.values.Value;
 import parser.tree.interfaces.Variable;
@@ -28,6 +29,10 @@ public class AssignmentOperatorNode extends AssignmentOperator {
         Object value = rightValue.getValue();
         IdNode id = (IdNode)getVariable();
         Value idValue = SymbolsTable.getInstance().getVariableValue(id.getName());
+        Type variableType = SymbolsTable.getInstance().getVariableType(id.getName());
+        if(variableType instanceof SetType){
+
+        }
         idValue.setValue(value);
         SymbolsTable.getInstance().setVariableValue(id.getName(),idValue);
         return null;
@@ -55,13 +60,13 @@ public class AssignmentOperatorNode extends AssignmentOperator {
             return idVariable.getType();
 
         throw new SemanticException(
-                ParserUtils.getLineErrorMessage("Assignment is not supported between "+ idVariable.getType()
+                ParserUtils.getInstance().getLineErrorMessage("Assignment is not supported between "+ idVariable.getType()
                         + " and " + rightType + " types.",
                         getLocation()));
     }
 
     private String errorMessage(IdNode idNode){
-        return ParserUtils.getLineErrorMessage("Variable `"+idNode.getName()
+        return ParserUtils.getInstance().getLineErrorMessage("Variable `"+idNode.getName()
                         +"` must be declared before",
                 idNode.getLocation());
     }

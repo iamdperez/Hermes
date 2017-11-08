@@ -23,7 +23,7 @@ public class SetAssignationStatementNode extends GlobalVariablesNode {
         this.expression = expressionNode;
 
         for (IdNode item: this.idList) {
-            item.setType(ParserUtils.getTypeNode("PinType"));
+            item.setType(ParserUtils.getInstance().getTypeNode("PinType"));
         }
 
     }
@@ -34,7 +34,7 @@ public class SetAssignationStatementNode extends GlobalVariablesNode {
         Type et = expression.evaluateSemantic();
         if(!(et instanceof IntType))
             throw new SemanticException(
-                    ParserUtils.getLineErrorMessage("Expected `IntType` in expression", expression.getLocation()));
+                    ParserUtils.getInstance().getLineErrorMessage("Expected `IntType` in expression", expression.getLocation()));
     }
 
     @Override
