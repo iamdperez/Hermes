@@ -1,5 +1,6 @@
 package parser.tree.statements;
 
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.statements.globalVariables.GlobalVariablesNode;
 
@@ -17,13 +18,17 @@ public class InitialNode extends StatementNode {
     }
 
     @Override
-    public void validateSemantic() {
-
+    public void validateSemantic() throws SemanticException {
+        for(GlobalVariablesNode item: GlobalVariables){
+            item.validateSemantic();
+        }
     }
 
     @Override
     public void interpret() {
-
+        for(GlobalVariablesNode item: GlobalVariables){
+            item.interpret();
+        }
     }
 
     public String getDeviceModel() {

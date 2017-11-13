@@ -1,1 +1,56 @@
-&[a,b,34]
+module patito;
+initial
+    device 'due';
+    a, b pin 1,2;
+    a, b istype input;
+    c = [a,b];
+    //c = 12;
+    d pin 3;
+    d istype output;
+endinitial
+/*main
+a, b pin 1,2;
+a, b istype input;
+c = [a,b];
+c = 12;
+var a,b,c;
+a = 1 + 34;
+print "hola mundo" + "chi, chi" + "1" + "";
+endmain*/
+
+/*
+function patito(a,b)
+print a + b;
+if(a > b)
+    print es + mayor;
+endif
+
+if(a)
+print b;
+else
+print c;
+endif
+
+if(c)
+print c;
+else if(d)
+print d;
+endif
+
+if(x)
+print x;
+else if(y)
+print y;
+else
+print t;
+endif
+
+if(expresion)
+b = c;
+else if(expresion)
+a =b;
+endif
+endif
+
+endfunction*/
+endmodule

@@ -17,7 +17,7 @@ public class AndOperatorNode extends BinaryOperator {
     }
 
     @Override
-    public Value interpret() {
+    public Value interpret() throws SemanticException {
         Value left = getLeftNode().interpret();
         Value right = getRightNode().interpret();
         if(nodeType.equals("int")){
@@ -38,7 +38,6 @@ public class AndOperatorNode extends BinaryOperator {
         validateIdNode(getLeftNode());
 
         if(isSetType(left)&&isSetType(right)){
-
             nodeType = "set";
             return new SetType();
         }else if(isIntType(left)&&isIntType(right)){

@@ -1,7 +1,9 @@
 package parser.tree.statements;
 
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.interfaces.FunctionDeclaration;
+import parser.tree.symbolsTable.SymbolsTable;
 
 import java.util.ArrayList;
 
@@ -33,5 +35,14 @@ public class ProgramNode {
 
     public ArrayList<FunctionDeclaration> getFunctionList() {
         return functionList;
+    }
+
+    public void validateSemantic() throws SemanticException {
+        SymbolsTable.getInstance().pushNewContext();
+        initial.validateSemantic();
+    }
+
+    public void interpretCode(){
+        initial.interpret();
     }
 }
