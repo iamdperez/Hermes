@@ -22,7 +22,8 @@ public class SerialCommunication {
     private byte[] sendCommand(byte command, int pinNumber) throws IOException, InterruptedException {
         byte[] message = new byte[]{
                 Commands.COMMAND_HEADER,
-                command, (byte)pinNumber,
+                command, 
+                (byte)pinNumber,
                 Commands.COMMAND_TRAILER };
         _outputStream.write(message);
         int incomingAvailable = _inputStream.available();
@@ -46,6 +47,11 @@ public class SerialCommunication {
 
     public void setValue(byte valueType, int pinNumber) throws IOException, InterruptedException {
         byte [] result = sendCommand(valueType, pinNumber);
+    }
+
+    public boolean getValue(int pinNumber) throws IOException, InterruptedException {
+        byte [] result = sendCommand(Commands.GET_VALUE, pinNumber);
+        return result[0] != 0;
     }
 
     public boolean close(){
