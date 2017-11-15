@@ -1,0 +1,44 @@
+BeginDeclaration
+
+    device 'Due';
+
+    in1, in2 pin 1,2;
+    out1, out2 pin 3,4;
+    out3, out4 pin 5,6;
+
+    in1, in2 isType INPUT; 
+    out1, out2, out3, out4 isType OUTPUT;
+
+    set1 = [out1, out2];
+    [out3, out4] = set2;
+
+endDeclaration
+
+BeginMain
+
+    var1, var2;
+    var1 = 0;
+    var2 = 1;
+
+    while(myFunction(var1, 5))
+        if(var2 == 1)
+            //do something
+        endIf
+
+        if(var2 == 3)
+            // do something
+
+        else if(var2 == 4)
+            // do something
+
+        endIf
+
+        var1++;
+
+    endWhile 
+
+endMain
+
+function myFunction(a,b)
+    return a < b;
+endFunction

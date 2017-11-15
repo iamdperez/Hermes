@@ -5,8 +5,8 @@ initial
     a, b istype input;
     c = [a,b];
     //c = 12;
-    d pin 3;
-    d istype output;
+/*    d pin 3;
+    d istype output;*/
 endinitial
 /*main
 a, b pin 1,2;

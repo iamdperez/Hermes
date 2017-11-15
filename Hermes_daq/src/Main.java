@@ -1,5 +1,6 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.ScannerBuffer;
+import parser.tree.statements.ProgramNode;
 import serialCommunication.Commands;
 import serialCommunication.SerialCommunication;
 
@@ -12,9 +13,9 @@ public class Main {
 //        try {
 //            System.out.println("Hello world: " + sc.getArduinoModel());
 //            sc.pinMode(Commands.PIN_MODE_OUTPUT, 7);
-//            sc.setValue(Commands.SET_VALUE_HIGH, 7);
+//            sc.setVariableValue(Commands.SET_VALUE_HIGH, 7);
 //            Thread.sleep(2000);
-//            sc.setValue(Commands.SET_VALUE_LOW, 7);
+//            sc.setVariableValue(Commands.SET_VALUE_LOW, 7);
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
@@ -26,9 +27,12 @@ public class Main {
             ScannerBuffer lexer = new ScannerBuffer(new Lexer(new BufferedReader(new FileReader("src/testGrammar.txt")),csf));
             // start parsing
             parser p = new parser(lexer,csf);
-            Object e = p.parse().value;
+            ProgramNode v = (ProgramNode) p.parse().value;
+            v.validateSemantic();
+            v.interpretCode();
+
             int a = 0;
-            System.out.print("Funciona prrin");
+            System.out.println("Funciona prrin");
         } catch (Exception e) {
       /* do cleanup here -- possibly rethrow e */
             e.printStackTrace();
