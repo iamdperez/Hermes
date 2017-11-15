@@ -25,7 +25,7 @@ public class InitialNode extends StatementNode {
     }
 
     @Override
-    public void interpret() {
+    public void interpret() throws SemanticException {
         for(GlobalVariablesNode item: GlobalVariables){
             item.interpret();
         }

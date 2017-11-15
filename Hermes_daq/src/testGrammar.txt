@@ -4,19 +4,12 @@ initial
     a, b pin 1,2;
     a, b istype input;
     c = [a,b];
-    //c = 12;
-/*    d pin 3;
-    d istype output;*/
 endinitial
-/*main
-a, b pin 1,2;
-a, b istype input;
-c = [a,b];
-c = 12;
-var a,b,c;
-a = 1 + 34;
-print "hola mundo" + "chi, chi" + "1" + "";
-endmain*/
+
+main
+    c = 12;
+    print "hola mundo" + "chi, chi" + "1" + "";
+endmain
 
 /*
 function patito(a,b)

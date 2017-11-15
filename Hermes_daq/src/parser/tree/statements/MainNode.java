@@ -1,5 +1,6 @@
 package parser.tree.statements;
 
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.interfaces.FunctionDeclaration;
 
@@ -26,12 +27,16 @@ public class MainNode extends StatementNode implements FunctionDeclaration {
     }
 
     @Override
-    public void validateSemantic() {
-
+    public void validateSemantic() throws SemanticException {
+        for(StatementNode item: statementList){
+            item.validateSemantic();
+        }
     }
 
     @Override
-    public void interpret() {
-
+    public void interpret() throws SemanticException {
+        for(StatementNode item: statementList){
+            item.interpret();
+        }
     }
 }

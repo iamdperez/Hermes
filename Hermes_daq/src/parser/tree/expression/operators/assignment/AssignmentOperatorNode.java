@@ -4,14 +4,19 @@ import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.IdNode;
+import parser.tree.symbolsTable.SetSymbol;
 import parser.tree.symbolsTable.Symbol;
 import parser.tree.symbolsTable.SymbolsTable;
+import parser.tree.types.IntType;
 import parser.tree.types.SetType;
 import parser.tree.types.Type;
+import parser.tree.values.PinValue;
 import parser.tree.values.Value;
 import parser.tree.interfaces.Variable;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.AssignmentOperator;
+
+import java.util.ArrayList;
 
 public class AssignmentOperatorNode extends AssignmentOperator {
 
@@ -30,12 +35,20 @@ public class AssignmentOperatorNode extends AssignmentOperator {
         IdNode id = (IdNode)getVariable();
         Value idValue = SymbolsTable.getInstance().getVariableValue(id.getName());
         Type variableType = SymbolsTable.getInstance().getVariableType(id.getName());
-        if(variableType instanceof SetType){
-
-        }
         idValue.setValue(value);
         SymbolsTable.getInstance().setVariableValue(id.getName(),idValue);
-        return null;
+
+        if(variableType instanceof SetType){
+            SetSymbol setVariable = (SetSymbol) SymbolsTable.getInstance().getVariable(id.getName());
+            ArrayList<IdNode> pinList = setVariable.getPinList();
+            for (IdNode item: pinList) {
+                PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(item.getName());
+                pv.setValue(idValue.getValue());
+                SymbolsTable.getInstance().setVariableValue(item.getName(), pv);
+                /*TODO: set with serialCommunication value to Arduino*/
+            }
+        }
+        return idValue;
     }
 
     @Override
@@ -56,13 +69,15 @@ public class AssignmentOperatorNode extends AssignmentOperator {
             throw new SemanticException(errorMessage(id));
         }
 
-        if(idVariable.getType() == rightType)
+        if((idVariable.getType() == rightType)
+                || ((idVariable.getType() instanceof SetType) && (rightType instanceof IntType)))
             return idVariable.getType();
 
         throw new SemanticException(
-                ParserUtils.getInstance().getLineErrorMessage("Assignment is not supported between "+ idVariable.getType()
-                        + " and " + rightType + " types.",
-                        getLocation()));
+                ParserUtils.getInstance().getLineErrorMessage("Assignment is not supported between "
+                                + idVariable.getType()
+                                + " and " + rightType + " types.",
+                                getLocation()));
     }
 
     private String errorMessage(IdNode idNode){

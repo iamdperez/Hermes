@@ -1,6 +1,7 @@
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.ScannerBuffer;
 import parser.tree.statements.ProgramNode;
+import parser.tree.symbolsTable.SymbolsTable;
 import serialCommunication.Commands;
 import serialCommunication.SerialCommunication;
 
@@ -30,7 +31,7 @@ public class Main {
             ProgramNode v = (ProgramNode) p.parse().value;
             v.validateSemantic();
             v.interpretCode();
-
+            Object vtype = SymbolsTable.getInstance().getVariableType("c");
             int a = 0;
             System.out.println("Funciona prrin");
         } catch (Exception e) {

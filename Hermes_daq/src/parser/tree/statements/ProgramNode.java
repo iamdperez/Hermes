@@ -40,9 +40,15 @@ public class ProgramNode {
     public void validateSemantic() throws SemanticException {
         SymbolsTable.getInstance().pushNewContext();
         initial.validateSemantic();
+        for(FunctionDeclaration item: functionList){
+            item.validateSemantic();
+        }
     }
 
-    public void interpretCode(){
+    public void interpretCode() throws SemanticException {
         initial.interpret();
+        for(FunctionDeclaration item: functionList){
+            item.interpret();
+        }
     }
 }

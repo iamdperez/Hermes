@@ -15,7 +15,7 @@ public abstract class StatementNode {
     }
 
     public abstract void validateSemantic() throws SemanticException;
-    public abstract void interpret();
+    public abstract void interpret() throws SemanticException;
 
     protected String getLineErrorMessage(String msg){
         return msg + " Line: "+
