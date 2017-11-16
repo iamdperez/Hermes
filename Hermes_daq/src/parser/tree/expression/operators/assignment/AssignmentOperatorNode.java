@@ -69,7 +69,7 @@ public class AssignmentOperatorNode extends AssignmentOperator {
             throw new SemanticException(errorMessage(id));
         }
 
-        if((idVariable.getType() == rightType)
+        if((idVariable.getType() instanceof IntType) && (rightType instanceof  IntType)
                 || ((idVariable.getType() instanceof SetType) && (rightType instanceof IntType)))
             return idVariable.getType();
 
