@@ -55,7 +55,7 @@ terminal    NOT, NOT_OP, LPARENTHESIS, RPARENTHESIS, ASSIGNMENT_OP, SEMICOLON;
 
 terminal    MODULE, MODULE_END, INITIAL, INITIAL_END, MAIN, MAIN_END, IF, IF_END;
 terminal    WHILE, WHILE_END, FOR, FOR_END, FUNCTION, FUNCTION_END, PRINT, VAR;       
-terminal    PIN, DEVICE, ISTYPE, INPUT, OUTPUT, BREAK, RETURN, ELSE;     
+terminal    PIN, DEVICE, ISTYPE, INPUT, OUTPUT, BREAK, RETURN, ELSE, HIGH,LOW;     
 
 terminal    Integer     INT_LITERAL;
 terminal    String      STRING_LITERAL;
@@ -92,7 +92,7 @@ non terminal    ExpressionStatementNode             expression_statement;
 non terminal    IfStatementNode                     if_statement;
 non terminal    IterationStatementNode              iteration_statement;
 non terminal    JumpStatementNode                   jump_statement;
-non terminal    PrintStatementNode                  print_statement;	  
+non terminal    PrintStatementNode                  print_statement; 
 start with program;
 
 /* expression */
@@ -268,6 +268,8 @@ primary_expression ::= ID:i
            RESULT =iln;:}
     |   STRING_LITERAL:sl
         {:  Location l = new Location(slleft,slright); RESULT = new StringLiteralNode(l,sl);:}
+    |   HIGH:h {:Location l = new Location(hleft,hright); RESULT = new PinLiteralNode(l, PinStatus.HIGH);:}
+    |   LOW:l {:Location loc = new Location(lleft,lright); RESULT = new PinLiteralNode(loc, PinStatus.LOW);:}
     |   LPARENTHESIS expression:e RPARENTHESIS {:RESULT = e;:} 
     ;
 
