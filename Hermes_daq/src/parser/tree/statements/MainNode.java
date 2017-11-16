@@ -28,6 +28,8 @@ public class MainNode extends StatementNode implements FunctionDeclaration {
 
     @Override
     public void validateSemantic() throws SemanticException {
+        if(variables != null)
+            variables.validateSemantic();
         for(StatementNode item: statementList){
             item.validateSemantic();
         }

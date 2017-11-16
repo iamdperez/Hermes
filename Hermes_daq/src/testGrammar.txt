@@ -7,8 +7,14 @@ initial
 endinitial
 
 main
-    c = 12;
-    print "hola mundo" + "chi, chi" + "1" + "";
+    //var x, y;
+    //y = 1;
+    //x = c && y; 
+   // c = 12;
+    a = high;
+    b = high;
+    print c;
+   // print "hola mundo" + "chi, chi" + "1" + "";
 endmain
 
 /*
