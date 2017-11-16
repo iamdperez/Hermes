@@ -8,4 +8,9 @@ public class IntType extends Type {
     public Value getDefaultValue() {
         return new IntValue(0);
     }
+
+    @Override
+    public String toString() {
+        return "IntType";
+    }
 }

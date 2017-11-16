@@ -8,4 +8,8 @@ public class PinType extends Type {
     public Value getDefaultValue() {
         return new PinValue(0);
     }
+    @Override
+    public String toString() {
+        return "PinType";
+    }
 }

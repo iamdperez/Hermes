@@ -8,4 +8,8 @@ public class StringType extends Type {
     public Value getDefaultValue() {
         return new StringValue("");
     }
+    @Override
+    public String toString() {
+        return "StringType";
+    }
 }

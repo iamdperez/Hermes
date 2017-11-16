@@ -8,4 +8,8 @@ public class SetType extends Type {
     public Value getDefaultValue() {
         return new SetValue();
     }
+    @Override
+    public String toString() {
+        return "SetType";
+    }
 }
