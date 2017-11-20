@@ -8,6 +8,7 @@ import parser.tree.symbolsTable.SetSymbol;
 import parser.tree.symbolsTable.Symbol;
 import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.IntType;
+import parser.tree.types.PinType;
 import parser.tree.types.SetType;
 import parser.tree.types.Type;
 import parser.tree.values.PinValue;
@@ -34,20 +35,8 @@ public class AssignmentOperatorNode extends AssignmentOperator {
         Object value = rightValue.getValue();
         IdNode id = (IdNode)getVariable();
         Value idValue = SymbolsTable.getInstance().getVariableValue(id.getName());
-        Type variableType = SymbolsTable.getInstance().getVariableType(id.getName());
         idValue.setValue(value);
         SymbolsTable.getInstance().setVariableValue(id.getName(),idValue);
-
-        if(variableType instanceof SetType){
-            SetSymbol setVariable = (SetSymbol) SymbolsTable.getInstance().getVariable(id.getName());
-            ArrayList<IdNode> pinList = setVariable.getPinList();
-            for (IdNode item: pinList) {
-                PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(item.getName());
-                pv.setValue(idValue.getValue());
-                SymbolsTable.getInstance().setVariableValue(item.getName(), pv);
-                /*TODO: set with serialCommunication value to Arduino*/
-            }
-        }
         return idValue;
     }
 
@@ -69,8 +58,15 @@ public class AssignmentOperatorNode extends AssignmentOperator {
             throw new SemanticException(errorMessage(id));
         }
 
-        if((idVariable.getType() instanceof IntType) && (rightType instanceof  IntType)
-                || ((idVariable.getType() instanceof SetType) && (rightType instanceof IntType)))
+        if((idVariable.getType() instanceof IntType) && (rightType instanceof  IntType))
+            return idVariable.getType();
+
+        if(((idVariable.getType() instanceof SetType) && (rightType instanceof SetType))
+                || ((idVariable.getType() instanceof SetType) && (rightType instanceof PinType)))
+            return idVariable.getType();
+
+        if(((idVariable.getType() instanceof PinType) && (rightType instanceof PinType))
+                || ((idVariable.getType() instanceof PinType) && (rightType instanceof SetType)))
             return idVariable.getType();
 
         throw new SemanticException(
