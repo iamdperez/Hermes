@@ -26,4 +26,9 @@ public class IntValue extends Value {
     public void setValue(Object value) {
         this.value = (int)value;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(value);
+    }
 }

@@ -24,4 +24,9 @@ public class PinValue extends Value {
     public void setValue(Object value) {
         this.value = (int)value > 0 ? 1 : 0;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(value);
+    }
 }

@@ -7,10 +7,6 @@ public class StringValue extends Value {
         this.value = value;
     }
 
-    public StringValue(){
-        super("");
-    }
-
     @Override
     public Value clone() {
         return new StringValue((String) this.getValue());
@@ -24,5 +20,10 @@ public class StringValue extends Value {
     @Override
     public void setValue(Object value) {
         this.value = (String)value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
     }
 }
