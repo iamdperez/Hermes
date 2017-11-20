@@ -21,7 +21,7 @@ public class SetAssignationStatementNode extends GlobalVariablesNode {
         this.expression = expressionNode;
 
         for (IdNode item: this.idList) {
-            item.setType(ParserUtils.getInstance().getTypeNode("PinType"));
+            item.setType(ParserUtils.pinType);
         }
 
     }

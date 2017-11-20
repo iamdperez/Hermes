@@ -21,7 +21,7 @@ public class PinDeclarationNode extends GlobalVariablesNode {
         this.pinList = pinList;
 
         for (IdNode item: this.idList) {
-            item.setType(ParserUtils.getInstance().getTypeNode(ParserUtils.pinType));
+            item.setType(ParserUtils.pinType);
         }
     }
 

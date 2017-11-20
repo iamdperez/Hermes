@@ -1,8 +1,10 @@
 package parser.tree.expression.literals;
 
+import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.types.Type;
+import parser.tree.values.PinValue;
 import parser.tree.values.Value;
 
 public class PinLiteralNode extends LiteralNode {
@@ -12,16 +14,17 @@ public class PinLiteralNode extends LiteralNode {
 
     @Override
     public Type getType() {
-        return null;
+        return ParserUtils.pinType;
     }
 
     @Override
     public Value interpret() throws SemanticException {
-        return null;
+        PinStatus ps = (PinStatus)getValue();
+        return new PinValue(ps == PinStatus.HIGH ? 1 : 0);
     }
 
     @Override
     public Type evaluateSemantic() throws SemanticException {
-        return null;
+        return ParserUtils.pinType;
     }
 }

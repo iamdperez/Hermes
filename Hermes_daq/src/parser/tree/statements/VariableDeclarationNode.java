@@ -27,7 +27,7 @@ public class VariableDeclarationNode extends StatementNode {
                         ParserUtils.getInstance().getLineErrorMessage("Variable `"+item.getName()+"` was declared before",
                                 item.getLocation()));
             SymbolsTable.getInstance().declareVariable(item.getName(),new VarSymbol());
-            item.setType(ParserUtils.getInstance().getTypeNode(ParserUtils.intType));
+            item.setType(ParserUtils.intType);
         }
     }
 

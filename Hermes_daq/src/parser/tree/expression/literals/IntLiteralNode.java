@@ -1,5 +1,6 @@
 package parser.tree.expression.literals;
 
+import parser.ParserUtils;
 import parser.tree.Location;
 import parser.tree.types.IntType;
 import parser.tree.types.Type;
@@ -14,7 +15,7 @@ public class IntLiteralNode extends LiteralNode {
 
     @Override
     public Type getType() {
-        return new IntType();
+        return ParserUtils.intType;
     }
 
     @Override
@@ -24,6 +25,6 @@ public class IntLiteralNode extends LiteralNode {
 
     @Override
     public Type evaluateSemantic() {
-        return new IntType();
+        return ParserUtils.intType;
     }
 }
