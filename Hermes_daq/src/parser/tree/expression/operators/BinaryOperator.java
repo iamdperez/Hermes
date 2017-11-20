@@ -2,10 +2,7 @@ package parser.tree.expression.operators;
 
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
-import parser.tree.types.IntType;
-import parser.tree.types.SetType;
-import parser.tree.types.StringType;
-import parser.tree.types.Type;
+import parser.tree.types.*;
 import parser.tree.expression.ExpressionNode;
 
 public abstract class BinaryOperator extends ExpressionNode {
@@ -44,6 +41,10 @@ public abstract class BinaryOperator extends ExpressionNode {
 
     protected boolean isSetType(Type t){
         return t instanceof SetType;
+    }
+
+    protected boolean isPinType(Type t){
+        return  t instanceof PinType;
     }
 
     protected String getSemanticErrorMessage(String operation, Type left, Type right){

@@ -40,7 +40,11 @@ public class PlusOperatorNode extends BinaryOperator {
 
         if((isStringType(left)&&isStringType(right))
                 ||(isStringType(left)&&isIntType(right))
-                ||(isStringType(right)&&isIntType(left))){
+                ||(isStringType(right)&&isIntType(left)
+                ||(isStringType(left)&&isSetType(right))
+                ||(isSetType(left)&&isStringType(right))
+                ||(isStringType(left)&&isPinType(right))
+                ||(isPinType(left)&&isStringType(right)))){
             _returnValue = "string";
             return new StringType();
         }
