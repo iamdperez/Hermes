@@ -10,13 +10,17 @@ endinitial
 
 main
     var x, y, z;
-    y = 2;
+    a = high;
+    f = !a;
+    print f;
+    y = -2;
     c = low;
     x = c || e;
     z = ((2+2)*3)/6;
     print (y+1) != z; 
+    y--;
     // c = 12;
-    print ""+y+" "+x+" "+z; 
+    print "y: "+y+" "+x+" "+z; 
    print "d antes de high "+ d;
    d = high;
    print "d despues: "+d;
