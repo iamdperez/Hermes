@@ -3,6 +3,7 @@ package parser.tree.statements;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.interfaces.FunctionDeclaration;
+import parser.tree.symbolsTable.SymbolsTable;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,8 @@ public class MainNode extends StatementNode implements FunctionDeclaration {
 
     @Override
     public void interpret() throws SemanticException {
+        if(variables != null)
+            variables.interpret();
         for(StatementNode item: statementList){
             item.interpret();
         }
