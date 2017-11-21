@@ -32,7 +32,8 @@ public class SetValue extends Value {
         ArrayList<IdNode> pinList = ss.getPinList();
         int val = 0;
         for(int i= 0; i <pinList.size();i++){
-            PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(pinList.get(i).getName());
+            PinValue pv = (PinValue) SymbolsTable.getInstance()
+                    .getVariableValue(pinList.get(i).getName(),pinList.get(i).getLocation());
             if((int)pv.getValue() > 0){
                 val = 1;
                 break;
@@ -51,7 +52,7 @@ public class SetValue extends Value {
         SetSymbol ss = (SetSymbol) SymbolsTable.getInstance().getVariable(setRef);
         ArrayList<IdNode> pinList = ss.getPinList();
         for (IdNode item: pinList) {
-            PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(item.getName());
+            PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(item.getName(), item.getLocation());
             pv.setValue(this.value);
             SymbolsTable.getInstance().setVariableValue(item.getName(), pv);
                 /*TODO: set with serialCommunication value to Arduino*/

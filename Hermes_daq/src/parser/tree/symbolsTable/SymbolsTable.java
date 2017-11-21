@@ -1,6 +1,8 @@
 package parser.tree.symbolsTable;
 
+import parser.ParserUtils;
 import parser.exeptions.SemanticException;
+import parser.tree.Location;
 import parser.tree.statements.globalVariables.IO;
 import parser.tree.types.Type;
 import parser.tree.values.Value;
@@ -29,12 +31,14 @@ public class SymbolsTable {
         return false;
     }
 
-    public Value getVariableValue(String variableName) throws SemanticException {
+    public Value getVariableValue(String variableName, Location location) throws SemanticException {
         for(int i = contexts.size() - 1; i >= 0; i--){
             if(contexts.get(i).exist(variableName))
                 return contexts.get(i).getValue(variableName);
         }
-        throw new SemanticException("Not found variable `"+variableName+"`");
+        throw new SemanticException(
+                ParserUtils.getInstance().getLineErrorMessage("Not found variable `"+variableName+"`", location)
+        );
     }
 
     public void pushNewContext(){

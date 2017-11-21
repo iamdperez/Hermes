@@ -17,7 +17,7 @@ public class IdNode extends ExpressionNode implements Variable {
 
     @Override
     public Value interpret() throws SemanticException {
-        return SymbolsTable.getInstance().getVariableValue(name);
+        return SymbolsTable.getInstance().getVariableValue(name,getLocation());
     }
 
     @Override

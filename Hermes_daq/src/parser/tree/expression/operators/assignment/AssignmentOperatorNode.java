@@ -34,7 +34,7 @@ public class AssignmentOperatorNode extends AssignmentOperator {
         Value rightValue = getRightNode().interpret();
         Object value = rightValue.getValue();
         IdNode id = (IdNode)getVariable();
-        Value idValue = SymbolsTable.getInstance().getVariableValue(id.getName());
+        Value idValue = SymbolsTable.getInstance().getVariableValue(id.getName(), id.getLocation());
         idValue.setValue(value);
         SymbolsTable.getInstance().setVariableValue(id.getName(),idValue);
         return idValue;

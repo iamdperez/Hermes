@@ -17,7 +17,7 @@ public class PosIncrementOperatorNode extends UnaryOperator {
     @Override
     public Value interpret() throws SemanticException {
         IdNode id = (IdNode)getExpression();
-        Value idValue = SymbolsTable.getInstance().getVariableValue(id.getName());
+        Value idValue = SymbolsTable.getInstance().getVariableValue(id.getName(), id.getLocation());
         Value returnValue = idValue.clone();
         int value = (int)idValue.getValue() + 1;
         idValue.setValue(value);

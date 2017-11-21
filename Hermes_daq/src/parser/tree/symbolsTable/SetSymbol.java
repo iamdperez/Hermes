@@ -29,7 +29,8 @@ public class SetSymbol implements Symbol{
         int v = 0;
         try{
             for(int i = 0; i < pinList.size(); i++){
-                PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(pinList.get(i).getName());
+                PinValue pv = (PinValue) SymbolsTable.getInstance()
+                        .getVariableValue(pinList.get(i).getName(),pinList.get(i).getLocation());
                 v = (int)pv.getValue();
                 if(v != 0)
                     break;

@@ -26,7 +26,7 @@ public class NotOperatorNode extends UnaryOperator {
     public Value interpret() throws SemanticException {
         if(getExpression() instanceof IdNode){
             IdNode id = (IdNode)getExpression();
-            Value value = SymbolsTable.getInstance().getVariableValue(id.getName());
+            Value value = SymbolsTable.getInstance().getVariableValue(id.getName(), id.getLocation());
             int result = (int)value.getValue() == 0 ? 1 :0;
             return new IntValue(result);
         }

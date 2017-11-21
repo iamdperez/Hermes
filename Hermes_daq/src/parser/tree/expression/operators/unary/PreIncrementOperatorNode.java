@@ -17,7 +17,7 @@ public class PreIncrementOperatorNode extends UnaryOperator {
     @Override
     public Value interpret() throws SemanticException {
         IdNode id = (IdNode)getExpression();
-        Value variableValue = SymbolsTable.getInstance().getVariableValue(id.getName());
+        Value variableValue = SymbolsTable.getInstance().getVariableValue(id.getName(), id.getLocation());
         int value = (int)variableValue.getValue() + 1;
         variableValue.setValue(value);
         SymbolsTable.getInstance().setVariableValue(id.getName(),variableValue);
