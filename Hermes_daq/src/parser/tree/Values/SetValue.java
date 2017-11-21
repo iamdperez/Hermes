@@ -23,8 +23,26 @@ public class SetValue extends Value {
 
     @Override
     public Object getValue() throws SemanticException {
-        
+        value = getValueUpdated();
         return value;
+    }
+
+    private int getValueUpdated() throws SemanticException {
+        SetSymbol ss = (SetSymbol) SymbolsTable.getInstance().getVariable(setRef);
+        ArrayList<IdNode> pinList = ss.getPinList();
+        int val = 0;
+        for(int i= 0; i <pinList.size();i++){
+            PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(pinList.get(i).getName());
+            if((int)pv.getValue() > 0){
+                val = 1;
+                break;
+            }
+        }
+        return val;
+    }
+
+    public void updateValue() throws SemanticException {
+        value = getValueUpdated();
     }
 
     @Override

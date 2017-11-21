@@ -1,8 +1,8 @@
 package parser.tree.symbolsTable;
 
+import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.expression.IdNode;
-import parser.tree.types.SetType;
 import parser.tree.types.Type;
 import parser.tree.values.PinValue;
 import parser.tree.values.SetValue;
@@ -12,14 +12,16 @@ import java.util.ArrayList;
 
 public class SetSymbol implements Symbol{
     private final ArrayList<IdNode> pinList;
-
-    public SetSymbol(ArrayList<IdNode> idList) {
+    private final String setRef;
+    private SetValue value;
+    public SetSymbol(ArrayList<IdNode> idList, String setRef) {
         pinList = idList;
+        this.setRef = setRef;
     }
 
     @Override
     public Type getType() {
-        return new SetType();
+        return ParserUtils.setType;
     }
 
     @Override
@@ -35,7 +37,19 @@ public class SetSymbol implements Symbol{
         }catch (SemanticException e){
             v = 0;
         }
-        return new SetValue(v);
+        value = new SetValue(v, setRef);
+        return value;
+    }
+
+    @Override
+    public Value getValue() throws SemanticException {
+        value.updateValue();
+        return value;
+    }
+
+    @Override
+    public void setValue(Value value) {
+        this.value = (SetValue)value;
     }
 
     public ArrayList<IdNode> getPinList() {

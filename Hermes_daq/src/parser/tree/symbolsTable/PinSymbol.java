@@ -1,5 +1,6 @@
 package parser.tree.symbolsTable;
 
+import parser.ParserUtils;
 import parser.tree.statements.globalVariables.IO;
 import parser.tree.types.PinType;
 import parser.tree.types.Type;
@@ -7,6 +8,7 @@ import parser.tree.values.PinValue;
 import parser.tree.values.Value;
 
 public class PinSymbol implements Symbol {
+    private PinValue value;
     private final int pinNumber;
     private IO pinIO;
 
@@ -15,12 +17,23 @@ public class PinSymbol implements Symbol {
     }
     @Override
     public Type getType() {
-        return new PinType();
+        return ParserUtils.pinType;
     }
 
     @Override
     public Value getDefaultValue() {
-        return new PinValue();
+        value = new PinValue();
+        return value;
+    }
+
+    @Override
+    public Value getValue() {
+        return value;
+    }
+
+    @Override
+    public void setValue(Value value) {
+        this.value = (PinValue)value;
     }
 
     public int getPinNumber() {

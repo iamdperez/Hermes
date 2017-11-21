@@ -6,7 +6,7 @@ import parser.tree.values.Value;
 public class SetType extends Type {
     @Override
     public Value getDefaultValue() {
-        return new SetValue();
+        return new SetValue(0, "");
     }
     @Override
     public String toString() {

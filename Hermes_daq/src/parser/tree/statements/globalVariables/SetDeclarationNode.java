@@ -26,7 +26,7 @@ public class SetDeclarationNode extends GlobalVariablesNode {
             throw new SemanticException(
                     getLineErrorMessage("Variable `"+setName+"` was declared before"));
         validateSetIdList(idList);
-        SymbolsTable.getInstance().declareVariable(setName, new SetSymbol(idList));
+        SymbolsTable.getInstance().declareVariable(setName, new SetSymbol(idList, setName));
     }
 
     @Override
