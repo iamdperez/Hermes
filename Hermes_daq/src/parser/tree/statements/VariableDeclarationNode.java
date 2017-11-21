@@ -33,7 +33,10 @@ public class VariableDeclarationNode extends StatementNode {
 
     @Override
     public void interpret() {
-
+        for (IdNode item: idList) {
+            SymbolsTable.getInstance().declareVariable(item.getName(),new VarSymbol());
+            item.setType(ParserUtils.intType);
+        }
     }
 
     public ArrayList<IdNode> getIdList() {
