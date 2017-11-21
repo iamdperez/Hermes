@@ -9,10 +9,14 @@ initial
 endinitial
 
 main
-    //var x, y;
-    //y = 1;
-    //x = c && y; 
-   // c = 12;
+    var x, y, z;
+    y = 2;
+    c = low;
+    x = c || e;
+    z = ((2+2)*3)/6;
+    print (y+1) != z; 
+    // c = 12;
+    print ""+y+" "+x+" "+z; 
    print "d antes de high "+ d;
    d = high;
    print "d despues: "+d;
@@ -33,6 +37,7 @@ main
     // print "a: "+a+" b: "+b;
     // print "c: "+c;
    // print "hola mundo" + "chi, chi" + "1" + "";
+
 endmain
 /*
 function patito(a,b)

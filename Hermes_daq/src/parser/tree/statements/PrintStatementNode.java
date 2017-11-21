@@ -4,7 +4,7 @@ import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
-import parser.tree.types.StringType;
+import parser.tree.types.*;
 
 public class PrintStatementNode extends StatementNode {
     private final ExpressionNode expression;
@@ -16,11 +16,19 @@ public class PrintStatementNode extends StatementNode {
 
     @Override
     public void validateSemantic() throws SemanticException {
-        if(!(getExpression().evaluateSemantic() instanceof StringType))
+        if(!(typeIsValid(getExpression().evaluateSemantic())))
             throw new SemanticException(
                     ParserUtils.getInstance().getLineErrorMessage("Expression must be type of `StringType`",
                             getLocation()));
     }
+
+    private boolean typeIsValid(Type t){
+        return (t instanceof StringType)
+                || (t instanceof IntType)
+                || (t instanceof SetType)
+                || (t instanceof PinType);
+    }
+
 
     @Override
     public void interpret() throws SemanticException {
