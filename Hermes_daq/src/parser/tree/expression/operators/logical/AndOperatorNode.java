@@ -41,6 +41,6 @@ public class AndOperatorNode extends BinaryOperator {
     }
 
     private boolean typeIsValid(Type type){
-        return isSetType(type) || isIntType(type);
+        return isSetType(type) || isIntType(type) || isPinType(type);
     }
 }
