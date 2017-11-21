@@ -10,7 +10,12 @@ endinitial
 
 main
     var x, y, z;
-    a = high;
+    a = low;
+    b = high;
+    y = 11;
+    x = a ? 23 : y;
+    print x;
+   /* a = high;
     f = !a;
     print f;
     y = -2;
@@ -23,20 +28,20 @@ main
     print "y: "+y+" "+x+" "+z; 
    print "d antes de high "+ d;
    d = high;
-   print "d despues: "+d;
+   print "d despues: "+d;*/
 
    // a = high;
   //  b = a;
     // c = d;
     // print "c: "+c;
-    print "f:" + f+" e: "+e;
+/*    print "f:" + f+" e: "+e;
     f = low;
     e = low;
     print "f " +f+" e: "+e+" d: "+d;
     f = high;
     print "f " +f+" e: "+e+" d: "+d;
     d = high;
-    print "f " +f+" e: "+e+" d: "+d;
+    print "f " +f+" e: "+e+" d: "+d;*/
     // a = low;
     // print "a: "+a+" b: "+b;
     // print "c: "+c;
