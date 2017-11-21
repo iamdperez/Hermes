@@ -36,7 +36,7 @@ public class PinDefinitionNode extends GlobalVariablesNode {
 
     @Override
     public void interpret() {
-
+        //do nothing
     }
 
     public ArrayList<IdNode> getIdList() {

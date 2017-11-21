@@ -31,7 +31,7 @@ public class SetDeclarationNode extends GlobalVariablesNode {
 
     @Override
     public void interpret() {
-
+        //do nothing
     }
 
     public String getSetName() {
