@@ -2,8 +2,6 @@ package parser.tree.expression.operators.logical;
 
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
-import parser.tree.types.IntType;
-import parser.tree.types.SetType;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;
@@ -27,20 +25,6 @@ public class AndOperatorNode extends BinaryOperator {
 
     @Override
     public Type evaluateSemantic() throws SemanticException {
-        Type left = getLeftNode().evaluateSemantic();
-        Type right = getRightNode().evaluateSemantic();
-
-        validateIdNode(getRightNode());
-        validateIdNode(getLeftNode());
-
-        if(typeIsValid(left)&&typeIsValid(right))
-            return new IntType();
-
-        String errorMessage = getSemanticErrorMessage("And operator", left, right);
-        throw new SemanticException(errorMessage);
-    }
-
-    private boolean typeIsValid(Type type){
-        return isSetType(type) || isIntType(type) || isPinType(type);
+        return validateLogicalSemanticOperation("And");
     }
 }

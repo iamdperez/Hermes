@@ -1,5 +1,6 @@
 package parser.tree.expression.operators;
 
+import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.types.*;
@@ -65,6 +66,24 @@ public abstract class BinaryOperator extends ExpressionNode {
         }
 
         String errorMessage = getSemanticErrorMessage(operation, left, right);
+        throw new SemanticException(errorMessage);
+    }
+
+    protected boolean typeIsValidForLogicalOperation(Type type){
+        return isSetType(type) || isIntType(type) || isPinType(type);
+    }
+
+    protected Type validateLogicalSemanticOperation(String operator) throws SemanticException {
+        Type left = getLeftNode().evaluateSemantic();
+        Type right = getRightNode().evaluateSemantic();
+
+        validateIdNode(getRightNode());
+        validateIdNode(getLeftNode());
+
+        if(typeIsValidForLogicalOperation(left)&& typeIsValidForLogicalOperation(right))
+            return ParserUtils.intType;
+
+        String errorMessage = getSemanticErrorMessage(operator+ " operator", left, right);
         throw new SemanticException(errorMessage);
     }
 }
