@@ -86,4 +86,16 @@ public abstract class BinaryOperator extends ExpressionNode {
         String errorMessage = getSemanticErrorMessage(operator+ " operator", left, right);
         throw new SemanticException(errorMessage);
     }
+
+    protected Type validateBitwiseSemanticOperator(String operator) throws SemanticException {
+        Type left = getLeftNode().evaluateSemantic();
+        Type right = getRightNode().evaluateSemantic();
+
+        validateIdNode(getRightNode());
+        validateIdNode(getLeftNode());
+        if(isIntType(left) && isIntType(right))
+            return left;
+        String errorMessage = getSemanticErrorMessage(operator+ " bitwise operator", left, right);
+        throw new SemanticException(errorMessage);
+    }
 }
