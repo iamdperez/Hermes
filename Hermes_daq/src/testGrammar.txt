@@ -1,8 +1,10 @@
 module patito;
 initial
     device 'due';
-    a, b pin 1,2;
-    a, b istype input;
+    a, b, e,f pin 1,2, 3, 4;
+    a, b, e istype input;
+    f istype output;
+    d = [f, e]; 
     c = [a,b];
 endinitial
 
@@ -11,12 +13,27 @@ main
     //y = 1;
     //x = c && y; 
    // c = 12;
-    a = high;
-    b = high;
-    print c;
+   print "d antes de high "+ d;
+   d = high;
+   print "d despues: "+d;
+
+   // a = high;
+  //  b = a;
+    // c = d;
+    // print "c: "+c;
+    print "f:" + f+" e: "+e;
+    f = low;
+    e = low;
+    print "f " +f+" e: "+e+" d: "+d;
+    f = high;
+    print "f " +f+" e: "+e+" d: "+d;
+    d = high;
+    print "f " +f+" e: "+e+" d: "+d;
+    // a = low;
+    // print "a: "+a+" b: "+b;
+    // print "c: "+c;
    // print "hola mundo" + "chi, chi" + "1" + "";
 endmain
-
 /*
 function patito(a,b)
 print a + b;

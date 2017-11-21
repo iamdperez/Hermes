@@ -33,11 +33,11 @@ public class Main {
             v.interpretCode();
             Object vtype = SymbolsTable.getInstance().getVariableType("c");
             int a = 0;
-            System.out.println("Funciona prrin");
+           // System.out.println("Funciona prrin");
         } catch (Exception e) {
       /* do cleanup here -- possibly rethrow e */
             e.printStackTrace();
         }
-    System.out.println("Oa");
+    //System.out.println("Oa");
     }
 }
