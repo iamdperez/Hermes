@@ -12,8 +12,10 @@ import java.util.ArrayList;
 public class SymbolsTable {
     private static SymbolsTable instance;
     private final ArrayList<ScopeContext> contexts;
+    private final ArrayList<Looping> looping;
     private SymbolsTable(){
         contexts = new ArrayList<>();
+        looping = new ArrayList<>();
     }
     public static synchronized SymbolsTable getInstance(){
         if (instance == null) {
@@ -91,5 +93,26 @@ public class SymbolsTable {
                 return contexts.get(i).getVariable(variableName);
         }
         throw new SemanticException("Not found variable `"+variableName+"`");
+    }
+
+    public void pushLooping(Looping looping){
+        this.looping.add(looping);
+    }
+
+    public Looping popLooping(){
+        if(looping.size()==0)
+            return null;
+        Looping fl = looping.get(looping.size()-1);
+        looping.remove(looping.size() - 1);
+        return fl;
+    }
+
+    public int loopingSize(){
+        return looping.size();
+    }
+
+    public void stopLooping(){
+        Looping fl = looping.get(looping.size()-1);
+        fl.looping = false;
     }
 }
