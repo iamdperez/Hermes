@@ -31,7 +31,6 @@ public class Main {
             ProgramNode v = (ProgramNode) p.parse().value;
             v.validateSemantic();
             v.interpretCode();
-            Object vtype = SymbolsTable.getInstance().getVariableType("c");
             int a = 0;
            // System.out.println("Funciona prrin");
         } catch (Exception e) {

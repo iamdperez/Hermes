@@ -4,6 +4,7 @@ import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
+import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.*;
 
 public class PrintStatementNode extends StatementNode {
@@ -33,6 +34,7 @@ public class PrintStatementNode extends StatementNode {
     @Override
     public void interpret() throws SemanticException {
         System.out.println(getExpression().interpret().getValue());
+        /*print in ui console.*/
     }
 
     public ExpressionNode getExpression() {
