@@ -10,55 +10,9 @@ initial
 endinitial
 
 main
-    var x, y, z, t;
-    x = 1;
-    z =0;
-    a = high;
-    b = high;
-    e = high;
-    y = &[a, b, e];
-    while (a) 
-      print "esta";
-      break;
-      print "esto no";
-    endwhile
-    /*print x & y;
-    print x | y;
-    print x ^ y;
-    print ~x;
-    print x << 2;
-    print x >> 2;*/
-   /* a = high;
-    f = !a;
-    print f;
-    y = -2;
-    c = low;
-    x = c || e;
-    z = ((2+2)*3)/6;
-    print (y+1) != z; 
-    y--;
-    // c = 12;
-    print "y: "+y+" "+x+" "+z; 
-   print "d antes de high "+ d;
-   d = high;
-   print "d despues: "+d;*/
-
-   // a = high;
-  //  b = a;
-    // c = d;
-    // print "c: "+c;
-/*    print "f:" + f+" e: "+e;
-    f = low;
-    e = low;
-    print "f " +f+" e: "+e+" d: "+d;
-    f = high;
-    print "f " +f+" e: "+e+" d: "+d;
-    d = high;
-    print "f " +f+" e: "+e+" d: "+d;*/
-    // a = low;
-    // print "a: "+a+" b: "+b;
-    // print "c: "+c;
-   // print "hola mundo" + "chi, chi" + "1" + "";
+var x, y;
+x = 1, y = 45;
+print "x= "+x+", y= "+y;
 
 endmain
 /*

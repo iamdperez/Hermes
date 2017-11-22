@@ -27,7 +27,10 @@ public class InLineExpressionNode extends ExpressionNode {
     }
 
     @Override
-    public Value interpret() {
+    public Value interpret() throws SemanticException {
+        for(ExpressionNode item: arguments){
+            item.interpret();
+        }
         return new IntValue();
     }
 
