@@ -18,6 +18,7 @@ import parser.tree.statements.*;
 import parser.tree.statements.globalVariables.*;
 import parser.tree.statements.iterationStatements.*;
 import parser.tree.statements.jumpStatements.*;
+import parser.tree.statements.ifStatement.*;
 parser code {:
 
     public parser(Lexer lex, ComplexSymbolFactory sf) {
@@ -86,13 +87,15 @@ non terminal    SetAssignationStatementNode         set_assignation_statement;
 non terminal    ArrayList<FunctionDeclaration>      functions_list;
 non terminal    FunctionDeclaration                 function;
 non terminal    VariableDeclarationNode             variable_declaration;
-non terminal    ArrayList<StatementNode>            statement_list;
-non terminal    StatementNode                       statement;
+non terminal    ArrayList<StatementNode>            statement_list, if_statement_list;
+non terminal    StatementNode                       statement, if_statements;
 non terminal    ExpressionStatementNode             expression_statement;
 non terminal    IfStatementNode                     if_statement;
 non terminal    IterationStatementNode              iteration_statement;
 non terminal    JumpStatementNode                   jump_statement;
-non terminal    PrintStatementNode                  print_statement; 
+non terminal    PrintStatementNode                  print_statement;
+non terminal    ArrayList<ElseIfNode>               opt_else_if; 
+non terminal    ElseNode                            opt_else; 
 start with program;
 
 /* expression */
@@ -389,12 +392,37 @@ iteration_statement ::= WHILE:w LPARENTHESIS expression:e RPARENTHESIS statement
             RESULT = new ForStatementNode(l,e1,e2,e3,sl);:}    
     ;
 
-if_statement ::= IF:i LPARENTHESIS expression:e RPARENTHESIS statement_list:sl IF_END
+if_statement ::= IF:i LPARENTHESIS expression:e RPARENTHESIS if_statement_list:sl opt_else_if:oei opt_else:oe IF_END
         {:  Location l = new Location(ileft,iright);
-            RESULT = new IfStatementNode(l,e,sl);:}
-    | IF:i LPARENTHESIS expression:e RPARENTHESIS statement_list:sl ELSE statement_list:esl IF_END
-        {:  Location l = new Location(ileft,iright);
-            RESULT = new IfStatementNode(l,e,sl,esl);:}
+            RESULT = new IfStatementNode(l,e,sl, oei, oe);:}
+    ;
+
+opt_else_if ::= opt_else_if:oei ELSE:el IF LPARENTHESIS expression:e RPARENTHESIS if_statement_list:sl
+        {:  Location l = new Location(elleft,elright);
+            ElseIfNode ein = new ElseIfNode(l,e,sl);
+            oei.add(ein);
+            RESULT = oei;:}
+    | {:RESULT = new ArrayList<ElseIfNode>();:}    
+    ;
+
+opt_else ::= ELSE:e if_statement_list:isl
+        {:  Location l = new Location(eleft,eright);
+            RESULT = new ElseNode(l,isl);:}
+    | {:RESULT = null;:}
+    ;
+
+if_statement_list ::= if_statements:s 
+    {:  ArrayList<StatementNode> sl = new ArrayList<>();
+        sl.add(s); RESULT = sl;:}
+    |   if_statement_list:sl if_statements:s
+    {:  sl.add(s); RESULT = sl;:}
+    ;
+
+if_statements ::= expression_statement:es {:RESULT = es;:}
+    |   set_assignation_statement:sas {:RESULT = sas;:}
+    |   iteration_statement:is {:RESULT = is;:}
+    |   jump_statement:js {:RESULT = js;:}
+    |   print_statement:ps {:RESULT = ps;:}
     ;
 
 expression_statement ::= SEMICOLON:s 
