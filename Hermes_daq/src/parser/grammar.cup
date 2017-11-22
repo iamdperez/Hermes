@@ -384,7 +384,7 @@ jump_statement ::= BREAK:b SEMICOLON {:RESULT = new BreakNode(new Location(bleft
 iteration_statement ::= WHILE:w LPARENTHESIS expression:e RPARENTHESIS statement_list:sl WHILE_END
     {:  Location l = new Location(wleft,wright);
         RESULT = new WhileStatementNode(l,e,sl);:}
-    |   FOR:f LPARENTHESIS expression_statement:e1 expression_statement:e2 expression:e3 RPARENTHESIS statement_list:sl FOR_END
+    |   FOR:f LPARENTHESIS expression_statement:e1 expression:e2 SEMICOLON expression:e3 RPARENTHESIS statement_list:sl FOR_END
         {:  Location l = new Location(fleft,fright);
             RESULT = new ForStatementNode(l,e1,e2,e3,sl);:}    
     ;
