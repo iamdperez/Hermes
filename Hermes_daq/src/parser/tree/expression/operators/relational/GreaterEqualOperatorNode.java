@@ -9,7 +9,7 @@ import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.BinaryOperator;
 
-public class GreaterEqualOperatorNode extends BinaryOperator {
+public class GreaterEqualOperatorNode extends BinaryOperator implements RelationalOperator{
     public GreaterEqualOperatorNode(Location location, ExpressionNode leftNode, ExpressionNode rightNode) {
         super(location, leftNode, rightNode);
     }
