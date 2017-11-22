@@ -3,6 +3,7 @@ package parser.tree.symbolsTable;
 import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.expression.IdNode;
+import parser.tree.interfaces.Symbol;
 import parser.tree.types.Type;
 import parser.tree.values.PinValue;
 import parser.tree.values.SetValue;
@@ -10,7 +11,7 @@ import parser.tree.values.Value;
 
 import java.util.ArrayList;
 
-public class SetSymbol implements Symbol{
+public class SetSymbol implements Symbol {
     private final ArrayList<IdNode> pinList;
     private final String setRef;
     private SetValue value;

@@ -1,8 +1,8 @@
 package parser.tree.symbolsTable;
 
 import parser.ParserUtils;
+import parser.tree.interfaces.Symbol;
 import parser.tree.statements.globalVariables.IO;
-import parser.tree.types.PinType;
 import parser.tree.types.Type;
 import parser.tree.values.PinValue;
 import parser.tree.values.Value;

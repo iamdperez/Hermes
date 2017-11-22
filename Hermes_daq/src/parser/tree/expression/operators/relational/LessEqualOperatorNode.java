@@ -3,6 +3,7 @@ package parser.tree.expression.operators.relational;
 import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
+import parser.tree.interfaces.RelationalOperator;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;

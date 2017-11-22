@@ -4,20 +4,16 @@ import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.IdNode;
-import parser.tree.symbolsTable.SetSymbol;
-import parser.tree.symbolsTable.Symbol;
+import parser.tree.interfaces.Symbol;
 import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.IntType;
 import parser.tree.types.PinType;
 import parser.tree.types.SetType;
 import parser.tree.types.Type;
-import parser.tree.values.PinValue;
 import parser.tree.values.Value;
 import parser.tree.interfaces.Variable;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.AssignmentOperator;
-
-import java.util.ArrayList;
 
 public class AssignmentOperatorNode extends AssignmentOperator {
 

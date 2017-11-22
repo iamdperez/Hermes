@@ -1,7 +1,7 @@
 package parser.tree.symbolsTable;
 
 import parser.ParserUtils;
-import parser.tree.types.IntType;
+import parser.tree.interfaces.Symbol;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;

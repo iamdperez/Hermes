@@ -3,13 +3,14 @@ package parser.tree.expression.operators.relational;
 import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
+import parser.tree.interfaces.RelationalOperator;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.BinaryOperator;
 
-public class GreaterEqualOperatorNode extends BinaryOperator implements RelationalOperator{
+public class GreaterEqualOperatorNode extends BinaryOperator implements RelationalOperator {
     public GreaterEqualOperatorNode(Location location, ExpressionNode leftNode, ExpressionNode rightNode) {
         super(location, leftNode, rightNode);
     }

@@ -3,6 +3,7 @@ package parser.tree.symbolsTable;
 import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
+import parser.tree.interfaces.Symbol;
 import parser.tree.statements.globalVariables.IO;
 import parser.tree.types.Type;
 import parser.tree.values.Value;

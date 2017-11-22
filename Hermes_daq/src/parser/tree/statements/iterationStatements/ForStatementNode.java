@@ -4,7 +4,7 @@ import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
-import parser.tree.expression.operators.relational.RelationalOperator;
+import parser.tree.interfaces.RelationalOperator;
 import parser.tree.statements.ExpressionStatementNode;
 import parser.tree.statements.StatementNode;
 import parser.tree.symbolsTable.Looping;

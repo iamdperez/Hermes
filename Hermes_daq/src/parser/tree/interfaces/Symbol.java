@@ -1,4 +1,4 @@
-package parser.tree.symbolsTable;
+package parser.tree.interfaces;
 
 import parser.exeptions.SemanticException;
 import parser.tree.types.Type;
