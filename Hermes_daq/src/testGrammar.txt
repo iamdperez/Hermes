@@ -10,10 +10,17 @@ initial
 endinitial
 
 main
-var x, y;
-x = 1, y = 45;
-print "x= "+x+", y= "+y;
-
+    var x, y;
+    x = 0, y = 45;
+    if(x == 0)
+        print "x es igual a 0";
+    else if(x ==10)
+        print "x es igual a 10";
+    else if(x == 23)
+        print "x es igual a 23";
+    else
+        print "el valor de x es= "+x;
+    endif
 endmain
 /*
 function patito(a,b)
