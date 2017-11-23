@@ -59,6 +59,10 @@ public class FunctionDeclarationNode extends StatementNode implements FunctionDe
                 SymbolsTable.getInstance().declareVariable(item.getName(),new VarSymbol());
             }
         }
+
+        if(getVariables() != null){
+            variables.validateSemantic();
+        }
         if(getStatementList() != null){
             for(StatementNode item: statementList){
                 item.validateSemantic();
@@ -86,8 +90,7 @@ public class FunctionDeclarationNode extends StatementNode implements FunctionDe
             fs.getOverloadedFunctions().add(of);
             SymbolsTable.getInstance().declareVariable(name, fs);
         }else{
-            FunctionSymbol fs = (FunctionSymbol)SymbolsTable.getInstance().getVariable(name);
-            fs.getOverloadedFunctions().add(of);
+            SymbolsTable.getInstance().addOverloadToFunction(name,of);
         }
     }
 }
