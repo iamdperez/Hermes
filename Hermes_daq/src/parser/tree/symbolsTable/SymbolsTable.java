@@ -116,4 +116,12 @@ public class SymbolsTable {
         Looping fl = looping.get(looping.size()-1);
         fl.looping = false;
     }
+
+    public void addOverloadToFunction(String functionName, OverloadedFunction overloaded){
+        contexts.get(0).addOverloadToFunction(functionName,overloaded);
+    }
+
+    public boolean existOverloadedFunction(String functionName, OverloadedFunction overloaded){
+        return contexts.get(0).existOverloadedFunction(functionName, overloaded);
+    }
 }

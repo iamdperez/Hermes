@@ -7,7 +7,10 @@ import parser.tree.types.Type;
 import parser.tree.values.Value;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class ScopeContext {
     private final Map<String, Symbol> variables;
@@ -47,5 +50,28 @@ public class ScopeContext {
         PinSymbol ps = (PinSymbol)getVariable(variableName);
         ps.setPinIO(pinIO);
         variables.replace(variableName, ps);
+    }
+
+    public void addOverloadToFunction(String functionName, OverloadedFunction overloaded){
+        FunctionSymbol fs = (FunctionSymbol)getVariable(functionName);
+        fs.getOverloadedFunctions().add(overloaded);
+        variables.replace(functionName,fs);
+    }
+
+    public boolean existOverloadedFunction(String functionName, OverloadedFunction overloaded){
+        if(!variables.containsKey(functionName))
+            return false;
+        FunctionSymbol fs = (FunctionSymbol)getVariable(functionName);
+        List<OverloadedFunction> of;
+        if(overloaded.getParams() == null){
+            of =  fs.getOverloadedFunctions().stream()
+                    .filter(o -> o.getParams() == null)
+                    .collect(Collectors.toList());
+        }else{
+            of = fs.getOverloadedFunctions().stream()
+                    .filter(o -> o.getParams().size() == overloaded.getParams().size())
+                    .collect(Collectors.toList());
+        }
+        return of.size() > 0;
     }
 }

@@ -1,8 +1,14 @@
 package parser.tree.statements;
 
+import parser.ParserUtils;
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.IdNode;
 import parser.tree.interfaces.FunctionDeclaration;
+import parser.tree.symbolsTable.FunctionSymbol;
+import parser.tree.symbolsTable.OverloadedFunction;
+import parser.tree.symbolsTable.SymbolsTable;
+import parser.tree.symbolsTable.VarSymbol;
 
 import java.util.ArrayList;
 
@@ -18,6 +24,15 @@ public class FunctionDeclarationNode extends StatementNode implements FunctionDe
         super(location);
         this.name = name;
         this.params = params;
+        this.variables = variables;
+        this.statementList = statementList;
+    }
+
+    public FunctionDeclarationNode(Location location, String name,VariableDeclarationNode variables,
+                                   ArrayList<StatementNode> statementList) {
+        super(location);
+        this.name = name;
+        this.params = null;
         this.variables = variables;
         this.statementList = statementList;
     }
@@ -38,12 +53,41 @@ public class FunctionDeclarationNode extends StatementNode implements FunctionDe
     }
 
     @Override
-    public void validateSemantic() {
-
+    public void validateSemantic() throws SemanticException {
+        if(params != null){
+            for(IdNode item: params){
+                SymbolsTable.getInstance().declareVariable(item.getName(),new VarSymbol());
+            }
+        }
+        if(getStatementList() != null){
+            for(StatementNode item: statementList){
+                item.validateSemantic();
+            }
+        }
     }
 
     @Override
     public void interpret() {
+        //do nothing
+    }
 
+    public void firstPassDeclaration() throws SemanticException{
+        OverloadedFunction of = new OverloadedFunction(params, statementList);
+
+        if(SymbolsTable.getInstance().variableExist(name)
+                && SymbolsTable.getInstance().existOverloadedFunction(name,of)){
+            throw new SemanticException(ParserUtils.getInstance().getLineErrorMessage(
+                    "Function `"+name+"` was declared before. ",getLocation()));
+        }
+
+        if(!SymbolsTable.getInstance().variableExist(name)
+                && !SymbolsTable.getInstance().existOverloadedFunction(name,of)){
+            FunctionSymbol fs = new FunctionSymbol();
+            fs.getOverloadedFunctions().add(of);
+            SymbolsTable.getInstance().declareVariable(name, fs);
+        }else{
+            FunctionSymbol fs = (FunctionSymbol)SymbolsTable.getInstance().getVariable(name);
+            fs.getOverloadedFunctions().add(of);
+        }
     }
 }

@@ -3,11 +3,9 @@ package parser.tree.statements;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.interfaces.FunctionDeclaration;
-import parser.tree.symbolsTable.Symbol;
 import parser.tree.symbolsTable.SymbolsTable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,8 +46,16 @@ public class ProgramNode {
             initial.validateSemantic();
         List<FunctionDeclaration> main = functionList.stream().filter( o -> o instanceof MainNode)
                 .collect(Collectors.toList());
-        if(main.size() > 1)
-            throw new SemanticException("Method `main` is already defined in module `"+getModuleName()+"`");
+        if(main.size() > 1) {
+            throw new SemanticException("Method `main` is already defined in module `" + getModuleName() + "`");
+        }
+
+        List<FunctionDeclaration> functions = functionList.stream().filter( o -> o instanceof FunctionDeclarationNode)
+                .collect(Collectors.toList());
+        for (FunctionDeclaration item: functions) {
+            ((FunctionDeclarationNode)item).firstPassDeclaration();
+        }
+
         for(FunctionDeclaration item: functionList){
             SymbolsTable.getInstance().pushNewContext();
             item.validateSemantic();
