@@ -84,8 +84,9 @@ public class ForStatementNode extends IterationStatementNode {
         while ((int)condition.getValue() != 0 && l.looping){
             SymbolsTable.getInstance().pushNewContext();
             for (StatementNode item: statementList) {
-                if(l.looping)
-                    item.interpret();
+                item.interpret();
+                if(!l.looping)
+                    break;
             }
             SymbolsTable.getInstance().popContext();
             thirdExpression.interpret();
