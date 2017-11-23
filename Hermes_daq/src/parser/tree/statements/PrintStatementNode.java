@@ -34,7 +34,7 @@ public class PrintStatementNode extends StatementNode {
     @Override
     public void interpret() throws SemanticException {
         System.out.println(getExpression().interpret().getValue());
-        /*print in ui console.*/
+        /*TODO print in ui console.*/
     }
 
     public ExpressionNode getExpression() {

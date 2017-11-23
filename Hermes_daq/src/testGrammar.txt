@@ -12,27 +12,37 @@ endinitial
 main
     var x;
     x = 22;
-    patito(1, x);
-    patito();
-    patito2();
-    patito2(10,13);
+    terminado();
+    print "Terminado";
 endmain
 
-function patito(a,b)
-    print a + b;
-    print "patito CON PARAMETROS";
+function terminado()
+    var x;
+    for(x = 0; x < 11; x++)
+        if(x%2==0)
+            print "x es par valor= " + x;
+        endif
+    endfor
+    print "llamando terminado 2";
+    terminado2(10);
 endfunction
 
-function patito2(a,b)
-    print a + b;
-    print "CON PARAMETROS";
+function terminado2(a)
+    var x;
+    x =0;
+    while (x < a)
+        if(x == 5)
+            print "x llego a 5";
+            break;
+        endif
+        print x;
+        x++;
+    endwhile
+    print "2 es mayo que 5 = "+(terminado2(2,5) ? 2: 5);
 endfunction
 
-function patito()
-    print "patito sin parametros";
+function terminado2(a,b)
+    return a > b;
 endfunction
 
-function patito2()
-    print "sin parametros";
-endfunction
 endmodule
