@@ -4,10 +4,7 @@ import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.statements.StatementNode;
-import parser.tree.symbolsTable.FunctionSymbol;
-import parser.tree.symbolsTable.OverloadedFunction;
-import parser.tree.symbolsTable.SymbolsTable;
-import parser.tree.symbolsTable.VarSymbol;
+import parser.tree.symbolsTable.*;
 import parser.tree.types.IntType;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
@@ -36,6 +33,7 @@ public class FunctionCallNode extends ExpressionNode {
     @Override
     public Value interpret() throws SemanticException {
         FunctionSymbol fs = (FunctionSymbol)SymbolsTable.getInstance().getVariable(functionName.getName());
+        SymbolsTable.getInstance().setVariableValue(functionName.getName(),ParserUtils.intValue);
         SymbolsTable.getInstance().pushNewContext();
         OverloadedFunction of;
         if(argumentList !=null){
@@ -49,10 +47,15 @@ public class FunctionCallNode extends ExpressionNode {
         }else{
             of = getOverloadedFunctions(0).get(0);
         }
+
+        FunctionCalled fc = new FunctionCalled(functionName.getName());
+        SymbolsTable.getInstance().pushFunctionCalled(fc);
         for(StatementNode item: of.getStatements()){
             item.interpret();
-            /*TODO: al encontrar un return hacer break*/
+            if(!fc.called)
+                break;
         }
+        SymbolsTable.getInstance().popFunctionCalled();
         SymbolsTable.getInstance().popContext();
         return fs.getValue();
     }

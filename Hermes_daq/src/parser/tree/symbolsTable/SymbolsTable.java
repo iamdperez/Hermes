@@ -14,9 +14,11 @@ public class SymbolsTable {
     private static SymbolsTable instance;
     private final ArrayList<ScopeContext> contexts;
     private final ArrayList<Looping> looping;
+    private final ArrayList<FunctionCalled> functionCalleds;
     private SymbolsTable(){
         contexts = new ArrayList<>();
         looping = new ArrayList<>();
+        functionCalleds = new ArrayList<>();
     }
     public static synchronized SymbolsTable getInstance(){
         if (instance == null) {
@@ -123,5 +125,30 @@ public class SymbolsTable {
 
     public boolean existOverloadedFunction(String functionName, OverloadedFunction overloaded){
         return contexts.get(0).existOverloadedFunction(functionName, overloaded);
+    }
+
+    public void stopAllLoops(){
+        /*for(int i = looping.size() -1; i >= 0; i--){
+            looping.get(i).looping = false;
+        }*/
+        looping.forEach( o -> o.looping = false);
+    }
+
+    public void pushFunctionCalled(FunctionCalled functionCalled){
+        functionCalleds.add(functionCalled);
+    }
+
+    public FunctionCalled popFunctionCalled(){
+        if(functionCalleds.size()==0)
+            return null;
+        FunctionCalled fl = functionCalleds.get(functionCalleds.size()-1);
+        functionCalleds.remove(functionCalleds.size() - 1);
+        return fl;
+    }
+
+    public FunctionCalled getCurrentFunctionCalled(){
+        if(functionCalleds.size()==0)
+            return null;
+        return functionCalleds.get(functionCalleds.size()-1);
     }
 }
