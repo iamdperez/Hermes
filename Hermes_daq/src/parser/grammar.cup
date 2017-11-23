@@ -345,6 +345,9 @@ functions_list ::= functions_list:fl function:f
 function ::= FUNCTION ID:i LPARENTHESIS id_list:il RPARENTHESIS variable_declaration:vd statement_list:sl FUNCTION_END
     {:  Location l = new Location(ileft,iright);
         RESULT = new FunctionDeclarationNode(l,i,il,vd,sl);:}
+    |   FUNCTION ID:i LPARENTHESIS RPARENTHESIS variable_declaration:vd statement_list:sl FUNCTION_END
+    {:  Location l = new Location(ileft,iright);
+        RESULT = new FunctionDeclarationNode(l,i,vd,sl);:}
     | MAIN:m variable_declaration:vd statement_list:sl MAIN_END
         {:  Location l = new Location(mleft,mright);
             RESULT = new MainNode(l,vd,sl);:}
