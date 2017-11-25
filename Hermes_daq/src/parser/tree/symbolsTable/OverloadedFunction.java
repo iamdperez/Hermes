@@ -10,8 +10,8 @@ public class OverloadedFunction {
     private ArrayList<StatementNode> statements;
 
     public OverloadedFunction(ArrayList<IdNode> params, ArrayList<StatementNode> statements){
-        this.params = params;
-        this.statements = statements;
+        this.params = params == null ? new ArrayList<>() : params;
+        this.statements = statements == null ? new ArrayList<>() : statements;
     }
 
     public ArrayList<IdNode> getParams() {

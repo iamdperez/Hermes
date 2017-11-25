@@ -104,13 +104,8 @@ public class FunctionCallNode extends ExpressionNode {
 
     private List<OverloadedFunction> getOverloadedFunctions(int paramsCount) throws SemanticException {
         FunctionSymbol fs = (FunctionSymbol)SymbolsTable.getInstance().getVariable(functionName.getName());
-
-        if(paramsCount == 0){
-            return fs.getOverloadedFunctions().stream()
-                    .filter(o -> o.getParams() == null).collect(Collectors.toList());
-        }
         return fs.getOverloadedFunctions().stream()
-                .filter( o -> o.getParams()!= null && o.getParams().size() == paramsCount)
+                .filter( o -> o.getParams().size() == paramsCount)
                 .collect(Collectors.toList());
     }
 

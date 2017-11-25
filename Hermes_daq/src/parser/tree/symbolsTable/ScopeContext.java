@@ -63,15 +63,9 @@ public class ScopeContext {
             return false;
         FunctionSymbol fs = (FunctionSymbol)getVariable(functionName);
         List<OverloadedFunction> of;
-        if(overloaded.getParams() == null){
-            of =  fs.getOverloadedFunctions().stream()
-                    .filter(o -> o.getParams() == null)
-                    .collect(Collectors.toList());
-        }else{
             of = fs.getOverloadedFunctions().stream()
                     .filter(o -> o.getParams().size() == overloaded.getParams().size())
                     .collect(Collectors.toList());
-        }
         return of.size() > 0;
     }
 }
