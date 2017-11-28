@@ -21,8 +21,10 @@ import parser.tree.statements.jumpStatements.*;
 import parser.tree.statements.ifStatement.*;
 parser code {:
 
-    public parser(Lexer lex, ComplexSymbolFactory sf) {
+    private ArrayList<DeviceInfo> devicesInfo;
+    public parser(Lexer lex, ComplexSymbolFactory sf, ArrayList<DeviceInfo> devicesInfo) {
         super(lex,sf);
+        this.devicesInfo = devicesInfo;
     }
 
     public void report_error(String message, Object info) {
@@ -290,7 +292,7 @@ program ::= MODULE:m ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_EN
 
 initial_begin ::= INITIAL:i DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END
     {:  Location l = new Location(ileft,iright);
-        RESULT = new InitialNode(l,dm, gv);:}
+        RESULT = new InitialNode(l,dm, gv, devicesInfo);:}
     | /* empty */ {:RESULT = null;:}
     ;
 
