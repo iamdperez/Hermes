@@ -1,19 +1,16 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.ScannerBuffer;
-import parser.tree.interfaces.DeviceInfo;
+import parser.deviceInfo.DeviceInfo;
 import parser.tree.statements.ProgramNode;
-import parser.tree.symbolsTable.SymbolsTable;
-import serialCommunication.Commands;
-import serialCommunication.SerialCommunication;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 
 import parser.*;
 public class Main {
@@ -33,17 +30,16 @@ public class Main {
         try {
             ComplexSymbolFactory csf = new ComplexSymbolFactory();
             // create a buffering scanner wrapper
-            ScannerBuffer lexer = new ScannerBuffer(new Lexer(new BufferedReader(new FileReader("src/testGrammar.txt")),csf));
+            Lexer lexer = new  Lexer(new BufferedReader(new FileReader("src/testGrammar.txt")),csf);
             // start parsing
 
             Gson gSon = new Gson();
             StringBuffer sb = new StringBuffer();
-
-            List<String> ls = Files.readAllLines("src/devicesInfo.json").forEach( s -> sb.append(s));
-            String jSon = "";
+            Files.readAllLines(Paths.get("src/devicesInfo.json")).forEach(s -> sb.append(s));
+            String jSon = sb.toString();
             Type listType = new TypeToken<ArrayList<DeviceInfo>>() {}.getType();
             ArrayList<DeviceInfo> devices = gSon.fromJson(jSon, listType);
-            parser p = new parser(lexer,csf, (ArrayList<DeviceInfo>) devices);
+            parser p = new parser(lexer,csf, devices);
             ProgramNode v = (ProgramNode) p.parse().value;
             v.validateSemantic();
             v.interpretCode();

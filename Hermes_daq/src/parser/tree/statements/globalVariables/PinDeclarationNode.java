@@ -34,6 +34,13 @@ public class PinDeclarationNode extends GlobalVariablesNode {
         }
         for (int i =0; i < idList.size(); i++) {
             IdNode item = idList.get(i);
+            if(!(pinList.get(i) >= SymbolsTable.getInstance().getDeviceInfo().getMinPin()
+                    && pinList.get(i) <= SymbolsTable.getInstance().getDeviceInfo().getMaxPin())){
+                throw new SemanticException(
+                        getLineErrorMessage("Pin `"+pinList.get(i)+"` is not supported for your Arduino "
+                                +SymbolsTable.getInstance().getDeviceInfo().getDeviceName()+" model."));
+            }
+
             if(SymbolsTable.getInstance().variableExist(item.getName())){
                 throw new SemanticException(
                         getLineErrorMessage("Variable `"+item.getName()+"` was declared before"));

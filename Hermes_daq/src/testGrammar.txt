@@ -1,7 +1,7 @@
 module patito;
 initial
-    device 'due';
-    a, b, e,f pin 1,2, 3, 4;
+    device 'Due';
+    a, b, e,f pin 1,2, 3, 100;
     a, b, e istype input;
     f istype output;
     d = [f, e]; 

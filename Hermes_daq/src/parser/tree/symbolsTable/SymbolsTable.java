@@ -1,6 +1,7 @@
 package parser.tree.symbolsTable;
 
 import parser.ParserUtils;
+import parser.deviceInfo.DeviceInfo;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.interfaces.Symbol;
@@ -14,11 +15,12 @@ public class SymbolsTable {
     private static SymbolsTable instance;
     private final ArrayList<ScopeContext> contexts;
     private final ArrayList<Looping> looping;
-    private final ArrayList<FunctionCalled> functionCalleds;
+    private final ArrayList<FunctionCalled> functionCalled;
+    private static DeviceInfo deviceInfo;
     private SymbolsTable(){
         contexts = new ArrayList<>();
         looping = new ArrayList<>();
-        functionCalleds = new ArrayList<>();
+        functionCalled = new ArrayList<>();
     }
     public static synchronized SymbolsTable getInstance(){
         if (instance == null) {
@@ -135,20 +137,28 @@ public class SymbolsTable {
     }
 
     public void pushFunctionCalled(FunctionCalled functionCalled){
-        functionCalleds.add(functionCalled);
+        this.functionCalled.add(functionCalled);
     }
 
     public FunctionCalled popFunctionCalled(){
-        if(functionCalleds.size()==0)
+        if(functionCalled.size()==0)
             return null;
-        FunctionCalled fl = functionCalleds.get(functionCalleds.size()-1);
-        functionCalleds.remove(functionCalleds.size() - 1);
+        FunctionCalled fl = functionCalled.get(functionCalled.size()-1);
+        functionCalled.remove(functionCalled.size() - 1);
         return fl;
     }
 
     public FunctionCalled getCurrentFunctionCalled(){
-        if(functionCalleds.size()==0)
+        if(functionCalled.size()==0)
             return null;
-        return functionCalleds.get(functionCalleds.size()-1);
+        return functionCalled.get(functionCalled.size()-1);
+    }
+
+    public void setDeviceInfo(DeviceInfo d){
+        deviceInfo = d;
+    }
+
+    public DeviceInfo getDeviceInfo(){
+        return deviceInfo;
     }
 }

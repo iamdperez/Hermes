@@ -19,6 +19,7 @@ import parser.tree.statements.globalVariables.*;
 import parser.tree.statements.iterationStatements.*;
 import parser.tree.statements.jumpStatements.*;
 import parser.tree.statements.ifStatement.*;
+import parser.deviceInfo.*;
 parser code {:
 
     private ArrayList<DeviceInfo> devicesInfo;

@@ -108,7 +108,9 @@ device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
                         s = s.length() < 3 ? "" : s.substring(1,s.length()-1);
                         return symbol(yytext(),sym.STRING_LITERAL, s);
                     }
-    {device}        {   return symbol("device model",sym.DEVICE_MODEL, yytext());}
+    {device}        {   String s = yytext();
+                        s = s.length() < 3 ? "" : s.substring(1,s.length()-1);
+                        return symbol("device model",sym.DEVICE_MODEL, s);}
 
     /* operators */
     ","             {   return symbol("comma", sym.COMMA);  }

@@ -1,4 +1,6 @@
-public class DeviceInfo implements parser.tree.interfaces.DeviceInfo {
+package parser.deviceInfo;
+
+public class DeviceInfo {
     public DeviceInfo(){
     }
     public String getDeviceName() {
