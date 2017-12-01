@@ -1,1 +1,48 @@
-&[a,b,34]
+module patito;
+initial
+    device 'Due';
+    a, b, e,f pin 1,2, 3, 100;
+    a, b, e istype input;
+    f istype output;
+    d = [f, e]; 
+    c = [a,b];
+    [a,e,f] = high;
+endinitial
+
+main
+    var x;
+    x = 22;
+    terminado();
+    print "Terminado";
+endmain
+
+function terminado()
+    var x;
+    for(x = 0; x < 11; x++)
+        if(x%2==0)
+            print "x es par valor= " + x;
+        endif
+    endfor
+    print "llamando terminado 2";
+    terminado2(10);
+endfunction
+
+function terminado2(a)
+    var x;
+    x =0;
+    while (x < a)
+        if(x == 5)
+            print "x llego a 5";
+            break;
+        endif
+        print x;
+        x++;
+    endwhile
+    print "2 es mayo que 5 = "+(terminado2(2,5) ? 2: 5);
+endfunction
+
+function terminado2(a,b)
+    return a > b;
+endfunction
+
+endmodule

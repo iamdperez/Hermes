@@ -1,7 +1,7 @@
 package parser.tree.expression.literals;
 
 import parser.tree.Location;
-import parser.tree.Types.Type;
+import parser.tree.types.Type;
 import parser.tree.expression.ExpressionNode;
 
 public abstract class LiteralNode extends ExpressionNode {

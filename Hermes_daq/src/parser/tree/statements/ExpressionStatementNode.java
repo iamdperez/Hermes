@@ -1,5 +1,6 @@
 package parser.tree.statements;
 
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
 
@@ -17,13 +18,13 @@ public class ExpressionStatementNode extends StatementNode {
     }
 
     @Override
-    public void validateSemantic() {
-
+    public void validateSemantic() throws SemanticException {
+        expressionNode.evaluateSemantic();
     }
 
     @Override
-    public void interpret() {
-
+    public void interpret() throws SemanticException {
+        expressionNode.interpret();
     }
 
     public ExpressionNode getExpressionNode() {

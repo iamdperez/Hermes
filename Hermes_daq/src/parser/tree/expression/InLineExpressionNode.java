@@ -1,8 +1,11 @@
 package parser.tree.expression;
 
+import parser.ParserUtils;
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
-import parser.tree.Types.Type;
-import parser.tree.Values.Value;
+import parser.tree.types.Type;
+import parser.tree.values.IntValue;
+import parser.tree.values.Value;
 
 import java.util.ArrayList;
 
@@ -24,12 +27,18 @@ public class InLineExpressionNode extends ExpressionNode {
     }
 
     @Override
-    public Value Interpret() {
-        return null;
+    public Value interpret() throws SemanticException {
+        for(ExpressionNode item: arguments){
+            item.interpret();
+        }
+        return new IntValue();
     }
 
     @Override
-    public Type EvaluateSemantic() {
-        return null;
+    public Type evaluateSemantic() throws SemanticException {
+        for(ExpressionNode item: arguments){
+            item.evaluateSemantic();
+        }
+        return arguments.get(0).evaluateSemantic();
     }
 }

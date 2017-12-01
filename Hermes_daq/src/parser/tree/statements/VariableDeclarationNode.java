@@ -1,7 +1,13 @@
 package parser.tree.statements;
 
+import parser.ParserUtils;
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.IdNode;
+import parser.tree.symbolsTable.SymbolsTable;
+import parser.tree.symbolsTable.VarSymbol;
+import parser.tree.types.PinType;
+import parser.tree.types.Type;
 
 import java.util.ArrayList;
 
@@ -14,13 +20,23 @@ public class VariableDeclarationNode extends StatementNode {
     }
 
     @Override
-    public void validateSemantic() {
-
+    public void validateSemantic() throws SemanticException {
+        for (IdNode item: idList) {
+            if(SymbolsTable.getInstance().variableExist(item.getName()))
+                throw new SemanticException(
+                        ParserUtils.getInstance().getLineErrorMessage("Variable `"+item.getName()+"` was declared before",
+                                item.getLocation()));
+            SymbolsTable.getInstance().declareVariable(item.getName(),new VarSymbol());
+            item.setType(ParserUtils.intType);
+        }
     }
 
     @Override
     public void interpret() {
-
+        for (IdNode item: idList) {
+            SymbolsTable.getInstance().declareVariable(item.getName(),new VarSymbol());
+            item.setType(ParserUtils.intType);
+        }
     }
 
     public ArrayList<IdNode> getIdList() {

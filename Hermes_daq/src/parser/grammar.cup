@@ -18,10 +18,14 @@ import parser.tree.statements.*;
 import parser.tree.statements.globalVariables.*;
 import parser.tree.statements.iterationStatements.*;
 import parser.tree.statements.jumpStatements.*;
+import parser.tree.statements.ifStatement.*;
+import parser.deviceInfo.*;
 parser code {:
 
-    public parser(Lexer lex, ComplexSymbolFactory sf) {
+    private ArrayList<DeviceInfo> devicesInfo;
+    public parser(Lexer lex, ComplexSymbolFactory sf, ArrayList<DeviceInfo> devicesInfo) {
         super(lex,sf);
+        this.devicesInfo = devicesInfo;
     }
 
     public void report_error(String message, Object info) {
@@ -55,7 +59,7 @@ terminal    NOT, NOT_OP, LPARENTHESIS, RPARENTHESIS, ASSIGNMENT_OP, SEMICOLON;
 
 terminal    MODULE, MODULE_END, INITIAL, INITIAL_END, MAIN, MAIN_END, IF, IF_END;
 terminal    WHILE, WHILE_END, FOR, FOR_END, FUNCTION, FUNCTION_END, PRINT, VAR;       
-terminal    PIN, DEVICE, ISTYPE, INPUT, OUTPUT, BREAK, RETURN, ELSE;     
+terminal    PIN, DEVICE, ISTYPE, INPUT, OUTPUT, BREAK, RETURN, ELSE, HIGH,LOW;     
 
 terminal    Integer     INT_LITERAL;
 terminal    String      STRING_LITERAL;
@@ -80,19 +84,21 @@ non terminal    ArrayList<GlobalVariablesNode>      global_variables;
 non terminal    PinDeclarationNode                  pin_declaration;
 non terminal    ArrayList<Integer>                  pin_list, pin_listp;
 non terminal    PinDefinitionNode                   pin_definition;
-non terminal    PinType                             pin_type;
+non terminal    IO                                  pin_type;
 non terminal    SetDeclarationNode                  set_declaration;
 non terminal    SetAssignationStatementNode         set_assignation_statement;
-non terminal    ArrayList<FunctionDeclaration>  functions_list;
-non terminal    FunctionDeclaration             function;
+non terminal    ArrayList<FunctionDeclaration>      functions_list;
+non terminal    FunctionDeclaration                 function;
 non terminal    VariableDeclarationNode             variable_declaration;
-non terminal    ArrayList<StatementNode>            statement_list;
-non terminal    StatementNode                       statement;
+non terminal    ArrayList<StatementNode>            statement_list, if_statement_list;
+non terminal    StatementNode                       statement, if_statements;
 non terminal    ExpressionStatementNode             expression_statement;
 non terminal    IfStatementNode                     if_statement;
 non terminal    IterationStatementNode              iteration_statement;
 non terminal    JumpStatementNode                   jump_statement;
-non terminal    PrintStatementNode                  print_statement;	  
+non terminal    PrintStatementNode                  print_statement;
+non terminal    ArrayList<ElseIfNode>               opt_else_if; 
+non terminal    ElseNode                            opt_else; 
 start with program;
 
 /* expression */
@@ -268,6 +274,8 @@ primary_expression ::= ID:i
            RESULT =iln;:}
     |   STRING_LITERAL:sl
         {:  Location l = new Location(slleft,slright); RESULT = new StringLiteralNode(l,sl);:}
+    |   HIGH:h {:Location l = new Location(hleft,hright); RESULT = new PinLiteralNode(l, PinStatus.HIGH);:}
+    |   LOW:l {:Location loc = new Location(lleft,lright); RESULT = new PinLiteralNode(loc, PinStatus.LOW);:}
     |   LPARENTHESIS expression:e RPARENTHESIS {:RESULT = e;:} 
     ;
 
@@ -285,7 +293,7 @@ program ::= MODULE:m ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_EN
 
 initial_begin ::= INITIAL:i DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END
     {:  Location l = new Location(ileft,iright);
-        RESULT = new InitialNode(l,dm, gv);:}
+        RESULT = new InitialNode(l,dm, gv, devicesInfo);:}
     | /* empty */ {:RESULT = null;:}
     ;
 
@@ -318,16 +326,16 @@ pin_definition ::= id_list:il ISTYPE:i pin_type:pt SEMICOLON
         RESULT = new PinDefinitionNode(l,il,pt);:}
     ;
 
-pin_type ::= OUTPUT {:RESULT = PinType.OUTPUT;:}
-    |   INPUT {:RESULT = PinType.INPUT;:}
+pin_type ::= OUTPUT {:RESULT = IO.OUTPUT;:}
+    |   INPUT {:RESULT = IO.INPUT;:}
     ;
 
-set_declaration ::= ID:i EQUAL_OP LSQUARE_BRACKET id_list:il RSQUARE_BRACKET SEMICOLON
+set_declaration ::= ID:i ASSIGNMENT_OP LSQUARE_BRACKET id_list:il RSQUARE_BRACKET SEMICOLON
     {:  Location l = new Location(ileft,iright);
         RESULT = new SetDeclarationNode(l, i, il);:}
     ;
 
-set_assignation_statement ::= LSQUARE_BRACKET:ls id_list:il RSQUARE_BRACKET EQUAL_OP expression:e SEMICOLON
+set_assignation_statement ::= LSQUARE_BRACKET:ls id_list:il RSQUARE_BRACKET ASSIGNMENT_OP expression:e SEMICOLON
     {:  Location l = new Location(lsleft,lsright);
         RESULT = new SetAssignationStatementNode(l,il,e); :}
     ;
@@ -340,6 +348,9 @@ functions_list ::= functions_list:fl function:f
 function ::= FUNCTION ID:i LPARENTHESIS id_list:il RPARENTHESIS variable_declaration:vd statement_list:sl FUNCTION_END
     {:  Location l = new Location(ileft,iright);
         RESULT = new FunctionDeclarationNode(l,i,il,vd,sl);:}
+    |   FUNCTION ID:i LPARENTHESIS RPARENTHESIS variable_declaration:vd statement_list:sl FUNCTION_END
+    {:  Location l = new Location(ileft,iright);
+        RESULT = new FunctionDeclarationNode(l,i,vd,sl);:}
     | MAIN:m variable_declaration:vd statement_list:sl MAIN_END
         {:  Location l = new Location(mleft,mright);
             RESULT = new MainNode(l,vd,sl);:}
@@ -348,13 +359,14 @@ function ::= FUNCTION ID:i LPARENTHESIS id_list:il RPARENTHESIS variable_declara
 variable_declaration ::= VAR:v id_list:il SEMICOLON
     {:  Location l = new Location(vleft,vright);
         RESULT = new VariableDeclarationNode(l,il);:}
+    | /* empty */ {:RESULT = null;:}
     ;
 
 statement_list ::= statement:s 
     {:  ArrayList<StatementNode> sl = new ArrayList<>();
-        sl.add(0,s); RESULT = sl;:}
+        sl.add(s); RESULT = sl;:}
     |   statement_list:sl statement:s
-    {:  sl.add(0,s); RESULT = sl;:}
+    {:  sl.add(s); RESULT = sl;:}
     ;
 
 statement ::= expression_statement:es {:RESULT = es;:}
@@ -381,17 +393,42 @@ jump_statement ::= BREAK:b SEMICOLON {:RESULT = new BreakNode(new Location(bleft
 iteration_statement ::= WHILE:w LPARENTHESIS expression:e RPARENTHESIS statement_list:sl WHILE_END
     {:  Location l = new Location(wleft,wright);
         RESULT = new WhileStatementNode(l,e,sl);:}
-    |   FOR:f LPARENTHESIS expression_statement:e1 expression_statement:e2 expression:e3 RPARENTHESIS statement_list:sl FOR_END
+    |   FOR:f LPARENTHESIS expression_statement:e1 expression:e2 SEMICOLON expression:e3 RPARENTHESIS statement_list:sl FOR_END
         {:  Location l = new Location(fleft,fright);
             RESULT = new ForStatementNode(l,e1,e2,e3,sl);:}    
     ;
 
-if_statement ::= IF:i LPARENTHESIS expression:e RPARENTHESIS statement_list:sl IF_END
+if_statement ::= IF:i LPARENTHESIS expression:e RPARENTHESIS if_statement_list:sl opt_else_if:oei opt_else:oe IF_END
         {:  Location l = new Location(ileft,iright);
-            RESULT = new IfStatementNode(l,e,sl);:}
-    | IF:i LPARENTHESIS expression:e RPARENTHESIS statement_list:sl ELSE statement_list:esl IF_END
-        {:  Location l = new Location(ileft,iright);
-            RESULT = new IfStatementNode(l,e,sl,esl);:}
+            RESULT = new IfStatementNode(l,e,sl, oei, oe);:}
+    ;
+
+opt_else_if ::= opt_else_if:oei ELSE:el IF LPARENTHESIS expression:e RPARENTHESIS if_statement_list:sl
+        {:  Location l = new Location(elleft,elright);
+            ElseIfNode ein = new ElseIfNode(l,e,sl);
+            oei.add(ein);
+            RESULT = oei;:}
+    | {:RESULT = new ArrayList<ElseIfNode>();:}    
+    ;
+
+opt_else ::= ELSE:e if_statement_list:isl
+        {:  Location l = new Location(eleft,eright);
+            RESULT = new ElseNode(l,isl);:}
+    | {:RESULT = null;:}
+    ;
+
+if_statement_list ::= if_statements:s 
+    {:  ArrayList<StatementNode> sl = new ArrayList<>();
+        sl.add(s); RESULT = sl;:}
+    |   if_statement_list:sl if_statements:s
+    {:  sl.add(s); RESULT = sl;:}
+    ;
+
+if_statements ::= expression_statement:es {:RESULT = es;:}
+    |   set_assignation_statement:sas {:RESULT = sas;:}
+    |   iteration_statement:is {:RESULT = is;:}
+    |   jump_statement:js {:RESULT = js;:}
+    |   print_statement:ps {:RESULT = ps;:}
     ;
 
 expression_statement ::= SEMICOLON:s 

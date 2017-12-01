@@ -1,7 +1,12 @@
 package parser.tree.statements.globalVariables;
 
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.IdNode;
+import parser.tree.symbolsTable.SetSymbol;
+import parser.tree.symbolsTable.SymbolsTable;
+import parser.tree.types.PinType;
+import parser.tree.types.Type;
 
 import java.util.ArrayList;
 
@@ -16,13 +21,17 @@ public class SetDeclarationNode extends GlobalVariablesNode {
     }
 
     @Override
-    public void validateSemantic() {
-
+    public void validateSemantic() throws SemanticException {
+        if(SymbolsTable.getInstance().variableExist(setName))
+            throw new SemanticException(
+                    getLineErrorMessage("Variable `"+setName+"` was declared before"));
+        validateSetIdList(idList);
+        SymbolsTable.getInstance().declareVariable(setName, new SetSymbol(idList, setName));
     }
 
     @Override
     public void interpret() {
-
+        //do nothing
     }
 
     public String getSetName() {

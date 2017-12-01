@@ -1,12 +1,12 @@
-package parser.tree.Values;
+package parser.tree.values;
+
+import parser.exeptions.SemanticException;
 
 public abstract class Value {
-    private Object value;
-    public Value(Object value){
-        this.value = value;
+    public Value(Object value) {
     }
+
     public abstract Value clone();
-    public Object getValue(){
-        return value;
-    }
+    public abstract Object getValue() throws SemanticException;
+    public abstract void setValue(Object value) throws SemanticException;
 }

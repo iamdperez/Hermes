@@ -1,11 +1,15 @@
-package parser.tree.Types;
+package parser.tree.types;
 
-import parser.tree.Values.StringValue;
-import parser.tree.Values.Value;
+import parser.tree.values.StringValue;
+import parser.tree.values.Value;
 
 public class StringType extends Type {
     @Override
     public Value getDefaultValue() {
         return new StringValue("");
+    }
+    @Override
+    public String toString() {
+        return "StringType";
     }
 }

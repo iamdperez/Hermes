@@ -58,10 +58,14 @@ CommentContent          =       ( [^*] | \*+ [^/*] )*
 
 /* literals */
 int_lit                 =       0 | [1-9][0-9]*
+string_lit              =       \"(\\.|[^\"\\])*\"
 id                      =       [A-Za-z_][A-Za-z_0-9]*
 
-%state STRING
+
 device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
+
+
+%state STRING
 %%
 
 /*keywords*/
@@ -89,6 +93,9 @@ device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
 <YYINITIAL> "output"        { return symbol("output",sym.OUTPUT); }
 <YYINITIAL> "break"         { return symbol("break",sym.BREAK); }
 <YYINITIAL> "return"        { return symbol("return",sym.RETURN); }
+<YYINITIAL> "high"          { return symbol("high",sym.HIGH); }
+<YYINITIAL> "low"           { return symbol("low",sym.LOW); }
+
 
 
 <YYINITIAL> {
@@ -97,8 +104,13 @@ device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
 
     /* literals */
     {int_lit}       {   return symbol("int literal",sym.INT_LITERAL, new Integer(Integer.parseInt(yytext())));   }
-    
-    {device}        {   return symbol("device model",sym.DEVICE_MODEL, yytext());}
+    {string_lit}    {   String s = yytext();
+                        s = s.length() < 3 ? "" : s.substring(1,s.length()-1);
+                        return symbol(yytext(),sym.STRING_LITERAL, s);
+                    }
+    {device}        {   String s = yytext();
+                        s = s.length() < 3 ? "" : s.substring(1,s.length()-1);
+                        return symbol("device model",sym.DEVICE_MODEL, s);}
 
     /* operators */
     ","             {   return symbol("comma", sym.COMMA);  }
@@ -137,18 +149,4 @@ device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
     {WhiteSpace}    {   /* ignore */    }
 }
 
-/*string literal*/
-<STRING> {
-    \"                             { yybegin(YYINITIAL); 
-                                    return symbol(string.toString(),sym.STRING_LITERAL, string.toString()); }
-    [^\n\r\"\\]+                   { string.append( yytext() ); }
-    \\t                            { string.append('\t'); }
-    \\n                            { string.append('\n'); }
-
-    \\r                            { string.append('\r'); }
-    \\\"                           { string.append('\"'); }
-    \\                             { string.append('\\'); }
-}
-
-
-[^]                    { throw new Error("Illegal character <"+yytext()+">"); }
+[^]             { throw new Error("Illegal character `"+yytext()+"` line: "+(yyline+1)+" column: "+(yycolumn +1)); }

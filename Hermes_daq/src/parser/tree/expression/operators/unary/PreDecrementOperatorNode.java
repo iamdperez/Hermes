@@ -1,8 +1,11 @@
 package parser.tree.expression.operators.unary;
 
+import parser.exeptions.SemanticException;
 import parser.tree.Location;
-import parser.tree.Types.Type;
-import parser.tree.Values.Value;
+import parser.tree.expression.IdNode;
+import parser.tree.symbolsTable.SymbolsTable;
+import parser.tree.types.Type;
+import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.UnaryOperator;
 
@@ -12,12 +15,17 @@ public class PreDecrementOperatorNode extends UnaryOperator {
     }
 
     @Override
-    public Value Interpret() {
-        return null;
+    public Value interpret() throws SemanticException {
+        IdNode id = (IdNode)getExpression();
+        Value variableValue = SymbolsTable.getInstance().getVariableValue(id.getName(), id.getLocation());
+        int value = (int)variableValue.getValue() - 1;
+        variableValue.setValue(value);
+        SymbolsTable.getInstance().setVariableValue(id.getName(),variableValue);
+        return variableValue;
     }
 
     @Override
-    public Type EvaluateSemantic() {
-        return null;
+    public Type evaluateSemantic() throws SemanticException {
+        return validatePosOrPreOperation("Pre Decrement");
     }
 }
