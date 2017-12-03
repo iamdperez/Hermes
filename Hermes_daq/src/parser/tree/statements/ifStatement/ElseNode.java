@@ -3,6 +3,7 @@ package parser.tree.statements.ifStatement;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.statements.StatementNode;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,7 @@ public class ElseNode extends StatementNode {
     }
 
     @Override
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         if(getStatementList()!=null)
             for (StatementNode item: statementList ) {
                 item.validateSemantic();

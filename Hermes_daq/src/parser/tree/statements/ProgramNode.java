@@ -4,6 +4,7 @@ import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.interfaces.FunctionDeclaration;
 import parser.tree.symbolsTable.SymbolsTable;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class ProgramNode {
         return functionList;
     }
 
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         SymbolsTable.getInstance().pushNewContext();
         if(initial != null)
             initial.validateSemantic();

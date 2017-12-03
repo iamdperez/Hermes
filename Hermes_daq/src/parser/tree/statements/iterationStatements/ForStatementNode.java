@@ -12,6 +12,7 @@ import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.IntType;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class ForStatementNode extends IterationStatementNode {
     }
 
     @Override
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         firstExpression.validateSemantic();
         Type secondExp = secondExpression.evaluateSemantic();
         if(!(secondExpression instanceof RelationalOperator)){

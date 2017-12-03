@@ -2,6 +2,9 @@ package parser.tree.statements;
 
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
+import serialCommunication.SerialCommException;
+
+import java.io.IOException;
 
 public abstract class StatementNode {
     private final Location location;
@@ -14,7 +17,7 @@ public abstract class StatementNode {
         return location;
     }
 
-    public abstract void validateSemantic() throws SemanticException;
+    public abstract void validateSemantic() throws SemanticException, SerialCommException;
     public abstract void interpret() throws SemanticException;
 
     protected String getLineErrorMessage(String msg){

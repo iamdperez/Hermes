@@ -6,7 +6,10 @@ import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.statements.globalVariables.GlobalVariablesNode;
 import parser.tree.symbolsTable.SymbolsTable;
+import serialCommunication.SerialCommException;
+import serialCommunication.SerialCommunication;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +28,7 @@ public class InitialNode extends StatementNode {
     }
 
     @Override
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         List<DeviceInfo> dFiltered =  devicesInfo.stream().filter(o -> o.getDeviceName().equals(deviceModel))
                 .collect(Collectors.toList());
         if(dFiltered.size() <= 0){
@@ -33,6 +36,11 @@ public class InitialNode extends StatementNode {
                     .getLineErrorMessage("Device model is not supported for the platform",getLocation()));
         }
         SymbolsTable.getInstance().setDeviceInfo(dFiltered.get(0));
+        String device = SerialCommunication.getInstance().getArduinoModel();
+        if(device == null || !device.equals(SymbolsTable.getInstance().getDeviceInfo().getDeviceName())){
+            throw new SemanticException(ParserUtils.getInstance()
+                    .getLineErrorMessage("Device model is not supported for the platform",getLocation()));
+        }
         for(GlobalVariablesNode item: GlobalVariables){
             item.validateSemantic();
         }
