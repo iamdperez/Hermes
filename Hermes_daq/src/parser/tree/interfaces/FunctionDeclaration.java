@@ -7,5 +7,5 @@ import java.io.IOException;
 
 public interface FunctionDeclaration {
     void validateSemantic() throws SemanticException, SerialCommException;
-    void interpret() throws SemanticException;
+    void interpret() throws SemanticException, SerialCommException;
 }

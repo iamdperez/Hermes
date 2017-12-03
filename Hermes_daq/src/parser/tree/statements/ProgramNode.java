@@ -64,7 +64,7 @@ public class ProgramNode {
         }
     }
 
-    public void interpretCode() throws SemanticException {
+    public void interpretCode() throws SemanticException, SerialCommException {
         if(initial != null)
             initial.interpret();
         Optional<FunctionDeclaration> main = functionList.stream().filter( o -> o instanceof MainNode).findFirst();

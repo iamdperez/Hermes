@@ -65,7 +65,7 @@ public class WhileStatementNode extends IterationStatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         Value condition = getCondition().interpret();
         Looping l = new Looping();
         SymbolsTable.getInstance().pushLooping(l);

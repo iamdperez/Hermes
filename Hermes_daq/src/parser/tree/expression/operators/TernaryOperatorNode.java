@@ -9,6 +9,7 @@ import parser.tree.types.SetType;
 import parser.tree.types.Type;
 import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
+import serialCommunication.SerialCommException;
 
 public class TernaryOperatorNode extends ExpressionNode {
     private final ExpressionNode truePart;
@@ -23,7 +24,7 @@ public class TernaryOperatorNode extends ExpressionNode {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         Value trueValue = getTruePart().interpret();
         Value falseValue = getFalsePart().interpret();
         Value condition = getCondition().interpret();

@@ -7,6 +7,7 @@ import parser.tree.values.IntValue;
 import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.BinaryOperator;
+import serialCommunication.SerialCommException;
 
 public class DivOperatorNode extends BinaryOperator {
     public DivOperatorNode(Location location, ExpressionNode leftNode, ExpressionNode rightNode) {
@@ -14,7 +15,7 @@ public class DivOperatorNode extends BinaryOperator {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         Value left = getLeftNode().interpret();
         Value right = getRightNode().interpret();
         if((Integer)right.getValue() == 0)

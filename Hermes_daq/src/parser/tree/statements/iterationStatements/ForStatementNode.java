@@ -77,7 +77,7 @@ public class ForStatementNode extends IterationStatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         firstExpression.interpret();
         IntValue condition = (IntValue) secondExpression.interpret();
         Looping l = new Looping();

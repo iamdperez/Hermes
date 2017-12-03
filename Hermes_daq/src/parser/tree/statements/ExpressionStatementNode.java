@@ -3,6 +3,7 @@ package parser.tree.statements;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
+import serialCommunication.SerialCommException;
 
 public class ExpressionStatementNode extends StatementNode {
     private final ExpressionNode expressionNode;
@@ -23,7 +24,7 @@ public class ExpressionStatementNode extends StatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         expressionNode.interpret();
     }
 

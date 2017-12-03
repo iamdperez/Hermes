@@ -7,6 +7,7 @@ import parser.tree.values.IntValue;
 import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.BinaryOperator;
+import serialCommunication.SerialCommException;
 
 public class TimesOperatorNode extends BinaryOperator {
     public TimesOperatorNode(Location location, ExpressionNode leftNode, ExpressionNode rightNode) {
@@ -14,7 +15,7 @@ public class TimesOperatorNode extends BinaryOperator {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         Value left = getLeftNode().interpret();
         Value right = getRightNode().interpret();
         return new IntValue(((Integer)left.getValue()) * ((Integer)right.getValue()));

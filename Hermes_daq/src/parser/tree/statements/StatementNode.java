@@ -18,7 +18,7 @@ public abstract class StatementNode {
     }
 
     public abstract void validateSemantic() throws SemanticException, SerialCommException;
-    public abstract void interpret() throws SemanticException;
+    public abstract void interpret() throws SemanticException, SerialCommException;
 
     protected String getLineErrorMessage(String msg){
         return msg + " Line: "+

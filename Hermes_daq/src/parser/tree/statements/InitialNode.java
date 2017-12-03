@@ -47,7 +47,7 @@ public class InitialNode extends StatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         for(GlobalVariablesNode item: GlobalVariables){
             item.interpret();
         }

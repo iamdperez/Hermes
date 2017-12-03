@@ -39,7 +39,7 @@ public class ElseIfNode extends StatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         for (StatementNode item: statementList) {
             item.interpret();
         }

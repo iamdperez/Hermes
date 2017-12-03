@@ -59,7 +59,7 @@ public class IfStatementNode extends StatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         Value conditionV = condition.interpret();
         if((int)conditionV.getValue()!=0){
             for (StatementNode item: statementList) {

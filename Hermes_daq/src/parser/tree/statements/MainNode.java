@@ -39,7 +39,7 @@ public class MainNode extends StatementNode implements FunctionDeclaration {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         if(variables != null)
             variables.interpret();
         for(StatementNode item: statementList){
