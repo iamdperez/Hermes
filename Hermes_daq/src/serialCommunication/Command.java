@@ -1,0 +1,7 @@
+package serialCommunication;
+
+public enum  Command {
+    PIN_MODE_INPUT, PIN_MODE_OUTPUT, SET_VALUE_HIGH,
+    SET_VALUE_LOW, GET_VALUE, GET_ARDUINO_MODEL,
+    COMMAND_HEADER, COMMAND_TRAILER
+}
