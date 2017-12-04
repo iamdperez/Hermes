@@ -1,0 +1,16 @@
+{
+	"availableSerialCommunication": false,
+	"availableUiConsole": false,
+	"deviceInfoArrayList": [{
+		"deviceName": "Due",
+		"minPin": 0,
+		"maxPin": 40
+	},{
+		"deviceName": "uno",
+		"minPin": 0,
+		"maxPin": 13
+	}]
+}
+
+
+

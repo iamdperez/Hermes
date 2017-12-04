@@ -6,6 +6,7 @@ import parser.tree.Location;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -27,7 +28,7 @@ public class InLineExpressionNode extends ExpressionNode {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         for(ExpressionNode item: arguments){
             item.interpret();
         }

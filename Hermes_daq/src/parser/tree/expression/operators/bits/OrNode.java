@@ -7,6 +7,7 @@ import parser.tree.values.IntValue;
 import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.BinaryOperator;
+import serialCommunication.SerialCommException;
 
 public class OrNode extends BinaryOperator {
     public OrNode(Location location, ExpressionNode leftNode, ExpressionNode rightNode) {
@@ -14,7 +15,7 @@ public class OrNode extends BinaryOperator {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         Value right = getRightNode().interpret();
         Value left = getLeftNode().interpret();
         int result = (int)left.getValue() | (int)right.getValue();

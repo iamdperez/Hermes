@@ -10,6 +10,7 @@ import parser.tree.types.PinType;
 import parser.tree.types.SetType;
 import parser.tree.types.Type;
 import parser.tree.values.Value;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -30,7 +31,7 @@ public class IfStatementNode extends StatementNode {
     }
 
     @Override
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         Type conditionT = getCondition().evaluateSemantic();
         if(!(typeIsValid(conditionT))){
             throw new SemanticException(
@@ -58,7 +59,7 @@ public class IfStatementNode extends StatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         Value conditionV = condition.interpret();
         if((int)conditionV.getValue()!=0){
             for (StatementNode item: statementList) {

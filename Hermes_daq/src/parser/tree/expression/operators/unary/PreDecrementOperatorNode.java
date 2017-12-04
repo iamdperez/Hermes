@@ -8,6 +8,7 @@ import parser.tree.types.Type;
 import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.UnaryOperator;
+import serialCommunication.SerialCommException;
 
 public class PreDecrementOperatorNode extends UnaryOperator {
     public PreDecrementOperatorNode(Location location, ExpressionNode expression) {
@@ -15,7 +16,7 @@ public class PreDecrementOperatorNode extends UnaryOperator {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         IdNode id = (IdNode)getExpression();
         Value variableValue = SymbolsTable.getInstance().getVariableValue(id.getName(), id.getLocation());
         int value = (int)variableValue.getValue() - 1;

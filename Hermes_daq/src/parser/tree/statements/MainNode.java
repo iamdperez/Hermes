@@ -4,7 +4,9 @@ import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.interfaces.FunctionDeclaration;
 import parser.tree.symbolsTable.SymbolsTable;
+import serialCommunication.SerialCommException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainNode extends StatementNode implements FunctionDeclaration {
@@ -28,7 +30,7 @@ public class MainNode extends StatementNode implements FunctionDeclaration {
     }
 
     @Override
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         if(variables != null)
             variables.validateSemantic();
         for(StatementNode item: statementList){
@@ -37,7 +39,7 @@ public class MainNode extends StatementNode implements FunctionDeclaration {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         if(variables != null)
             variables.interpret();
         for(StatementNode item: statementList){

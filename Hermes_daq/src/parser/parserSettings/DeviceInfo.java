@@ -1,4 +1,4 @@
-package parser.deviceInfo;
+package parser.parserSettings;
 
 public class DeviceInfo {
     public DeviceInfo(){

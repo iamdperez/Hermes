@@ -9,6 +9,7 @@ import parser.tree.types.IntType;
 import parser.tree.types.PinType;
 import parser.tree.types.SetType;
 import parser.tree.types.Type;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -23,7 +24,7 @@ public class ElseIfNode extends StatementNode {
     }
 
     @Override
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         Type conditionT = getCondition().evaluateSemantic();
         if(!(typeIsValid(conditionT))){
             throw new SemanticException(
@@ -38,7 +39,7 @@ public class ElseIfNode extends StatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         for (StatementNode item: statementList) {
             item.interpret();
         }

@@ -10,6 +10,7 @@ import parser.tree.values.StringValue;
 import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.BinaryOperator;
+import serialCommunication.SerialCommException;
 
 public class PlusOperatorNode extends BinaryOperator {
     private String _returnValue;
@@ -18,14 +19,15 @@ public class PlusOperatorNode extends BinaryOperator {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         Value left = getLeftNode().interpret();
         Value right = getRightNode().interpret();
         switch (_returnValue){
             case "int":
                 return new IntValue(((Integer)left.getValue()) + ((Integer)right.getValue()));
-            case "string":
-                return new StringValue((String)left.getValue() + right.getValue());
+            case "string": {
+                return new StringValue( left.getValue().toString() + right.getValue().toString());
+            }
         }
         return null;
     }

@@ -19,13 +19,13 @@ import parser.tree.statements.globalVariables.*;
 import parser.tree.statements.iterationStatements.*;
 import parser.tree.statements.jumpStatements.*;
 import parser.tree.statements.ifStatement.*;
-import parser.deviceInfo.*;
+import parser.parserSettings.*;
 parser code {:
 
-    private ArrayList<DeviceInfo> devicesInfo;
-    public parser(Lexer lex, ComplexSymbolFactory sf, ArrayList<DeviceInfo> devicesInfo) {
+    private ParserSettings parserSettings;
+    public parser(Lexer lex, ComplexSymbolFactory sf, ParserSettings parserSettings) {
         super(lex,sf);
-        this.devicesInfo = devicesInfo;
+        this.parserSettings = parserSettings;
     }
 
     public void report_error(String message, Object info) {
@@ -59,7 +59,7 @@ terminal    NOT, NOT_OP, LPARENTHESIS, RPARENTHESIS, ASSIGNMENT_OP, SEMICOLON;
 
 terminal    MODULE, MODULE_END, INITIAL, INITIAL_END, MAIN, MAIN_END, IF, IF_END;
 terminal    WHILE, WHILE_END, FOR, FOR_END, FUNCTION, FUNCTION_END, PRINT, VAR;       
-terminal    PIN, DEVICE, ISTYPE, INPUT, OUTPUT, BREAK, RETURN, ELSE, HIGH,LOW;     
+terminal    PIN, DEVICE, ISTYPE, INPUT, OUTPUT, BREAK, RETURN, ELSE, HIGH,LOW, WAIT;     
 
 terminal    Integer     INT_LITERAL;
 terminal    String      STRING_LITERAL;
@@ -99,6 +99,7 @@ non terminal    JumpStatementNode                   jump_statement;
 non terminal    PrintStatementNode                  print_statement;
 non terminal    ArrayList<ElseIfNode>               opt_else_if; 
 non terminal    ElseNode                            opt_else; 
+non terminal    WaitStatementNode                   wait_statement; 
 start with program;
 
 /* expression */
@@ -288,12 +289,12 @@ assignment_operator ::= ASSIGNMENT_OP:ao
 /* statement */
 program ::= MODULE:m ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_END
     {: Location l = new Location(mleft,mright);
-        RESULT = new ProgramNode(l,i,ib,fl);:}
+        RESULT = new ProgramNode(l,i,ib,fl,parserSettings);:}
     ;
 
 initial_begin ::= INITIAL:i DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END
     {:  Location l = new Location(ileft,iright);
-        RESULT = new InitialNode(l,dm, gv, devicesInfo);:}
+        RESULT = new InitialNode(l,dm, gv);:}
     | /* empty */ {:RESULT = null;:}
     ;
 
@@ -375,6 +376,7 @@ statement ::= expression_statement:es {:RESULT = es;:}
     |   iteration_statement:is {:RESULT = is;:}
     |   jump_statement:js {:RESULT = js;:}
     |   print_statement:ps {:RESULT = ps;:}
+    |   wait_statement:ws {:RESULT = ws;:}
     ;
 
 print_statement ::= PRINT:p expression:e SEMICOLON
@@ -429,6 +431,7 @@ if_statements ::= expression_statement:es {:RESULT = es;:}
     |   iteration_statement:is {:RESULT = is;:}
     |   jump_statement:js {:RESULT = js;:}
     |   print_statement:ps {:RESULT = ps;:}
+    |   wait_statement:ws {:RESULT = ws;:}
     ;
 
 expression_statement ::= SEMICOLON:s 
@@ -437,4 +440,9 @@ expression_statement ::= SEMICOLON:s
     |   expression:e SEMICOLON
         {:  Location l = new Location(eleft,eright);
             RESULT = new ExpressionStatementNode(l,e);:}
+    ;
+
+wait_statement ::= WAIT:w INT_LITERAL:il SEMICOLON
+        {:  Location l = new Location(wleft,wright);
+            RESULT = new WaitStatementNode(l, il);:}
     ;       

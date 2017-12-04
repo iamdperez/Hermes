@@ -10,6 +10,7 @@ import parser.tree.types.IntType;
 import parser.tree.types.PinType;
 import parser.tree.types.Type;
 import parser.tree.values.PinValue;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -41,13 +42,12 @@ public class SetAssignationStatementNode extends GlobalVariablesNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         PinValue right = (PinValue) expression.interpret();
         for(IdNode item: idList){
             PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(item.getName(), item.getLocation());
             pv.setValue(right.getValue());
             SymbolsTable.getInstance().setVariableValue(item.getName(), pv);
-                /*TODO: set with serialCommunication value to Arduino*/
         }
     }
 
