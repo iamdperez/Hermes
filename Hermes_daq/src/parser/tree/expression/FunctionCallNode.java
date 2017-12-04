@@ -9,6 +9,7 @@ import parser.tree.types.IntType;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class FunctionCallNode extends ExpressionNode {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         FunctionSymbol fs = (FunctionSymbol)SymbolsTable.getInstance().getVariable(functionName.getName());
         SymbolsTable.getInstance().setVariableValue(functionName.getName(),ParserUtils.intValue);
         SymbolsTable.getInstance().pushNewContext();

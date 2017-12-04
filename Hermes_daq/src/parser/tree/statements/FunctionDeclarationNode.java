@@ -9,6 +9,7 @@ import parser.tree.symbolsTable.FunctionSymbol;
 import parser.tree.symbolsTable.OverloadedFunction;
 import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.symbolsTable.VarSymbol;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -53,7 +54,7 @@ public class FunctionDeclarationNode extends StatementNode implements FunctionDe
     }
 
     @Override
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         if(params != null){
             for(IdNode item: params){
                 SymbolsTable.getInstance().declareVariable(item.getName(),new VarSymbol());

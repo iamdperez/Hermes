@@ -9,6 +9,7 @@ import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;
 import parser.tree.expression.operators.UnaryOperator;
+import serialCommunication.SerialCommException;
 
 public class MinusNode extends UnaryOperator {
     public MinusNode(Location location) {
@@ -16,7 +17,7 @@ public class MinusNode extends UnaryOperator {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         if(getExpression() instanceof IdNode){
             IdNode id = (IdNode)getExpression();
             Value value = SymbolsTable.getInstance().getVariableValue(id.getName(), id.getLocation());

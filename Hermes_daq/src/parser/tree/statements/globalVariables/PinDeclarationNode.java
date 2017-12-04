@@ -45,7 +45,8 @@ public class PinDeclarationNode extends GlobalVariablesNode {
                 throw new SemanticException(
                         getLineErrorMessage("Variable `"+item.getName()+"` was declared before"));
             }else{
-                SymbolsTable.getInstance().declareVariable(item.getName(), new PinSymbol(pinList.get(i)));
+                SymbolsTable.getInstance().declareVariable(item.getName(),
+                        new PinSymbol(pinList.get(i),idList.get(i).getName()));
             }
         }
     }

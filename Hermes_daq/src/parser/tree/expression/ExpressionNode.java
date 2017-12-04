@@ -4,6 +4,7 @@ import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.types.Type;
 import parser.tree.values.Value;
+import serialCommunication.SerialCommException;
 
 public abstract class ExpressionNode {
 
@@ -11,7 +12,7 @@ public abstract class ExpressionNode {
     public ExpressionNode(Location location){
         this.location = location;
     }
-    public abstract Value interpret() throws SemanticException;
+    public abstract Value interpret() throws SemanticException, SerialCommException;
     public abstract Type evaluateSemantic() throws SemanticException;
     public Location getLocation() {
         return location;

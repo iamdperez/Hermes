@@ -7,6 +7,7 @@ import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class OrReductionNode extends ReductionOperators {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         Value firstItemVal = SymbolsTable.getInstance().getVariableValue(ids.get(0).getName(),ids.get(0).getLocation());
         int result = (int)firstItemVal.getValue();
         for(int i = 1; i < ids.size(); i++){

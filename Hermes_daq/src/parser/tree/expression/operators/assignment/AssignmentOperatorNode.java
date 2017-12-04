@@ -14,6 +14,7 @@ import parser.tree.values.Value;
 import parser.tree.interfaces.Variable;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.AssignmentOperator;
+import serialCommunication.SerialCommException;
 
 public class AssignmentOperatorNode extends AssignmentOperator {
 
@@ -26,7 +27,7 @@ public class AssignmentOperatorNode extends AssignmentOperator {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         Value rightValue = getRightNode().interpret();
         Object value = rightValue.getValue();
         IdNode id = (IdNode)getVariable();

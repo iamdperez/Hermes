@@ -20,7 +20,7 @@ public class PinLiteralNode extends LiteralNode {
     @Override
     public Value interpret() throws SemanticException {
         PinStatus ps = (PinStatus)getValue();
-        return new PinValue(ps == PinStatus.HIGH ? 1 : 0);
+        return new PinValue(ps == PinStatus.HIGH ? 1 : 0, ps == PinStatus.HIGH ? "HIGH" : "LOW" );
     }
 
     @Override

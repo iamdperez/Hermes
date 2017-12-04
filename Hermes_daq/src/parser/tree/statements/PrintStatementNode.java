@@ -6,6 +6,7 @@ import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.*;
+import serialCommunication.SerialCommException;
 
 public class PrintStatementNode extends StatementNode {
     private final ExpressionNode expression;
@@ -32,7 +33,7 @@ public class PrintStatementNode extends StatementNode {
 
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         System.out.println(getExpression().interpret().getValue());
         /*TODO print in ui console.*/
     }

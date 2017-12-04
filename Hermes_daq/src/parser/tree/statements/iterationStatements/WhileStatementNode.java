@@ -13,6 +13,7 @@ import parser.tree.types.SetType;
 import parser.tree.types.Type;
 import parser.tree.values.IntValue;
 import parser.tree.values.Value;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class WhileStatementNode extends IterationStatementNode {
     }
 
     @Override
-    public void validateSemantic() throws SemanticException {
+    public void validateSemantic() throws SemanticException, SerialCommException {
         Type condition = getCondition().evaluateSemantic();
         if(!(typeIsValid(condition))){
             throw new SemanticException(
@@ -64,7 +65,7 @@ public class WhileStatementNode extends IterationStatementNode {
     }
 
     @Override
-    public void interpret() throws SemanticException {
+    public void interpret() throws SemanticException, SerialCommException {
         Value condition = getCondition().interpret();
         Looping l = new Looping();
         SymbolsTable.getInstance().pushLooping(l);

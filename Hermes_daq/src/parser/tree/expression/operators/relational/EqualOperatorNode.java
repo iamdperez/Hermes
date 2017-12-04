@@ -9,6 +9,7 @@ import parser.tree.values.IntValue;
 import parser.tree.values.Value;
 import parser.tree.expression.ExpressionNode;
 import parser.tree.expression.operators.BinaryOperator;
+import serialCommunication.SerialCommException;
 
 public class EqualOperatorNode extends BinaryOperator implements RelationalOperator {
     public EqualOperatorNode(Location location, ExpressionNode leftNode, ExpressionNode rightNode) {
@@ -16,7 +17,7 @@ public class EqualOperatorNode extends BinaryOperator implements RelationalOpera
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         Value left = getLeftNode().interpret();
         Value right = getRightNode().interpret();
         int iLeft = (int)left.getValue();

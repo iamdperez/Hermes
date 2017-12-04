@@ -5,6 +5,7 @@ import parser.tree.interfaces.Symbol;
 import parser.tree.statements.globalVariables.IO;
 import parser.tree.types.Type;
 import parser.tree.values.Value;
+import serialCommunication.SerialCommException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ScopeContext {
         s.setValue(value);
     }
 
-    public Value getValue(String variableName) throws SemanticException {
+    public Value getValue(String variableName) throws SemanticException, SerialCommException {
         Symbol s = getVariable(variableName);
         return s.getValue();
     }
@@ -67,5 +68,10 @@ public class ScopeContext {
                     .filter(o -> o.getParams().size() == overloaded.getParams().size())
                     .collect(Collectors.toList());
         return of.size() > 0;
+    }
+
+    public int getPinNumber(String variableName){
+        PinSymbol ps = (PinSymbol)getVariable(variableName);
+        return ps.getPinNumber();
     }
 }
