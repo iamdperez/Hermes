@@ -95,6 +95,7 @@ device                  =       \'[A-Za-z][A-Za-z_0-9]*\'
 <YYINITIAL> "return"        { return symbol("return",sym.RETURN); }
 <YYINITIAL> "high"          { return symbol("high",sym.HIGH); }
 <YYINITIAL> "low"           { return symbol("low",sym.LOW); }
+<YYINITIAL> "wait"           { return symbol("wait",sym.WAIT); }
 
 
 
