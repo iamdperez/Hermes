@@ -6,7 +6,7 @@ import parser.tree.values.Value;
 public class PinType extends Type {
     @Override
     public Value getDefaultValue() {
-        return new PinValue(0);
+        return new PinValue(0, "");
     }
     @Override
     public String toString() {

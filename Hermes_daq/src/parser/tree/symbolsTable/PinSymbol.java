@@ -1,6 +1,7 @@
 package parser.tree.symbolsTable;
 
 import parser.ParserUtils;
+import parser.tree.expression.IdNode;
 import parser.tree.interfaces.Symbol;
 import parser.tree.statements.globalVariables.IO;
 import parser.tree.types.Type;
@@ -11,9 +12,10 @@ public class PinSymbol implements Symbol {
     private PinValue value;
     private final int pinNumber;
     private IO pinIO;
-
-    public PinSymbol(int pinNumber){
+    private String variableRef;
+    public PinSymbol(int pinNumber, String variableRef){
         this.pinNumber = pinNumber;
+        this.variableRef = variableRef;
     }
     @Override
     public Type getType() {
@@ -22,7 +24,7 @@ public class PinSymbol implements Symbol {
 
     @Override
     public Value getDefaultValue() {
-        value = new PinValue();
+        value = new PinValue(0,variableRef);
         return value;
     }
 
