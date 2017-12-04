@@ -8,6 +8,7 @@ import parser.tree.types.Type;
 import parser.tree.values.PinValue;
 import parser.tree.values.SetValue;
 import parser.tree.values.Value;
+import serialCommunication.SerialCommException;
 
 import java.util.ArrayList;
 
@@ -38,13 +39,16 @@ public class SetSymbol implements Symbol {
             }
         }catch (SemanticException e){
             v = 0;
+        } catch (SerialCommException e) {
+            e.printStackTrace();
+            v = 0;
         }
         value = new SetValue(v, setRef);
         return value;
     }
 
     @Override
-    public Value getValue() throws SemanticException {
+    public Value getValue() throws SemanticException, SerialCommException {
         value.updateValue();
         return value;
     }

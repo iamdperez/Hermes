@@ -6,6 +6,7 @@ import parser.tree.types.Type;
 import parser.tree.values.Value;
 import parser.tree.interfaces.Variable;
 import parser.tree.symbolsTable.SymbolsTable;
+import serialCommunication.SerialCommException;
 
 public class IdNode extends ExpressionNode implements Variable {
     private final String name;
@@ -16,7 +17,7 @@ public class IdNode extends ExpressionNode implements Variable {
     }
 
     @Override
-    public Value interpret() throws SemanticException {
+    public Value interpret() throws SemanticException, SerialCommException {
         return SymbolsTable.getInstance().getVariableValue(name,getLocation());
     }
 
