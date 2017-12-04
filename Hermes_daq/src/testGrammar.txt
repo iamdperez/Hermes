@@ -1,21 +1,31 @@
 module patito;
 initial
     device 'Due';
-    a, b, e,f pin 1,2, 3, 4;
-    a, b, e istype input;
-    f istype output;
-    d = [f, e]; 
+    a, b pin 10, 12;
+    a, b istype output;
     c = [a,b];
-    [a,e,f] = high;
 endinitial
 
 main
     var x;
-    x = 22;
-    terminado();
+    x = 0;
+    a = high;
+    b = high;
+    print a + " " + b;
+    wait 5000;
+    a = low;
+    b = low;
+    print a + " " + b;
+    wait 2000;
+    c = low;
+    print a + " "+ b;
+    wait 2000;
+    c = high
+    wait 2000;
+    c = low;
     print "Terminado";
 endmain
-
+/*
 function terminado()
     var x;
     for(x = 0; x < 11; x++)
@@ -43,6 +53,6 @@ endfunction
 
 function terminado2(a,b)
     return a > b;
-endfunction
+endfunction */
 
 endmodule
