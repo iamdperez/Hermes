@@ -17,12 +17,11 @@ main
     b = low;
     print a + " " + b;
     wait 2000;
-    c = low;
+    c = high;
     print a + " "+ b;
     wait 2000;
-    c = high
-    wait 2000;
     c = low;
+    wait 2000;
     print "Terminado";
 endmain
 /*

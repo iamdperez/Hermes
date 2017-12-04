@@ -1,6 +1,8 @@
 package parser.tree.statements;
 
+import parser.ParserUtils;
 import parser.exeptions.SemanticException;
+import parser.parserSettings.ParserSettings;
 import parser.tree.Location;
 import parser.tree.interfaces.FunctionDeclaration;
 import parser.tree.symbolsTable.SymbolsTable;
@@ -16,13 +18,14 @@ public class ProgramNode {
     private final String moduleName;
     private final InitialNode initial;
     private final ArrayList<FunctionDeclaration> functionList;
-
+    private final ParserSettings parserSettings;
     public ProgramNode(Location location, String moduleName,
-                       InitialNode initial, ArrayList<FunctionDeclaration> functionList ){
+                       InitialNode initial, ArrayList<FunctionDeclaration> functionList, ParserSettings parserSettings){
         this.location = location;
         this.moduleName = moduleName;
         this.initial = initial;
         this.functionList = functionList;
+        this.parserSettings = parserSettings;
     }
 
     public Location getLocation() {
@@ -42,6 +45,7 @@ public class ProgramNode {
     }
 
     public void validateSemantic() throws SemanticException, SerialCommException {
+        ParserUtils.getInstance().setParserSettings(parserSettings);
         SymbolsTable.getInstance().pushNewContext();
         if(initial != null)
             initial.validateSemantic();

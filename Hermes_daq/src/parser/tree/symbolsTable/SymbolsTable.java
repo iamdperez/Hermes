@@ -1,7 +1,7 @@
 package parser.tree.symbolsTable;
 
 import parser.ParserUtils;
-import parser.deviceInfo.DeviceInfo;
+import parser.parserSettings.DeviceInfo;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.interfaces.Symbol;

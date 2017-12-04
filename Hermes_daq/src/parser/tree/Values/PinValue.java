@@ -1,5 +1,6 @@
 package parser.tree.values;
 
+import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.symbolsTable.SymbolsTable;
 import serialCommunication.Command;
@@ -33,7 +34,7 @@ public class PinValue extends Value {
             value = 1;
         }else if(variableRef.equals("LOW")){
             value = 0;
-        }else {
+        }else if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()){
             int pinNumber = SymbolsTable.getInstance().getPinNumber(variableRef);
             boolean v = SerialCommunication.getInstance().getValue(pinNumber);
             value = v ? 1 : 0;
@@ -44,9 +45,11 @@ public class PinValue extends Value {
     @Override
     public void setValue(Object value) throws SemanticException, SerialCommException {
         this.value = (int)value > 0 ? 1 : 0;
-        int pinNumber = SymbolsTable.getInstance().getPinNumber(variableRef);
-        Command command = this.value == 0 ? Command.SET_VALUE_LOW : Command.SET_VALUE_HIGH;
-        SerialCommunication.getInstance().setValue(command,pinNumber);
+        if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()){
+            int pinNumber = SymbolsTable.getInstance().getPinNumber(variableRef);
+            Command command = this.value == 0 ? Command.SET_VALUE_LOW : Command.SET_VALUE_HIGH;
+            SerialCommunication.getInstance().setValue(command,pinNumber);
+        }
     }
 
     @Override

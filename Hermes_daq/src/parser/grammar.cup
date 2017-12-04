@@ -19,13 +19,13 @@ import parser.tree.statements.globalVariables.*;
 import parser.tree.statements.iterationStatements.*;
 import parser.tree.statements.jumpStatements.*;
 import parser.tree.statements.ifStatement.*;
-import parser.deviceInfo.*;
+import parser.parserSettings.*;
 parser code {:
 
-    private ArrayList<DeviceInfo> devicesInfo;
-    public parser(Lexer lex, ComplexSymbolFactory sf, ArrayList<DeviceInfo> devicesInfo) {
+    private ParserSettings parserSettings;
+    public parser(Lexer lex, ComplexSymbolFactory sf, ParserSettings parserSettings) {
         super(lex,sf);
-        this.devicesInfo = devicesInfo;
+        this.parserSettings = parserSettings;
     }
 
     public void report_error(String message, Object info) {
@@ -289,12 +289,12 @@ assignment_operator ::= ASSIGNMENT_OP:ao
 /* statement */
 program ::= MODULE:m ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_END
     {: Location l = new Location(mleft,mright);
-        RESULT = new ProgramNode(l,i,ib,fl);:}
+        RESULT = new ProgramNode(l,i,ib,fl,parserSettings);:}
     ;
 
 initial_begin ::= INITIAL:i DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END
     {:  Location l = new Location(ileft,iright);
-        RESULT = new InitialNode(l,dm, gv, devicesInfo);:}
+        RESULT = new InitialNode(l,dm, gv);:}
     | /* empty */ {:RESULT = null;:}
     ;
 

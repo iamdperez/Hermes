@@ -48,7 +48,6 @@ public class SetAssignationStatementNode extends GlobalVariablesNode {
             PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(item.getName(), item.getLocation());
             pv.setValue(right.getValue());
             SymbolsTable.getInstance().setVariableValue(item.getName(), pv);
-                /*TODO: set with serialCommunication value to Arduino*/
         }
     }
 

@@ -1,5 +1,6 @@
 package parser.tree.values;
 
+import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.expression.IdNode;
 import parser.tree.symbolsTable.SetSymbol;
@@ -58,10 +59,11 @@ public class SetValue extends Value {
             PinValue pv = (PinValue) SymbolsTable.getInstance().getVariableValue(item.getName(), item.getLocation());
             pv.setValue(this.value);
             SymbolsTable.getInstance().setVariableValue(item.getName(), pv);
-            int pinNumber = SymbolsTable.getInstance().getPinNumber(item.getName());
-            Command command = this.value == 0 ? Command.SET_VALUE_LOW : Command.SET_VALUE_HIGH;
-            SerialCommunication.getInstance().setValue(command,pinNumber);
-                /*TODO: set with serialCommunication value to Arduino*/
+            if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()){
+                int pinNumber = SymbolsTable.getInstance().getPinNumber(item.getName());
+                Command command = this.value == 0 ? Command.SET_VALUE_LOW : Command.SET_VALUE_HIGH;
+                SerialCommunication.getInstance().setValue(command,pinNumber);
+            }
         }
     }
 
