@@ -6,6 +6,9 @@ import parser.tree.expression.IdNode;
 import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.PinType;
 import parser.tree.types.Type;
+import serialCommunication.Command;
+import serialCommunication.SerialCommException;
+import serialCommunication.SerialCommunication;
 
 import java.util.ArrayList;
 
@@ -35,8 +38,14 @@ public class PinDefinitionNode extends GlobalVariablesNode {
     }
 
     @Override
-    public void interpret() {
-        //do nothing
+    public void interpret() throws SemanticException, SerialCommException {
+        for (IdNode item: idList) {
+            int pinNumber = SymbolsTable.getInstance().getPinNumber(item.getName());
+            Command command = IO == parser.tree.statements.globalVariables.IO.INPUT
+                    ? Command.PIN_MODE_INPUT
+                    : Command.PIN_MODE_OUTPUT;
+            SerialCommunication.getInstance().pinMode(command,pinNumber);
+        }
     }
 
     public ArrayList<IdNode> getIdList() {
