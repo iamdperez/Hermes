@@ -25,8 +25,9 @@ public class PlusOperatorNode extends BinaryOperator {
         switch (_returnValue){
             case "int":
                 return new IntValue(((Integer)left.getValue()) + ((Integer)right.getValue()));
-            case "string":
-                return new StringValue((String)left.getValue() + right.getValue());
+            case "string": {
+                return new StringValue( left.getValue().toString() + right.getValue().toString());
+            }
         }
         return null;
     }
