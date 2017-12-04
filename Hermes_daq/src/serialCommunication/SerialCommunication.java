@@ -1,7 +1,6 @@
 package serialCommunication;
 
 import com.fazecast.jSerialComm.SerialPort;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -10,7 +9,7 @@ public final class SerialCommunication {
     private InputStream _inputStream;
     private SerialPort _serialPort;
     private static SerialCommunication instance;
-
+    private final static int timeoutMillis = 30000;
     public static synchronized SerialCommunication getInstance() throws SerialCommException {
         if (instance == null) {
             instance =  new SerialCommunication();
@@ -40,9 +39,13 @@ public final class SerialCommunication {
         try {
             _outputStream.write(message);
             int incomingAvailable = _inputStream.available();
+            long maxTimeMillis = System.currentTimeMillis() + timeoutMillis;
             while (incomingAvailable == 0){
                 Thread.sleep(20);
                 incomingAvailable = _inputStream.available();
+                if(System.currentTimeMillis() < maxTimeMillis && incomingAvailable == 0){
+                    throw new SerialCommException("TIMEOUT: Is not possible send command `"+command+"` to arduino device.");
+                }
              }
             byte [] response = new byte[incomingAvailable];
             _inputStream.read(response);
@@ -59,14 +62,23 @@ public final class SerialCommunication {
 
     public void pinMode(Command pinModeType, int pinNumber) throws SerialCommException {
         byte [] result = sendCommand(pinModeType, pinNumber);
+        if(result[0] == 3){
+            throw new SerialCommException("Error with command `"+pinModeType+"` for pinNumber `"+pinNumber+"`");
+        }
     }
 
     public void setValue(Command valueType, int pinNumber) throws SerialCommException {
         byte [] result = sendCommand(valueType, pinNumber);
+        if(result[0] == 3){
+            throw new SerialCommException("Error with command `"+valueType+"` for pinNumber `"+pinNumber+"`");
+        }
     }
 
     public boolean getValue(int pinNumber) throws SerialCommException {
         byte [] result = sendCommand(Command.GET_VALUE, pinNumber);
+        if(result[0] == 3){
+            throw new SerialCommException("Error with command `GET_VALUE` for pinNumber `"+pinNumber+"`");
+        }
         return result[0] != 0;
     }
 
