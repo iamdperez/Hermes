@@ -49,9 +49,9 @@ public class CodeEditor {
 
     private CodeArea codeArea;
     private ExecutorService executor;
+    private StackPane editorArea;
 
-
-    public StackPane getEditorArea() {
+    public CodeEditor(){
         executor = Executors.newSingleThreadExecutor();
         codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -69,8 +69,11 @@ public class CodeEditor {
                     }
                 })
                 .subscribe(this::applyHighlighting);
-        return new StackPane(new VirtualizedScrollPane<>(codeArea));
+        editorArea =  new StackPane(new VirtualizedScrollPane<>(codeArea));
+    }
 
+    public StackPane getEditorArea() {
+        return editorArea;
     }
 
     private Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
@@ -97,15 +100,15 @@ public class CodeEditor {
         while(matcher.find()) {
             String styleClass =
                     matcher.group("KEYWORD") != null ? "keyword" :
-                            matcher.group("PAREN") != null ? "paren" :
-                                    matcher.group("BRACE") != null ? "brace" :
-                                            matcher.group("BRACKET") != null ? "bracket" :
-                                                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                                                            matcher.group("STRING") != null ? "string" :
-                                                                    matcher.group("COMMENT") != null ? "comment" :
-                                                                            matcher.group("DEVICE") != null ? "device" :
-                                                                                    matcher.group("NUMBER") != null ? "number" :
-                                                                            null; /* never happens */ assert styleClass != null;
+                    matcher.group("PAREN") != null ? "paren" :
+                    matcher.group("BRACE") != null ? "brace" :
+                    matcher.group("BRACKET") != null ? "bracket" :
+                    matcher.group("SEMICOLON") != null ? "semicolon" :
+                    matcher.group("STRING") != null ? "string" :
+                    matcher.group("COMMENT") != null ? "comment" :
+                    matcher.group("DEVICE") != null ? "device" :
+                    matcher.group("NUMBER") != null ? "number" :
+                    null; /* never happens */ assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();

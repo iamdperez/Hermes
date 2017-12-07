@@ -1,5 +1,6 @@
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -8,9 +9,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import static javafx.application.Platform.exit;
+
 public class Main extends Application {
     private final int windowsHeight = 768;
     private final int windowsWidth = 1366;
+    private CodeEditor codeEditor = new CodeEditor();
+
     public static void main(String[] args){
         launch(args);
     }
@@ -18,7 +23,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Hermes DAQ");
-
         /*======= ui area ========*/
         BorderPane border = new BorderPane();
         border.setMinSize(windowsWidth,windowsHeight);
@@ -36,66 +40,15 @@ public class Main extends Application {
         scene.getStylesheets().add(CodeEditor.class.getResource("/resources/uiStyle.css").toExternalForm());
         primaryStage.setScene(scene);
         //        primaryStage.setMaximized(true);
+        primaryStage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
         primaryStage.show();
     }
 
-    private static final String sampleCode = "module patito;\n" +
-            "initial\n" +
-            "    device 'Due';\n" +
-            "    a, b pin 10, 12;\n" +
-            "    a, b istype output;\n" +
-            "    c = [a,b];\n" +
-            "endinitial\n" +
-            "\n" +
-            "main\n" +
-            "    var x;\n" +
-            "    x = 0;\n" +
-            "    a = high;\n" +
-            "    b = high;\n" +
-            "    print a + \" \" + b;\n" +
-            "    wait 5000;\n" +
-            "    a = low;\n" +
-            "    b = low;\n" +
-            "    print a + \" \" + b;\n" +
-            "    wait 2000;\n" +
-            "    c = high;\n" +
-            "    print a + \" \"+ b;\n" +
-            "    wait 2000;\n" +
-            "    c = low;\n" +
-            "    wait 2000;\n" +
-            "    print \"Terminado\";\n" +
-            "endmain\n" +
-            "\n" +
-            "function terminado()\n" +
-            "    var x;\n" +
-            "    for(x = 0; x < 11; x++)\n" +
-            "        if(x%2==0)\n" +
-            "            print \"x es par valor= \" + x;\n" +
-            "        endif\n" +
-            "    endfor\n" +
-            "    print \"llamando terminado 2\";\n" +
-            "    terminado2(10);\n" +
-            "endfunction\n" +
-            "\n" +
-            "function terminado2(a)\n" +
-            "    var x;\n" +
-            "    x =0;\n" +
-            "    while (x < a)\n" +
-            "        if(x == 5)\n" +
-            "            print \"x llego a 5\";\n" +
-            "            break;\n" +
-            "        endif\n" +
-            "        print x;\n" +
-            "        x++;\n" +
-            "    endwhile\n" +
-            "    print \"2 es mayo que 5 = \"+(terminado2(2,5) ? 2: 5);\n" +
-            "endfunction\n" +
-            "\n" +
-            "function terminado2(a,b)\n" +
-            "    return a > b;\n" +
-            "endfunction \n" +
-            "\n" +
-            "endmodule";
+
+
     private HBox addWorkSpaceTabsCenter() {
         HBox hb = new HBox();
         hb.setPadding(new Insets(10));
@@ -103,10 +56,7 @@ public class Main extends Application {
 
         TabPane tabPane = new TabPane();
         Tab code = new Tab("Code");
-
-        CodeEditor codeEditor = new CodeEditor();
         StackPane codeView = codeEditor.getEditorArea();
-        codeEditor.setText(sampleCode);
         HBox hbox = new HBox();
         hbox.getChildren().add(codeView);
         hbox.setAlignment(Pos.CENTER);
@@ -165,7 +115,7 @@ public class Main extends Application {
         Menu menuFile = new Menu("File");
         MenuItem openProject = new MenuItem("Open project");
         openProject.setOnAction(actionEvent -> {
-            // openFolder code
+            
         });
 
         menuFile.getItems().addAll(openProject);
