@@ -34,8 +34,13 @@ public class PrintStatementNode extends StatementNode {
 
     @Override
     public void interpret() throws SemanticException, SerialCommException {
-        System.out.println(getExpression().interpret().getValue());
-        /*TODO print in ui console.*/
+        if(ParserUtils.getInstance().getParserSettings().isAvailableUiConsole()){
+            String val = ParserUtils.getInstance().getUiConsole().getText();
+            val += "\r\n"+getExpression().interpret().getValue();
+            ParserUtils.getInstance().getUiConsole().setText(val);
+        }else{
+            System.out.println(getExpression().interpret().getValue());
+        }
     }
 
     public ExpressionNode getExpression() {

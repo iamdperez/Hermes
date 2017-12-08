@@ -19,6 +19,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import parser.parserSettings.ParserSettings;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -35,13 +36,21 @@ public class Main extends Application {
     private String _currentProjectPath;
     private ProjectStructure _currentProjectStructure;
     private TreeItem<String> _rootTreeVItem;
+    private TextArea _consoleArea;
+    private ParserSettings _parserSettings;
+    private  ParserCode parserCode;
 
     public Main() throws IOException {
         codeEditor = new CodeEditor();
         Gson gSon = new Gson();
+
         Type listType = new TypeToken<Map<String, String>>() {
         }.getType();
         icons = gSon.fromJson(getIconJson(), listType);
+
+        Type parserSettingsType = new TypeToken<ParserSettings>(){}.getType();
+        _parserSettings = gSon.fromJson(
+                readFile("src/resources/parserSettings.json"), parserSettingsType);
     }
 
     public static void main(String[] args) {
@@ -123,14 +132,17 @@ public class Main extends Application {
     }
 
     private HBox addConsoleBottom() {
-        TextArea textArea = new TextArea();
-
+        _consoleArea = new TextArea();
+        _consoleArea.setPrefRowCount(10);
+        _consoleArea.setPrefColumnCount(100);
+        _consoleArea.setWrapText(true);
         HBox hb = new HBox();
         hb.setPadding(new Insets(10, 10, 10, 10));
         hb.setAlignment(Pos.CENTER);
         hb.setSpacing(10);
-        hb.getChildren().addAll(textArea);
-        HBox.setHgrow(textArea, Priority.ALWAYS);
+        hb.getChildren().addAll(_consoleArea);
+        HBox.setHgrow(_consoleArea, Priority.ALWAYS);
+
         return hb;
     }
 
@@ -268,6 +280,8 @@ public class Main extends Application {
             String code = readFile(_currentProjectPath+"/"
                     +_currentProjectStructure.getCodeFile()+".hc",true);
             codeEditor.setText(code);
+            parserCode = new ParserCode(_currentProjectPath+"/"
+                    +_currentProjectStructure.getCodeFile()+".hc", _parserSettings, _consoleArea );
             in.close();
             fileIn.close();
         } catch (Exception ex) {
