@@ -1,0 +1,5 @@
+module %s;
+    initial
+        device '';
+    endinitial
+endmodule

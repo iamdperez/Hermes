@@ -1,0 +1,55 @@
+.keyword {
+    -fx-fill: #3f00ff;
+    -fx-font-weight: bold;
+}
+.semicolon {
+    -fx-fill: #b3532c;
+    -fx-font-weight: bold;
+}
+.paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.bracket {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.string {
+    -fx-fill: #ab1515;
+}
+
+.comment {
+    -fx-fill: #3f8000;
+}
+
+.paragraph-box:has-caret {
+    -fx-background-color: #f2f9fc;
+}
+
+.device {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+
+.number {
+    -fx-fill: teal;
+}
+
+.button {
+    -fx-padding: 5;
+    -fx-border-style: none;
+    -fx-border-width: 0;
+    -fx-border-insets: 0;
+    -fx-background-color: transparent;
+}
+.button .svg {
+    -fx-fill: -fill;
+}
+
+.button:hover .svg {
+    -fx-fill: -hover-fill;
+}
