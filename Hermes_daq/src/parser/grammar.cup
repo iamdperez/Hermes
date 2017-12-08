@@ -20,6 +20,7 @@ import parser.tree.statements.iterationStatements.*;
 import parser.tree.statements.jumpStatements.*;
 import parser.tree.statements.ifStatement.*;
 import parser.parserSettings.*;
+import javafx.scene.control.TextArea;
 parser code {:
 
     private ParserSettings parserSettings;
@@ -43,13 +44,12 @@ parser code {:
             }
         }
         m.append(" : "+message);
-        System.err.println(m);
+        console.appendText("\r\n" + m.toString());
     }
 
 
     public void report_fatal_error(String message, Object info) {
         report_error(message, info);
-        System.exit(1);
     }
 :};
 

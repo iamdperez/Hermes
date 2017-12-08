@@ -1,4 +1,4 @@
-module %s;
+module {{moduleName}};
     initial
         device '';
     endinitial

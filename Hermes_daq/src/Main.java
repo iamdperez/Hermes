@@ -20,11 +20,14 @@ import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import parser.parserSettings.ParserSettings;
+import parser.tree.statements.ProgramNode;
 
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 
 
@@ -101,7 +104,7 @@ public class Main extends Application {
         Tab design = new Tab("Design");
 
         tabPane.getTabs().addAll(code, design);
-
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         hb.getChildren().addAll(tabPane);
         HBox.setHgrow(tabPane, Priority.ALWAYS);
         return hb;
@@ -159,7 +162,7 @@ public class Main extends Application {
 
         Menu menuFile = getMenuFile(stage);
 
-        Menu menuBuild = new Menu("Build");
+        Menu menuBuild = getMenuBuild(stage);
 
         menuBar.getMenus().addAll(menuFile, menuBuild);
 
@@ -169,6 +172,35 @@ public class Main extends Application {
         hb.getChildren().addAll(menuBar);
         HBox.setHgrow(menuBar, Priority.ALWAYS);
         return hb;
+    }
+
+    private Menu getMenuBuild(Stage stage) {
+        Menu menuBuild = new Menu("Build");
+        MenuItem run = new MenuItem("Run",
+                getSvgIcon("play", "green", "darkgreen"));
+        run.setOnAction(actionEvent -> {
+            try {
+                _consoleArea.clear();
+                _consoleArea.setText("Compiling "+ LocalDateTime.now());
+                saveCode();
+                ProgramNode program = parserCode.getAST();
+                _consoleArea.appendText("\r\nprogram is running");
+                program.interpretCode();
+                _consoleArea.appendText("\r\nProgram finished...");
+            } catch (Exception e) {
+                _consoleArea.appendText("\r\n" + e.toString());
+                //TODO: show error
+            }
+        });
+
+        MenuItem stop = new MenuItem("Stop",
+                getSvgIcon("stop", "#D46354", "#D46354"));
+        stop.setOnAction(actionEvent -> {
+            //TODO stop button
+        });
+
+        menuBuild.getItems().addAll(run,stop);
+        return menuBuild;
     }
 
     private Menu getMenuFile(Stage stage) {
@@ -235,7 +267,7 @@ public class Main extends Application {
     }
 
     private void writeCodeFile(String filePath) throws IOException {
-        String content = readFile("src/resources/projectFormat.txt");
+        String content = readFile("src/resources/projectFormat.txt",true);
         Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
     }
 
@@ -262,6 +294,7 @@ public class Main extends Application {
     private void openFile(File file) {
         try {
             FileInputStream fileIn = new FileInputStream(file.getAbsolutePath());
+            String p = file.getPath();
             String path = file.getAbsolutePath().substring(0, file.getAbsolutePath().indexOf(file.getName()));
             _currentProjectPath = path;
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -280,8 +313,8 @@ public class Main extends Application {
             String code = readFile(_currentProjectPath+"/"
                     +_currentProjectStructure.getCodeFile()+".hc",true);
             codeEditor.setText(code);
-            parserCode = new ParserCode(_currentProjectPath+"/"
-                    +_currentProjectStructure.getCodeFile()+".hc", _parserSettings, _consoleArea );
+            parserCode = new ParserCode(Paths.get(_currentProjectPath + "\\"
+                    +_currentProjectStructure.getCodeFile()+".hc").toString(), _parserSettings, _consoleArea );
             in.close();
             fileIn.close();
         } catch (Exception ex) {
