@@ -4,7 +4,6 @@ import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
-import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.*;
 import serialCommunication.SerialCommException;
 

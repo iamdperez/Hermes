@@ -1,8 +1,11 @@
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import graph.Graph;
+import graph.StateProperties;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingNode;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +25,7 @@ import javafx.stage.Stage;
 import parser.parserSettings.ParserSettings;
 import parser.tree.statements.ProgramNode;
 
+import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -42,9 +46,14 @@ public class Main extends Application {
     private TextArea _consoleArea;
     private ParserSettings _parserSettings;
     private  ParserCode parserCode;
+    private Graph _graph;
 
     public Main() throws IOException {
         codeEditor = new CodeEditor();
+        _graph = new Graph();
+        StateProperties st = new StateProperties();
+        st.setStateId("testing");
+        _graph.AddState(st);
         Gson gSon = new Gson();
 
         Type listType = new TypeToken<Map<String, String>>() {
@@ -101,7 +110,13 @@ public class Main extends Application {
         hbox.setAlignment(Pos.CENTER);
         HBox.setHgrow(codeView, Priority.ALWAYS);
         code.setContent(hbox);
+
         Tab design = new Tab("Design");
+        BorderPane content = new BorderPane();
+        SwingNode sn = new SwingNode();
+        sn.setContent(_graph.getGraphComponent());
+        content.setCenter(sn);
+        design.setContent(content);
 
         tabPane.getTabs().addAll(code, design);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -237,7 +252,7 @@ public class Main extends Application {
         });
 
         MenuItem saveProject = new MenuItem("Save Project",
-                getSvgIcon("floppy-disk", "blue", "darkblue"));
+                getSaveIcon());
         saveProject.setOnAction(actionEvent -> {
             saveCode();
         });
@@ -327,14 +342,35 @@ public class Main extends Application {
                 createPath(icons.get(iconName), color, hoverColor)
         );
         Bounds bounds = svg.getBoundsInParent();
-        double scale = Math.min(20 / bounds.getWidth(), 20 / bounds.getHeight());
+        double scale = Math.min(10 / bounds.getWidth(), 10 / bounds.getHeight());
         svg.setScaleX(scale);
         svg.setScaleY(scale);
 
         Button btn = new Button();
         btn.setGraphic(svg);
-        btn.setMaxSize(20, 20);
-        btn.setMinSize(20, 20);
+        btn.setMaxSize(10, 10);
+        btn.setMinSize(10, 10);
+        btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        return btn;
+    }
+
+    private Button getSaveIcon(){
+        Group svg = new Group(
+                createPath(icons.get("save-1"),"#324d5b","#324d5b"),
+                createPath(icons.get("save-2"),"#ccd0d2","#ccd0d2"),
+                createPath(icons.get("save-3"),"#e4e7e7","#e4e7e7"),
+                createPath(icons.get("save-4"),"#2b414d","#2b414d"),
+                createPath(icons.get("save-5"),"#ccd0d2","#ccd0d2")
+        );
+        Bounds bounds = svg.getBoundsInParent();
+        double scale = Math.min(10 / bounds.getWidth(), 10 / bounds.getHeight());
+        svg.setScaleX(scale);
+        svg.setScaleY(scale);
+
+        Button btn = new Button();
+        btn.setGraphic(svg);
+        btn.setMaxSize(10, 10);
+        btn.setMinSize(10, 10);
         btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         return btn;
     }
