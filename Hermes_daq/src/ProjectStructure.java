@@ -5,9 +5,10 @@ public class ProjectStructure implements Serializable {
 
     }
 
-    public ProjectStructure(String code, String ui) {
+    public ProjectStructure(String code, String ui, String projectName) {
         codeFile = code;
         uiFile = ui;
+        this.projectName = projectName;
     }
 
     public String getUiFile() {
@@ -28,5 +29,13 @@ public class ProjectStructure implements Serializable {
 
     private String uiFile;
     private String codeFile;
+    private String projectName;
 
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
 }

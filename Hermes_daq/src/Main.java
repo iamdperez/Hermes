@@ -1,11 +1,8 @@
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sun.javafx.binding.StringFormatter;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +20,6 @@ import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -36,6 +32,9 @@ public class Main extends Application {
     private final int windowsWidth = 1366;
     private CodeEditor codeEditor;
     private final Map<String, String> icons;
+    private String _currentProjectPath;
+    private ProjectStructure _currentProjectStructure;
+    private TreeItem<String> _rootTreeVItem;
 
     public Main() throws IOException {
         codeEditor = new CodeEditor();
@@ -109,12 +108,10 @@ public class Main extends Application {
     }
 
     private VBox addTreeViewLeft() {
-        TreeItem<String> rootItem = new TreeItem<>("Project name");
-        rootItem.getChildren().addAll(new TreeItem<>("Test"));
-
-        rootItem.setExpanded(true);
-        TreeView<String> treeView = new TreeView<>(rootItem);
-
+        _rootTreeVItem = new TreeItem<>("Project name",
+                getSvgIcon("folder","orange","darkorange"));
+        _rootTreeVItem.setExpanded(true);
+        TreeView<String> treeView = new TreeView<>(_rootTreeVItem);
 
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(10));
@@ -148,39 +145,7 @@ public class Main extends Application {
     private HBox addMenuTop(Stage stage) {
         MenuBar menuBar = new MenuBar();
 
-        Menu menuFile = new Menu("File");
-
-        MenuItem openProject = new MenuItem("Open project",
-                getSvgIcon("folder-open", "orange", "darkorange"));
-        openProject.setOnAction(actionEvent -> {
-            final FileChooser fileChooser = new FileChooser();
-            configureFileChooser(fileChooser);
-            File file = fileChooser.showOpenDialog(stage);
-            if (file != null) {
-                openFile(file);
-            }
-        });
-
-        MenuItem newProject = new MenuItem("New Project",
-                getSvgIcon("folder-add", "orange", "darkorange"));
-        newProject.setOnAction(actionEvent -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save project");
-            File file = fileChooser.showSaveDialog(stage);
-            if (file != null) {
-                try {
-                    file.mkdir();
-                    ProjectStructure ps = new ProjectStructure("code","ui");
-                    writeFileObject(file, ".hdaq", ps);
-
-                    writeCodeFile(file.getAbsolutePath());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        menuFile.getItems().addAll(openProject, newProject);
+        Menu menuFile = getMenuFile(stage);
 
         Menu menuBuild = new Menu("Build");
 
@@ -194,36 +159,115 @@ public class Main extends Application {
         return hb;
     }
 
+    private Menu getMenuFile(Stage stage) {
+        Menu menuFile = new Menu("File");
+
+        MenuItem openProject = new MenuItem("Open project",
+                getSvgIcon("folder-open", "orange", "darkorange"));
+        openProject.setOnAction(actionEvent -> {
+            final FileChooser fileChooser = new FileChooser();
+            configureFileChooser(fileChooser, "Open Project");
+            File file = fileChooser.showOpenDialog(stage);
+            if (file != null) {
+                openFile(file);
+            }
+        });
+
+        MenuItem newProject = new MenuItem("New Project",
+                getSvgIcon("folder-add", "orange", "darkorange"));
+        newProject.setOnAction(actionEvent -> {
+            FileChooser fileChooser = new FileChooser();
+            configureFileChooser(fileChooser, "Save project");
+            File file = fileChooser.showSaveDialog(stage);
+            if (file != null) {
+                try {
+                    file.mkdir();
+                    ProjectStructure ps = new ProjectStructure("code", "ui", file.getName());
+                    writeFileObject(file, ".hdaq", ps);
+
+                    writeCodeFile(file.getAbsolutePath());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        MenuItem saveProject = new MenuItem("Save Project",
+                getSvgIcon("floppy-disk", "blue", "darkblue"));
+        saveProject.setOnAction(actionEvent -> {
+            saveCode();
+        });
+
+        menuFile.getItems().addAll(openProject, newProject, saveProject);
+        return menuFile;
+    }
+
+    private void saveCode() {
+        try {
+
+            String content = codeEditor.getText();
+            File file = new File(_currentProjectPath
+                    +"/"+_currentProjectStructure.getCodeFile()+".hc");
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(content);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void writeCodeFile(String filePath) throws IOException {
         String content = readFile("src/resources/projectFormat.txt");
-        Files.write(Paths.get(filePath+"/code.hc"), content.getBytes());
+        Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
     }
 
     private void writeFileObject(File file, String extension, Object object) throws IOException {
         FileOutputStream fileOut = new FileOutputStream(
-                file.getAbsolutePath()+"/"+file.getName()+extension);
+                file.getAbsolutePath() + "/" + file.getName() + extension);
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(object);
         out.close();
         fileOut.close();
     }
 
-    private void configureFileChooser(final FileChooser fileChooser) {
-        fileChooser.setTitle("Open Project");
+    private void configureFileChooser(final FileChooser fileChooser, String title) {
+        fileChooser.setTitle(title);
         fileChooser.setInitialDirectory(
                 new File(System.getProperty("user.home"))
         );
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Hermes_Project", "*.hdaq")
-        );
+        if (!title.equals("Save project"))
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Hermes_Project", "*.hdaq")
+            );
     }
 
     private void openFile(File file) {
         try {
             FileInputStream fileIn = new FileInputStream(file.getAbsolutePath());
-            System.out.println(file.getName());
+            String path = file.getAbsolutePath().substring(0, file.getAbsolutePath().indexOf(file.getName()));
+            _currentProjectPath = path;
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            ProjectStructure ps = (ProjectStructure) in.readObject();
+            _currentProjectStructure = (ProjectStructure) in.readObject();
+
+            _rootTreeVItem.setValue(_currentProjectStructure.getProjectName());
+            TreeItem<String> codeItem = new TreeItem<>(_currentProjectStructure.getCodeFile(),
+                    getSvgIcon("file","blue","darkblue"));
+            _rootTreeVItem.getChildren().addAll(codeItem);
+
+            _rootTreeVItem.setValue(_currentProjectStructure.getProjectName());
+            TreeItem<String> uiItem = new TreeItem<>(_currentProjectStructure.getUiFile(),
+                    getSvgIcon("uiApp","red","darkred"));
+            _rootTreeVItem.getChildren().addAll(uiItem);
+
+            String code = readFile(_currentProjectPath+"/"
+                    +_currentProjectStructure.getCodeFile()+".hc",true);
+            codeEditor.setText(code);
             in.close();
             fileIn.close();
         } catch (Exception ex) {
@@ -242,8 +286,8 @@ public class Main extends Application {
 
         Button btn = new Button();
         btn.setGraphic(svg);
-        btn.setMaxSize(30, 30);
-        btn.setMinSize(30, 30);
+        btn.setMaxSize(20, 20);
+        btn.setMinSize(20, 20);
         btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         return btn;
     }
@@ -262,9 +306,13 @@ public class Main extends Application {
         return readFile("src/resources/icons.json");
     }
 
-    private String readFile(String filePath) throws IOException {
+    private String readFile(String filePath, boolean eof) throws IOException {
         StringBuffer sb = new StringBuffer();
-        Files.readAllLines(Paths.get(filePath)).forEach(s -> sb.append(s));
+        Files.readAllLines(Paths.get(filePath)).forEach(s -> sb.append(eof ? s +"\r\n" : s));
         return sb.toString();
+    }
+
+    private String readFile(String filePath) throws IOException {
+        return readFile(filePath,false);
     }
 }
