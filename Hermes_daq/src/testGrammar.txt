@@ -1,57 +1,23 @@
-module patito;
+module test;
 initial
     device 'Due';
-    a, b pin 10, 12;
-    a, b istype output;
-    c = [a,b];
+    led pin 1;
+    led istype output;
 endinitial
 
 main
     var x;
     x = 0;
-    a = high;
-    b = high;
-    print a + " " + b;
-    wait 5000;
-    a = low;
-    b = low;
-    print a + " " + b;
-    wait 2000;
-    c = high;
-    print a + " "+ b;
-    wait 2000;
-    c = low;
-    wait 2000;
+    while(x < 10)
+        if(x%2==0)
+            led = high;
+            print "led encendido"
+        else
+            led = low;
+            print "led apagado";
+        endif
+    endwhile
     print "Terminado";
 endmain
-/*
-function terminado()
-    var x;
-    for(x = 0; x < 11; x++)
-        if(x%2==0)
-            print "x es par valor= " + x;
-        endif
-    endfor
-    print "llamando terminado 2";
-    terminado2(10);
-endfunction
-
-function terminado2(a)
-    var x;
-    x =0;
-    while (x < a)
-        if(x == 5)
-            print "x llego a 5";
-            break;
-        endif
-        print x;
-        x++;
-    endwhile
-    print "2 es mayo que 5 = "+(terminado2(2,5) ? 2: 5);
-endfunction
-
-function terminado2(a,b)
-    return a > b;
-endfunction */
-
 endmodule
+
