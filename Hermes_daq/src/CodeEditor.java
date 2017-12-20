@@ -34,6 +34,8 @@ public class CodeEditor {
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
     private static final String DEVICE_PATTERN = "\'([^\"\\\\]|\\\\.)*\'";
     private static final String NUMBER_PATTERN = "0 | [1-9][0-9]*";
+    private static final String ID_PATTERN = "[A-Za-z_][A-Za-z_0-9]*";
+
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -45,6 +47,7 @@ public class CodeEditor {
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<DEVICE>" + DEVICE_PATTERN + ")"
                     + "|(?<NUMBER>" + NUMBER_PATTERN + ")"
+                    + "|(?<ID>" + ID_PATTERN + ")"
     );
 
     private CodeArea codeArea;
@@ -108,6 +111,7 @@ public class CodeEditor {
                     matcher.group("COMMENT") != null ? "comment" :
                     matcher.group("DEVICE") != null ? "device" :
                     matcher.group("NUMBER") != null ? "number" :
+                    matcher.group("ID") != null ? "id" :
                     null; /* never happens */ assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());

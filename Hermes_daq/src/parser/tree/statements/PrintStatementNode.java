@@ -1,5 +1,6 @@
 package parser.tree.statements;
 
+import javafx.application.Platform;
 import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
@@ -34,7 +35,21 @@ public class PrintStatementNode extends StatementNode {
     @Override
     public void interpret() throws SemanticException, SerialCommException {
         if(ParserUtils.getInstance().getParserSettings().isAvailableUiConsole()){
-            ParserUtils.getInstance().getUiConsole().appendText("\r\n"+getExpression().interpret().getValue());
+
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ParserUtils.getInstance().getUiConsole().appendText("\r\n"+getExpression().interpret().getValue());
+                    } catch (final Throwable t) {
+                        System.out.println("Unable to append log to text area: "
+                                + t.getMessage());
+                    }
+                }
+            });
+
+
         }else{
             System.out.println(getExpression().interpret().getValue());
         }

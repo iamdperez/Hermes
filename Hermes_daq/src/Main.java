@@ -25,13 +25,11 @@ import javafx.stage.Stage;
 import parser.parserSettings.ParserSettings;
 import parser.tree.statements.ProgramNode;
 
-import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Map;
 
 
@@ -62,7 +60,7 @@ public class Main extends Application {
 
         Type parserSettingsType = new TypeToken<ParserSettings>(){}.getType();
         _parserSettings = gSon.fromJson(
-                readFile("src/resources/parserSettings.json"), parserSettingsType);
+                loadResource("/parserSettings.json"), parserSettingsType);
     }
 
     public static void main(String[] args) {
@@ -86,7 +84,7 @@ public class Main extends Application {
 
         // Render screen
         Scene scene = new Scene(border);
-        scene.getStylesheets().add(CodeEditor.class.getResource("/resources/uiStyle.css").toExternalForm());
+        scene.getStylesheets().add(CodeEditor.class.getResource("/uiStyle.css").toExternalForm());
         primaryStage.setScene(scene);
         //        primaryStage.setMaximized(true);
         primaryStage.setOnCloseRequest(e -> {
@@ -282,7 +280,7 @@ public class Main extends Application {
     }
 
     private void writeCodeFile(String filePath) throws IOException {
-        String content = readFile("src/resources/projectFormat.txt",true);
+        String content = loadResource("/projectFormat.txt");
         Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
     }
 
@@ -386,16 +384,25 @@ public class Main extends Application {
     }
 
     public String getIconJson() throws IOException {
-        return readFile("src/resources/icons.json");
+        return loadResource("/icons.json");
+    }
+
+    private String loadResource(String filePath) throws IOException {
+        InputStream res = Main.class.getResourceAsStream(filePath);
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(res));
+        StringBuffer  sb = new StringBuffer();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        reader.close();
+        return sb.toString();
     }
 
     private String readFile(String filePath, boolean eof) throws IOException {
         StringBuffer sb = new StringBuffer();
         Files.readAllLines(Paths.get(filePath)).forEach(s -> sb.append(eof ? s +"\r\n" : s));
         return sb.toString();
-    }
-
-    private String readFile(String filePath) throws IOException {
-        return readFile(filePath,false);
     }
 }
