@@ -34,25 +34,15 @@ public class PrintStatementNode extends StatementNode {
 
     @Override
     public void interpret() throws SemanticException, SerialCommException {
-        if(ParserUtils.getInstance().getParserSettings().isAvailableUiConsole()){
-
-
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ParserUtils.getInstance().getUiConsole().appendText("\r\n"+getExpression().interpret().getValue());
-                    } catch (final Throwable t) {
-                        System.out.println("Unable to append log to text area: "
-                                + t.getMessage());
-                    }
-                }
-            });
-
-
-        }else{
-            System.out.println(getExpression().interpret().getValue());
-        }
+        Platform.runLater(() -> {
+            try {
+                System.out.println(getExpression().interpret().getValue());
+            } catch (SemanticException e) {
+                e.printStackTrace();
+            } catch (SerialCommException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public ExpressionNode getExpression() {

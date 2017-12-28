@@ -24,11 +24,9 @@ import javafx.scene.control.TextArea;
 parser code {:
 
     private ParserSettings parserSettings;
-    private TextArea console;
-    public parser(Lexer lex, ComplexSymbolFactory sf, ParserSettings parserSettings, TextArea console) {
+    public parser(Lexer lex, ComplexSymbolFactory sf, ParserSettings parserSettings) {
         super(lex,sf);
         this.parserSettings = parserSettings;
-        this.console = console;
     }
 
     public void report_error(String message, Object info) {
@@ -44,7 +42,7 @@ parser code {:
             }
         }
         m.append(" : "+message);
-        console.appendText("\r\n" + m.toString());
+        System.out.println("\r\n" + m.toString());
     }
 
 
@@ -291,7 +289,7 @@ assignment_operator ::= ASSIGNMENT_OP:ao
 /* statement */
 program ::= MODULE:m ID:i SEMICOLON initial_begin:ib functions_list:fl MODULE_END
     {: Location l = new Location(mleft,mright);
-        RESULT = new ProgramNode(l,i,ib,fl,parserSettings, console);:}
+        RESULT = new ProgramNode(l,i,ib,fl,parserSettings);:}
     ;
 
 initial_begin ::= INITIAL:i DEVICE DEVICE_MODEL:dm SEMICOLON global_variables:gv INITIAL_END

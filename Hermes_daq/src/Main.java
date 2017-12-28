@@ -1,4 +1,3 @@
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import graph.Graph;
@@ -17,7 +16,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
@@ -32,6 +30,11 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import ui.CodeEditor;
+import ui.Console;
+import ui.ParserCode;
+import ui.ProjectStructure;
+
 
 public class Main extends Application {
     private final int windowsHeight = 768;
@@ -41,10 +44,11 @@ public class Main extends Application {
     private String _currentProjectPath;
     private ProjectStructure _currentProjectStructure;
     private TreeItem<String> _rootTreeVItem;
-    private TextArea _consoleArea;
+    private Console _consoleArea;
     private ParserSettings _parserSettings;
-    private  ParserCode parserCode;
+    private ParserCode parserCode;
     private Graph _graph;
+    private TextArea textConsole;
 
     public Main() throws IOException {
         codeEditor = new CodeEditor();
@@ -61,6 +65,8 @@ public class Main extends Application {
         Type parserSettingsType = new TypeToken<ParserSettings>(){}.getType();
         _parserSettings = gSon.fromJson(
                 loadResource("/parserSettings.json"), parserSettingsType);
+
+        textConsole = new TextArea();
     }
 
     public static void main(String[] args) {
@@ -69,6 +75,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
         primaryStage.setTitle("Hermes DAQ");
         /*======= ui area ========*/
         BorderPane border = new BorderPane();
@@ -93,7 +100,6 @@ public class Main extends Application {
         });
         primaryStage.show();
     }
-
 
     private HBox addWorkSpaceTabsCenter() {
         HBox hb = new HBox();
@@ -148,17 +154,11 @@ public class Main extends Application {
     }
 
     private HBox addConsoleBottom() {
-        _consoleArea = new TextArea();
-        _consoleArea.setPrefRowCount(10);
-        _consoleArea.setPrefColumnCount(100);
-        _consoleArea.setWrapText(true);
         HBox hb = new HBox();
-        hb.setPadding(new Insets(10, 10, 10, 10));
-        hb.setAlignment(Pos.CENTER);
-        hb.setSpacing(10);
-        hb.getChildren().addAll(_consoleArea);
-        HBox.setHgrow(_consoleArea, Priority.ALWAYS);
+        new Thread(() -> {
+            _consoleArea = new Console(hb, textConsole);
 
+        }).start();
         return hb;
     }
 
@@ -194,14 +194,14 @@ public class Main extends Application {
         run.setOnAction(actionEvent -> {
             try {
                 _consoleArea.clear();
-                _consoleArea.setText("Compiling "+ LocalDateTime.now());
+                System.out.println("Compiling "+ LocalDateTime.now());
                 saveCode();
                 ProgramNode program = parserCode.getAST();
-                _consoleArea.appendText("\r\nprogram is running");
+                System.out.println("program is running");
                 program.interpretCode();
-                _consoleArea.appendText("\r\nProgram finished...");
+                System.out.println("Program finished...");
             } catch (Exception e) {
-                _consoleArea.appendText("\r\n" + e.toString());
+                System.out.println(e.toString());
                 //TODO: show error
             }
         });
@@ -327,11 +327,11 @@ public class Main extends Application {
                     +_currentProjectStructure.getCodeFile()+".hc",true);
             codeEditor.setText(code);
             parserCode = new ParserCode(Paths.get(_currentProjectPath + "\\"
-                    +_currentProjectStructure.getCodeFile()+".hc").toString(), _parserSettings, _consoleArea );
+                    +_currentProjectStructure.getCodeFile()+".hc").toString(), _parserSettings);
             in.close();
             fileIn.close();
         } catch (Exception ex) {
-
+            System.out.println(ex);
         }
     }
 
@@ -405,4 +405,5 @@ public class Main extends Application {
         Files.readAllLines(Paths.get(filePath)).forEach(s -> sb.append(eof ? s +"\r\n" : s));
         return sb.toString();
     }
+
 }

@@ -1,3 +1,5 @@
+package ui;
+
 import java.io.Serializable;
 
 public class ProjectStructure implements Serializable {

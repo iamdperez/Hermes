@@ -1,56 +1,46 @@
 .keyword {
     -fx-fill: #3f00ff;
     -fx-font-weight: bold;
-    -fx-font-size: 1.8em;
 }
 .semicolon {
     -fx-fill: #b3532c;
     -fx-font-weight: bold;
-    -fx-font-size: 1.8em;
 }
 .paren {
     -fx-fill: firebrick;
     -fx-font-weight: bold;
-    -fx-font-size: 1.8em;
 }
 .bracket {
     -fx-fill: firebrick;
     -fx-font-weight: bold;
-    -fx-font-size: 1.8em;
 }
 .brace {
     -fx-fill: firebrick;
     -fx-font-weight: bold;
-    -fx-font-size: 1.8em;
 }
 .string {
     -fx-fill: #ab1515;
-    -fx-font-size: 1.8em;
 }
 
 .comment {
     -fx-fill: #3f8000;
-    -fx-font-size: 1.6em;
 }
 
 .paragraph-box:has-caret {
     -fx-background-color: #f2f9fc;
-    -fx-font-size: 1.8em;
 }
 
 .device {
     -fx-fill: darkgreen;
     -fx-font-weight: bold;
-    -fx-font-size: 1.8em;
 }
 
 .number {
     -fx-fill: teal;
-    -fx-font-size: 1.8em;
 }
 
 .id{
-    -fx-font-size: 1.8em;
+
 }
 
 .button {

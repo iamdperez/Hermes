@@ -1,3 +1,5 @@
+package ui;
+
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;

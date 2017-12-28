@@ -1,14 +1,9 @@
 package parser;
 
-import javafx.scene.control.TextArea;
 import parser.parserSettings.ParserSettings;
 import parser.tree.Location;
-import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.*;
 import parser.tree.values.IntValue;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public final class ParserUtils {
     public final static PinType pinType = new PinType();
@@ -18,7 +13,6 @@ public final class ParserUtils {
     public final static SetType setType = new SetType();
     public final static IntValue intValue = new IntValue();
     private ParserSettings parserSettings;
-    private TextArea uiConsole;
 
     public static synchronized ParserUtils getInstance(){
         if (instance == null) {
@@ -43,11 +37,4 @@ public final class ParserUtils {
         return parserSettings;
     }
 
-    public void setUiConsole(TextArea uiConsole) {
-        this.uiConsole = uiConsole;
-    }
-
-    public TextArea getUiConsole(){
-        return uiConsole;
-    }
 }

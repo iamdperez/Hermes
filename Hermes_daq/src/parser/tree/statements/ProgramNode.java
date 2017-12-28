@@ -1,6 +1,5 @@
 package parser.tree.statements;
 
-import javafx.scene.control.TextArea;
 import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.parserSettings.ParserSettings;
@@ -22,13 +21,12 @@ public class ProgramNode {
     private final ParserSettings parserSettings;
     public ProgramNode(Location location, String moduleName,
                        InitialNode initial, ArrayList<FunctionDeclaration> functionList,
-                       ParserSettings parserSettings, TextArea console){
+                       ParserSettings parserSettings){
         this.location = location;
         this.moduleName = moduleName;
         this.initial = initial;
         this.functionList = functionList;
         this.parserSettings = parserSettings;
-        ParserUtils.getInstance().setUiConsole(console);
     }
 
     public Location getLocation() {
