@@ -1,6 +1,5 @@
 package parser.tree.statements;
 
-import javafx.application.Platform;
 import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
@@ -34,15 +33,14 @@ public class PrintStatementNode extends StatementNode {
 
     @Override
     public void interpret() throws SemanticException, SerialCommException {
-        Platform.runLater(() -> {
             try {
-                System.out.println(getExpression().interpret().getValue());
+                Object val = getExpression().interpret().getValue();
+                System.out.println(val);
             } catch (SemanticException e) {
                 e.printStackTrace();
             } catch (SerialCommException e) {
                 e.printStackTrace();
             }
-        });
     }
 
     public ExpressionNode getExpression() {

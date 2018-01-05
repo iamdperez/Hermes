@@ -20,6 +20,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import parser.exeptions.SemanticException;
 import parser.parserSettings.ParserSettings;
 import parser.tree.statements.ProgramNode;
 
@@ -30,6 +31,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import serialCommunication.SerialCommException;
 import ui.CodeEditor;
 import ui.Console;
 import ui.ParserCode;
@@ -66,7 +68,7 @@ public class Main extends Application {
         _parserSettings = gSon.fromJson(
                 loadResource("/parserSettings.json"), parserSettingsType);
 
-        textConsole = new TextArea();
+
     }
 
     public static void main(String[] args) {
@@ -155,10 +157,8 @@ public class Main extends Application {
 
     private HBox addConsoleBottom() {
         HBox hb = new HBox();
-        new Thread(() -> {
-            _consoleArea = new Console(hb, textConsole);
-
-        }).start();
+        TextArea console = new TextArea();
+        _consoleArea = new Console(hb, console);
         return hb;
     }
 
@@ -193,13 +193,27 @@ public class Main extends Application {
                 getSvgIcon("play", "green", "darkgreen"));
         run.setOnAction(actionEvent -> {
             try {
-                _consoleArea.clear();
-                System.out.println("Compiling "+ LocalDateTime.now());
-                saveCode();
-                ProgramNode program = parserCode.getAST();
-                System.out.println("program is running");
-                program.interpretCode();
-                System.out.println("Program finished...");
+                new Thread( () -> {
+                    _consoleArea.clear();
+                    System.out.println("Compiling "+ LocalDateTime.now());
+                    saveCode();
+                    ProgramNode program = null;
+                    try {
+                        program = parserCode.getAST();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("program is running");
+                    try {
+                        program.interpretCode();
+                    } catch (SemanticException e) {
+                        e.printStackTrace();
+                    } catch (SerialCommException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("Program finished...");
+                }).start();
+
             } catch (Exception e) {
                 System.out.println(e.toString());
                 //TODO: show error
