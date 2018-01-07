@@ -50,8 +50,6 @@ public class Main extends Application {
     private ParserSettings _parserSettings;
     private ParserCode parserCode;
     private Graph _graph;
-    private TextArea textConsole;
-
     public Main() throws IOException {
         codeEditor = new CodeEditor();
         _graph = new Graph();
@@ -175,7 +173,7 @@ public class Main extends Application {
 
         Menu menuFile = getMenuFile(stage);
 
-        Menu menuBuild = getMenuBuild(stage);
+        Menu menuBuild = getMenuBuild();
 
         menuBar.getMenus().addAll(menuFile, menuBuild);
 
@@ -187,7 +185,7 @@ public class Main extends Application {
         return hb;
     }
 
-    private Menu getMenuBuild(Stage stage) {
+    private Menu getMenuBuild() {
         Menu menuBuild = new Menu("Build");
         MenuItem run = new MenuItem("Run",
                 getSvgIcon("play", "green", "darkgreen"));
@@ -321,7 +319,6 @@ public class Main extends Application {
     private void openFile(File file) {
         try {
             FileInputStream fileIn = new FileInputStream(file.getAbsolutePath());
-            String p = file.getPath();
             String path = file.getAbsolutePath().substring(0, file.getAbsolutePath().indexOf(file.getName()));
             _currentProjectPath = path;
             ObjectInputStream in = new ObjectInputStream(fileIn);
