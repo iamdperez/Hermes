@@ -1,10 +1,8 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import graph.Graph;
-import graph.StateProperties;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingNode;
+
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,14 +10,10 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
-import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import jfxtras.labs.util.event.MouseControlUtil;
 import parser.exeptions.SemanticException;
 import parser.parserSettings.ParserSettings;
 import parser.tree.statements.ProgramNode;
@@ -29,42 +23,32 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Map;
-
 import serialCommunication.SerialCommException;
-import ui.CodeEditor;
+import ui.*;
 import ui.Console;
-import ui.ParserCode;
-import ui.ProjectStructure;
 
 
 public class Main extends Application {
     private final int windowsHeight = 768;
     private final int windowsWidth = 1366;
     private CodeEditor codeEditor;
-    private final Map<String, String> icons;
+
     private String _currentProjectPath;
     private ProjectStructure _currentProjectStructure;
     private TreeItem<String> _rootTreeVItem;
     private Console _consoleArea;
     private ParserSettings _parserSettings;
     private ParserCode parserCode;
-    private Graph _graph;
+
     public Main() throws IOException {
         codeEditor = new CodeEditor();
-        _graph = new Graph();
-        StateProperties st = new StateProperties();
-        st.setStateId("testing");
-        _graph.AddState(st);
         Gson gSon = new Gson();
 
-        Type listType = new TypeToken<Map<String, String>>() {
-        }.getType();
-        icons = gSon.fromJson(getIconJson(), listType);
+
 
         Type parserSettingsType = new TypeToken<ParserSettings>(){}.getType();
         _parserSettings = gSon.fromJson(
-                loadResource("/parserSettings.json"), parserSettingsType);
+                UiUtils.getInstance().loadResource("/parserSettings.json"), parserSettingsType);
 
 
     }
@@ -91,7 +75,7 @@ public class Main extends Application {
 
         // Render screen
         Scene scene = new Scene(border);
-        scene.getStylesheets().add(CodeEditor.class.getResource("/uiStyle.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("/uiStyle.css").toExternalForm());
         primaryStage.setScene(scene);
         //        primaryStage.setMaximized(true);
         primaryStage.setOnCloseRequest(e -> {
@@ -101,7 +85,7 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private HBox addWorkSpaceTabsCenter() {
+    private HBox addWorkSpaceTabsCenter() throws IOException {
         HBox hb = new HBox();
         hb.setPadding(new Insets(10));
         hb.setSpacing(10);
@@ -117,9 +101,12 @@ public class Main extends Application {
 
         Tab design = new Tab("Design");
         BorderPane content = new BorderPane();
-        SwingNode sn = new SwingNode();
-        sn.setContent(_graph.getGraphComponent());
-        content.setCenter(sn);
+
+        Pane root = new Pane();
+        ToggleSwitch ts = new ToggleSwitch();
+        MouseControlUtil.makeDraggable(ts);
+        root.getChildren().add(ts);
+        content.setCenter(root);
         design.setContent(content);
 
         tabPane.getTabs().addAll(code, design);
@@ -138,9 +125,9 @@ public class Main extends Application {
         return vbox;
     }
 
-    private VBox addTreeViewLeft() {
+    private VBox addTreeViewLeft() throws IOException {
         _rootTreeVItem = new TreeItem<>("Project name",
-                getSvgIcon("folder","orange","darkorange"));
+                UiUtils.getInstance().getSvgIcon("folder","orange","darkorange"));
         _rootTreeVItem.setExpanded(true);
         TreeView<String> treeView = new TreeView<>(_rootTreeVItem);
 
@@ -160,15 +147,8 @@ public class Main extends Application {
         return hb;
     }
 
-    private static SVGPath createPath(String d, String fill, String hoverFill) {
-        SVGPath path = new SVGPath();
-        path.getStyleClass().add("svg");
-        path.setContent(d);
-        path.setStyle("-fill:" + fill + ";-hover-fill:" + hoverFill + ';');
-        return path;
-    }
 
-    private HBox addMenuTop(Stage stage) {
+    private HBox addMenuTop(Stage stage) throws IOException {
         MenuBar menuBar = new MenuBar();
 
         Menu menuFile = getMenuFile(stage);
@@ -185,10 +165,10 @@ public class Main extends Application {
         return hb;
     }
 
-    private Menu getMenuBuild() {
+    private Menu getMenuBuild() throws IOException {
         Menu menuBuild = new Menu("Build");
         MenuItem run = new MenuItem("Run",
-                getSvgIcon("play", "green", "darkgreen"));
+                UiUtils.getInstance().getSvgIcon("play", "green", "darkgreen"));
         run.setOnAction(actionEvent -> {
             try {
                 new Thread( () -> {
@@ -219,7 +199,7 @@ public class Main extends Application {
         });
 
         MenuItem stop = new MenuItem("Stop",
-                getSvgIcon("stop", "#D46354", "#D46354"));
+                UiUtils.getInstance().getSvgIcon("stop", "#D46354", "#D46354"));
         stop.setOnAction(actionEvent -> {
             //TODO stop button
         });
@@ -228,11 +208,11 @@ public class Main extends Application {
         return menuBuild;
     }
 
-    private Menu getMenuFile(Stage stage) {
+    private Menu getMenuFile(Stage stage) throws IOException {
         Menu menuFile = new Menu("File");
 
         MenuItem openProject = new MenuItem("Open project",
-                getSvgIcon("folder-open", "orange", "darkorange"));
+                UiUtils.getInstance().getSvgIcon("folder-open", "orange", "darkorange"));
         openProject.setOnAction(actionEvent -> {
             final FileChooser fileChooser = new FileChooser();
             configureFileChooser(fileChooser, "Open Project");
@@ -243,7 +223,7 @@ public class Main extends Application {
         });
 
         MenuItem newProject = new MenuItem("New Project",
-                getSvgIcon("folder-add", "orange", "darkorange"));
+                UiUtils.getInstance().getSvgIcon("folder-add", "orange", "darkorange"));
         newProject.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
             configureFileChooser(fileChooser, "Save project");
@@ -262,7 +242,7 @@ public class Main extends Application {
         });
 
         MenuItem saveProject = new MenuItem("Save Project",
-                getSaveIcon());
+                UiUtils.getInstance().getSaveIcon());
         saveProject.setOnAction(actionEvent -> {
             saveCode();
         });
@@ -292,7 +272,7 @@ public class Main extends Application {
     }
 
     private void writeCodeFile(String filePath) throws IOException {
-        String content = loadResource("/projectFormat.txt");
+        String content = UiUtils.getInstance().loadResource("/projectFormat.txt");
         Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
     }
 
@@ -326,12 +306,12 @@ public class Main extends Application {
 
             _rootTreeVItem.setValue(_currentProjectStructure.getProjectName());
             TreeItem<String> codeItem = new TreeItem<>(_currentProjectStructure.getCodeFile(),
-                    getSvgIcon("file","blue","darkblue"));
+                   UiUtils.getInstance().getSvgIcon("file","blue","darkblue"));
             _rootTreeVItem.getChildren().addAll(codeItem);
 
             _rootTreeVItem.setValue(_currentProjectStructure.getProjectName());
             TreeItem<String> uiItem = new TreeItem<>(_currentProjectStructure.getUiFile(),
-                    getSvgIcon("uiApp","red","darkred"));
+                    UiUtils.getInstance().getSvgIcon("uiApp","red","darkred"));
             _rootTreeVItem.getChildren().addAll(uiItem);
 
             String code = readFile(_currentProjectPath+"/"
@@ -346,43 +326,6 @@ public class Main extends Application {
         }
     }
 
-    private Button getSvgIcon(String iconName, String color, String hoverColor) {
-        Group svg = new Group(
-                createPath(icons.get(iconName), color, hoverColor)
-        );
-        Bounds bounds = svg.getBoundsInParent();
-        double scale = Math.min(10 / bounds.getWidth(), 10 / bounds.getHeight());
-        svg.setScaleX(scale);
-        svg.setScaleY(scale);
-
-        Button btn = new Button();
-        btn.setGraphic(svg);
-        btn.setMaxSize(10, 10);
-        btn.setMinSize(10, 10);
-        btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        return btn;
-    }
-
-    private Button getSaveIcon(){
-        Group svg = new Group(
-                createPath(icons.get("save-1"),"#324d5b","#324d5b"),
-                createPath(icons.get("save-2"),"#ccd0d2","#ccd0d2"),
-                createPath(icons.get("save-3"),"#e4e7e7","#e4e7e7"),
-                createPath(icons.get("save-4"),"#2b414d","#2b414d"),
-                createPath(icons.get("save-5"),"#ccd0d2","#ccd0d2")
-        );
-        Bounds bounds = svg.getBoundsInParent();
-        double scale = Math.min(10 / bounds.getWidth(), 10 / bounds.getHeight());
-        svg.setScaleX(scale);
-        svg.setScaleY(scale);
-
-        Button btn = new Button();
-        btn.setGraphic(svg);
-        btn.setMaxSize(10, 10);
-        btn.setMinSize(10, 10);
-        btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        return btn;
-    }
 
     private AnchorPane addAnchorPane(Node uiElement) {
         AnchorPane anchorpane = new AnchorPane();
@@ -392,23 +335,6 @@ public class Main extends Application {
         AnchorPane.setLeftAnchor(uiElement, 10.0);
         AnchorPane.setTopAnchor(uiElement, 10.0);
         return anchorpane;
-    }
-
-    public String getIconJson() throws IOException {
-        return loadResource("/icons.json");
-    }
-
-    private String loadResource(String filePath) throws IOException {
-        InputStream res = Main.class.getResourceAsStream(filePath);
-        BufferedReader reader =
-                new BufferedReader(new InputStreamReader(res));
-        StringBuffer  sb = new StringBuffer();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-        }
-        reader.close();
-        return sb.toString();
     }
 
     private String readFile(String filePath, boolean eof) throws IOException {
