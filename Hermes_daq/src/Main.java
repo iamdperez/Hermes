@@ -2,22 +2,17 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Application;
 import javafx.application.Platform;
-
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import jfxtras.labs.util.event.MouseControlUtil;
 import parser.exeptions.SemanticException;
 import parser.parserSettings.ParserSettings;
 import parser.tree.statements.ProgramNode;
-
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -103,9 +98,9 @@ public class Main extends Application {
         BorderPane content = new BorderPane();
 
         Pane root = new Pane();
-        ToggleSwitch ts = new ToggleSwitch();
-        MouseControlUtil.makeDraggable(ts);
-        root.getChildren().add(ts);
+        root.getStyleClass().add("canvas");
+
+//        root.getChildren().addAll();
         content.setCenter(root);
         design.setContent(content);
 

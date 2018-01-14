@@ -52,8 +52,24 @@
 }
 .button .svg {
     -fx-fill: -fill;
+    -fx-opacity: -opacity;
 }
 
 .button:hover .svg {
     -fx-fill: -hover-fill;
+}
+
+.canvas {
+    -fx-background-color: white;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-border-color: rgba(122, 116, 111, 0.57);
+    -fx-border-width: 1px;
+}
+
+.vBoxElectronic{
+    -fx-padding: 10;
+    -fx-border-color: rgba(122, 116, 111, 0.4);
+    -fx-smooth: true;
+    -fx-border-width: 5%;
 }
