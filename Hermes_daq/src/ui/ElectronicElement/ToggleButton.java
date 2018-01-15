@@ -16,7 +16,7 @@ public class ToggleButton  extends  ElectronicElement{
     private VBox vbox;
     private Group buttonRest;
     private Group buttonPress;
-    public ToggleButton(String name, Function<VBox, Boolean> deleteFunction) throws IOException {
+    public ToggleButton(String name, Function<String, Boolean> deleteFunction) throws IOException {
         super(name, deleteFunction);
         vbox = new VBox(3);
         init();
@@ -37,7 +37,7 @@ public class ToggleButton  extends  ElectronicElement{
 
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem item1 = new MenuItem("Delete");
-        item1.setOnAction( e -> deleteFunction.apply(vbox));
+        item1.setOnAction( e -> deleteFunction.apply(getName()));
         contextMenu.getItems().addAll(item1);
         vbox.setOnContextMenuRequested( e -> contextMenu.show(button,e.getScreenX(),e.getScreenY()));
     }

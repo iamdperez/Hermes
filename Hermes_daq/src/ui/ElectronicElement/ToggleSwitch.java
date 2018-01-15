@@ -19,7 +19,7 @@ public class ToggleSwitch extends ElectronicElement {
     private VBox vbox;
     private SimpleBooleanProperty switchedOn;
 
-    public ToggleSwitch(String name, Function<VBox, Boolean> deleteFunction) throws IOException {
+    public ToggleSwitch(String name, Function<String, Boolean> deleteFunction) throws IOException {
         super(name, deleteFunction);
         vbox = new VBox(1);
         switchedOn = new SimpleBooleanProperty(false);
@@ -51,7 +51,7 @@ public class ToggleSwitch extends ElectronicElement {
 
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem item1 = new MenuItem("Delete");
-        item1.setOnAction( e -> deleteFunction.apply(vbox));
+        item1.setOnAction( e -> deleteFunction.apply(getName()));
         contextMenu.getItems().addAll(item1);
         vbox.setOnContextMenuRequested( e -> contextMenu.show(button,e.getScreenX(),e.getScreenY()));
     }
@@ -83,5 +83,8 @@ public class ToggleSwitch extends ElectronicElement {
         switchedOn = null;
         switchOff = null;
         switchOn = null;
+
     }
+
+
 }

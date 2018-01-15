@@ -38,7 +38,7 @@ public class Console extends WindowAdapter implements WindowListener, Runnable {
 
         try {
             PipedOutputStream pout = new PipedOutputStream(this.firstPin);
-            System.setOut(new PrintStream(pout, true));
+//            System.setOut(new PrintStream(pout, true));
         } catch (java.io.IOException io) {
             textArea.appendText("Couldn't redirect STDOUT to this console\n" + io.getMessage());
         } catch (SecurityException se) {
@@ -47,7 +47,7 @@ public class Console extends WindowAdapter implements WindowListener, Runnable {
 
         try {
             PipedOutputStream pout2 = new PipedOutputStream(this.secondPin);
-            System.setErr(new PrintStream(pout2, true));
+//            System.setErr(new PrintStream(pout2, true));
         } catch (java.io.IOException io) {
             textArea.appendText("Couldn't redirect STDERR to this console\n" + io.getMessage());
         } catch (SecurityException se) {

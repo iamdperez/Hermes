@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -13,14 +14,22 @@ import javafx.stage.Stage;
 import parser.exeptions.SemanticException;
 import parser.parserSettings.ParserSettings;
 import parser.tree.statements.ProgramNode;
+
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import serialCommunication.SerialCommException;
 import ui.*;
 import ui.Console;
+import ui.ElectronicElement.ElectronicElement;
+import ui.ElectronicElement.Led;
+import ui.ElectronicElement.ToggleButton;
+import ui.ElectronicElement.ToggleSwitch;
 
 
 public class Main extends Application {
@@ -34,14 +43,16 @@ public class Main extends Application {
     private Console _consoleArea;
     private ParserSettings _parserSettings;
     private ParserCode parserCode;
-
+    private Pane _canvas;
+    private ArrayList<ElectronicElement> electronicElements;
+    private Gson gSon;
     public Main() throws IOException {
         codeEditor = new CodeEditor();
-        Gson gSon = new Gson();
+        gSon = new Gson();
 
-
-
-        Type parserSettingsType = new TypeToken<ParserSettings>(){}.getType();
+        electronicElements = new ArrayList<>();
+        Type parserSettingsType = new TypeToken<ParserSettings>() {
+        }.getType();
         _parserSettings = gSon.fromJson(
                 UiUtils.getInstance().loadResource("/parserSettings.json"), parserSettingsType);
 
@@ -94,14 +105,13 @@ public class Main extends Application {
         HBox.setHgrow(codeView, Priority.ALWAYS);
         code.setContent(hbox);
 
+
         Tab design = new Tab("Design");
         BorderPane content = new BorderPane();
 
-        Pane root = new Pane();
-        root.getStyleClass().add("canvas");
-
-//        root.getChildren().addAll();
-        content.setCenter(root);
+        _canvas = new Pane();
+        _canvas.getStyleClass().add("canvas");
+        content.setCenter(_canvas);
         design.setContent(content);
 
         tabPane.getTabs().addAll(code, design);
@@ -116,13 +126,59 @@ public class Main extends Application {
         vbox.setPadding(new Insets(10));
         vbox.setSpacing(10);
 
+        Label cbl = new Label("Element");
+        ChoiceBox cb = new ChoiceBox(FXCollections.observableArrayList(
+                "Led", "Switch", "Push Button")
+        );
+
+        Label nl = new Label("Name");
+        TextField name = new TextField();
+
+        Button button = new Button("Add");
+        button.setOnAction(e -> {
+            String item = (String) cb.getSelectionModel().getSelectedItem();
+            if (item == null)
+                return;
+            try {
+                ElectronicElement ee = null;
+                switch (item) {
+                    case "Led":
+                        ee = new Led(name.getText(), o -> removeElectronicElement(o));
+                        break;
+                    case "Switch":
+                        ee = new ToggleSwitch(name.getText(), o -> removeElectronicElement(o));
+                        break;
+                    case "Push Button":
+                        ee = new ToggleButton(name.getText(), o -> removeElectronicElement(o));
+                        break;
+                }
+                _canvas.getChildren().add(ee.drawElement());
+                electronicElements.add(ee);
+
+            } catch (IOException e1) {
+                System.out.println(e1.getMessage());
+            }
+        });
+        vbox.getChildren().addAll(cbl, cb, nl, name, button);
+
 
         return vbox;
     }
 
+    public boolean removeElectronicElement(String name){
+
+        Optional<ElectronicElement> element = electronicElements.stream().filter(o -> o.getName().equals(name)).findFirst();
+        if(!element.isPresent())
+            return false;
+        ElectronicElement mainNode = element.get();
+        _canvas.getChildren().remove(mainNode.drawElement());
+        electronicElements.remove(mainNode);
+        return true;
+    }
+
     private VBox addTreeViewLeft() throws IOException {
         _rootTreeVItem = new TreeItem<>("Project name",
-                UiUtils.getInstance().getSvgIcon("folder","orange","darkorange"));
+                UiUtils.getInstance().getSvgIcon("folder", "orange", "darkorange"));
         _rootTreeVItem.setExpanded(true);
         TreeView<String> treeView = new TreeView<>(_rootTreeVItem);
 
@@ -166,9 +222,9 @@ public class Main extends Application {
                 UiUtils.getInstance().getSvgIcon("play", "green", "darkgreen"));
         run.setOnAction(actionEvent -> {
             try {
-                new Thread( () -> {
+                new Thread(() -> {
                     _consoleArea.clear();
-                    System.out.println("Compiling "+ LocalDateTime.now());
+                    System.out.println("Compiling " + LocalDateTime.now());
                     saveCode();
                     ProgramNode program = null;
                     try {
@@ -199,7 +255,7 @@ public class Main extends Application {
             //TODO stop button
         });
 
-        menuBuild.getItems().addAll(run,stop);
+        menuBuild.getItems().addAll(run, stop);
         return menuBuild;
     }
 
@@ -246,12 +302,13 @@ public class Main extends Application {
         return menuFile;
     }
 
+
     private void saveCode() {
         try {
 
             String content = codeEditor.getText();
             File file = new File(_currentProjectPath
-                    +"/"+_currentProjectStructure.getCodeFile()+".hc");
+                    + "/" + _currentProjectStructure.getCodeFile() + ".hc");
 
             if (!file.exists()) {
                 file.createNewFile();
@@ -262,12 +319,13 @@ public class Main extends Application {
             bw.write(content);
             bw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
     }
 
     private void writeCodeFile(String filePath) throws IOException {
         String content = UiUtils.getInstance().loadResource("/projectFormat.txt");
+        String p = filePath + "/code.hc";
         Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
     }
 
@@ -301,22 +359,24 @@ public class Main extends Application {
 
             _rootTreeVItem.setValue(_currentProjectStructure.getProjectName());
             TreeItem<String> codeItem = new TreeItem<>(_currentProjectStructure.getCodeFile(),
-                   UiUtils.getInstance().getSvgIcon("file","blue","darkblue"));
+                    UiUtils.getInstance().getSvgIcon("file", "blue", "darkblue"));
             _rootTreeVItem.getChildren().addAll(codeItem);
 
             _rootTreeVItem.setValue(_currentProjectStructure.getProjectName());
             TreeItem<String> uiItem = new TreeItem<>(_currentProjectStructure.getUiFile(),
-                    UiUtils.getInstance().getSvgIcon("uiApp","red","darkred"));
+                    UiUtils.getInstance().getSvgIcon("uiApp", "red", "darkred"));
             _rootTreeVItem.getChildren().addAll(uiItem);
 
-            String code = readFile(_currentProjectPath+"/"
-                    +_currentProjectStructure.getCodeFile()+".hc",true);
+            String code = readFile(_currentProjectPath + "/"
+                    + _currentProjectStructure.getCodeFile() + ".hc", true);
             codeEditor.setText(code);
+
             parserCode = new ParserCode(Paths.get(_currentProjectPath + "\\"
-                    +_currentProjectStructure.getCodeFile()+".hc").toString(), _parserSettings);
+                    + _currentProjectStructure.getCodeFile() + ".hc").toString(), _parserSettings);
             in.close();
             fileIn.close();
-        } catch (Exception ex) {
+
+         } catch (Exception ex) {
             System.out.println(ex);
         }
     }
@@ -334,7 +394,7 @@ public class Main extends Application {
 
     private String readFile(String filePath, boolean eof) throws IOException {
         StringBuffer sb = new StringBuffer();
-        Files.readAllLines(Paths.get(filePath)).forEach(s -> sb.append(eof ? s +"\r\n" : s));
+        Files.readAllLines(Paths.get(filePath)).forEach(s -> sb.append(eof ? s + "\r\n" : s));
         return sb.toString();
     }
 

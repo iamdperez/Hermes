@@ -17,9 +17,9 @@ public abstract class ElectronicElement implements Serializable{
     protected ProgramNode ast;
     protected int height;
     protected int width;
-    protected Function<VBox,Boolean> deleteFunction;
+    protected Function<String,Boolean> deleteFunction;
 
-    public ElectronicElement(String name, Function<VBox,Boolean> deleteFunction){
+    public ElectronicElement(String name, Function<String,Boolean> deleteFunction){
         this.name = name;
         label = new Label();
         label.setText(name);
