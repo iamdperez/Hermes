@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public abstract class ElectronicElement implements Serializable{
-    private String name;
+    protected String name;
     protected Label label;
     protected Button button;
     protected boolean value;
@@ -28,6 +28,19 @@ public abstract class ElectronicElement implements Serializable{
         width = 30;
         this.deleteFunction = deleteFunction;
     }
+
+    public ElectronicElement(String name, Function<String,Boolean> deleteFunction, double x, double y){
+        this.name = name;
+        label = new Label();
+        label.setText(name);
+        button = new Button();
+        height = 30;
+        width = 30;
+        this.deleteFunction = deleteFunction;
+    }
+
+    public abstract double getX();
+    public abstract double getY();
     public boolean isValue() {
         return value;
     }
@@ -55,6 +68,5 @@ public abstract class ElectronicElement implements Serializable{
     public abstract VBox drawElement();
     public abstract void onClick();
     public abstract void onValueChanged();
-
-
+    public abstract String getType();
 }

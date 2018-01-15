@@ -26,10 +26,8 @@ import java.util.Optional;
 import serialCommunication.SerialCommException;
 import ui.*;
 import ui.Console;
-import ui.ElectronicElement.ElectronicElement;
-import ui.ElectronicElement.Led;
+import ui.ElectronicElement.*;
 import ui.ElectronicElement.ToggleButton;
-import ui.ElectronicElement.ToggleSwitch;
 
 
 public class Main extends Application {
@@ -49,14 +47,13 @@ public class Main extends Application {
     public Main() throws IOException {
         codeEditor = new CodeEditor();
         gSon = new Gson();
-
+        _canvas = new Pane();
         electronicElements = new ArrayList<>();
+
         Type parserSettingsType = new TypeToken<ParserSettings>() {
         }.getType();
         _parserSettings = gSon.fromJson(
                 UiUtils.getInstance().loadResource("/parserSettings.json"), parserSettingsType);
-
-
     }
 
     public static void main(String[] args) {
@@ -109,7 +106,7 @@ public class Main extends Application {
         Tab design = new Tab("Design");
         BorderPane content = new BorderPane();
 
-        _canvas = new Pane();
+//        _canvas = new Pane();
         _canvas.getStyleClass().add("canvas");
         content.setCenter(_canvas);
         design.setContent(content);
@@ -163,6 +160,28 @@ public class Main extends Application {
 
 
         return vbox;
+    }
+
+    private void addElementToCanvas(ElementSerialized element){
+        try {
+            ElectronicElement ee = null;
+            switch (element.getType()) {
+                case "Led":
+                    ee = new Led(element.getName(),s -> removeElectronicElement(s),element.getX(),element.getY());
+                    break;
+                case "Switch":
+                    ee = new ToggleSwitch(element.getName(),s -> removeElectronicElement(s),element.getX(),element.getY());
+                    break;
+                case "Button":
+                    ee = new ToggleButton(element.getName(),s -> removeElectronicElement(s),element.getX(),element.getY());
+                    break;
+            }
+            _canvas.getChildren().add(ee.drawElement());
+            electronicElements.add(ee);
+
+        } catch (IOException e1) {
+            System.out.println(e1.getMessage());
+        }
     }
 
     public boolean removeElectronicElement(String name){
@@ -226,6 +245,7 @@ public class Main extends Application {
                     _consoleArea.clear();
                     System.out.println("Compiling " + LocalDateTime.now());
                     saveCode();
+                    saveUi();
                     ProgramNode program = null;
                     try {
                         program = parserCode.getAST();
@@ -284,8 +304,8 @@ public class Main extends Application {
                     file.mkdir();
                     ProjectStructure ps = new ProjectStructure("code", "ui", file.getName());
                     writeFileObject(file, ".hdaq", ps);
-
                     writeCodeFile(file.getAbsolutePath());
+                    writeUiFile(file.getAbsolutePath());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -296,6 +316,7 @@ public class Main extends Application {
                 UiUtils.getInstance().getSaveIcon());
         saveProject.setOnAction(actionEvent -> {
             saveCode();
+            saveUi();
         });
 
         menuFile.getItems().addAll(openProject, newProject, saveProject);
@@ -323,10 +344,42 @@ public class Main extends Application {
         }
     }
 
+    private void saveUi(){
+        try {
+
+            String content = getElectronicElementsJson();
+            File file = new File(_currentProjectPath
+                    + "/" + _currentProjectStructure.getUiFile() + ".hu");
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(content);
+            bw.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
     private void writeCodeFile(String filePath) throws IOException {
         String content = UiUtils.getInstance().loadResource("/projectFormat.txt");
         String p = filePath + "/code.hc";
         Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
+    }
+
+    private void writeUiFile(String filePath) throws IOException{
+        String content = getElectronicElementsJson();
+        String p = filePath + "/ui.hu";
+        writeFile(p,content);
+    }
+
+    private String getElectronicElementsJson(){
+        ArrayList<ElementSerialized> elements = new ArrayList<>();
+        electronicElements.stream().forEach( o ->
+                elements.add(new ElementSerialized(o.getName(), o.getX(),o.getY(), o.getType())));
+        return gSon.toJson(elements);
     }
 
     private void writeFileObject(File file, String extension, Object object) throws IOException {
@@ -371,6 +424,13 @@ public class Main extends Application {
                     + _currentProjectStructure.getCodeFile() + ".hc", true);
             codeEditor.setText(code);
 
+            String electronicJson = readFile(_currentProjectPath + "/"
+                    + _currentProjectStructure.getUiFile() + ".hu", true);
+
+            Type listElements = new TypeToken<ArrayList<ElementSerialized>>(){}.getType();
+            ArrayList<ElementSerialized> es = gSon.fromJson(electronicJson,listElements);
+            es.forEach( o -> addElementToCanvas(o));
+
             parserCode = new ParserCode(Paths.get(_currentProjectPath + "\\"
                     + _currentProjectStructure.getCodeFile() + ".hc").toString(), _parserSettings);
             in.close();
@@ -398,4 +458,11 @@ public class Main extends Application {
         return sb.toString();
     }
 
+    private void writeFile(String path, String content) throws IOException{
+        File file = new File(path);
+        FileWriter fileWriter = new FileWriter(file);
+        fileWriter.write(content);
+        fileWriter.flush();
+        fileWriter.close();
+    }
 }

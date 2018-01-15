@@ -34,6 +34,23 @@ public class ToggleSwitch extends ElectronicElement {
         });
     }
 
+    public ToggleSwitch(String name, Function<String,Boolean> deleteFunction, double x, double y) throws IOException {
+        super(name, deleteFunction);
+        vbox = new VBox(1);
+        switchedOn = new SimpleBooleanProperty(false);
+        init();
+
+        switchedOn.addListener((a,b,c) -> {
+            if(c){
+                button.setGraphic(switchOn);
+            }else{
+                button.setGraphic(switchOff);
+            }
+        });
+        vbox.setLayoutX(x);
+        vbox.setLayoutY(y);
+    }
+
     private void init() throws IOException {
         switchOn = UiUtils.getInstance().getSwitchOn();
         switchOff = UiUtils.getInstance().getSwitchOff();
@@ -75,6 +92,21 @@ public class ToggleSwitch extends ElectronicElement {
     @Override
     public void onValueChanged() {
 
+    }
+
+    @Override
+    public String getType() {
+        return "Switch";
+    }
+
+    @Override
+    public double getX() {
+        return vbox.getLayoutX();
+    }
+
+    @Override
+    public double getY() {
+        return vbox.getLayoutY();
     }
 
     public void finalize(){

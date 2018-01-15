@@ -22,6 +22,24 @@ public class Led extends ElectronicElement {
         init();
     }
 
+    public Led(String name, Function<String,Boolean> deleteFunction, double x, double y) throws IOException {
+        super(name, deleteFunction);
+        vbox = new VBox(10);
+        init();
+        vbox.setLayoutX(x);
+        vbox.setLayoutY(y);
+    }
+
+    @Override
+    public double getX() {
+        return vbox.getLayoutX();
+    }
+
+    @Override
+    public double getY() {
+        return vbox.getLayoutY();
+    }
+
     private void init() throws IOException {
         on = UiUtils.getInstance().getLedOn();
         off = UiUtils.getInstance().getLedOff();
@@ -71,6 +89,11 @@ public class Led extends ElectronicElement {
     @Override
     public void onValueChanged() {
 
+    }
+
+    @Override
+    public String getType() {
+        return "Led";
     }
 
     public void finalize(){

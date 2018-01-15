@@ -22,6 +22,14 @@ public class ToggleButton  extends  ElectronicElement{
         init();
     }
 
+    public ToggleButton(String name, Function<String,Boolean> deleteFunction, double x, double y) throws IOException {
+        super(name, deleteFunction);
+        vbox = new VBox(3);
+        init();
+        vbox.setLayoutX(x);
+        vbox.setLayoutY(y);
+    }
+
     private void init() throws IOException {
         buttonRest = UiUtils.getInstance().getRestButton();
         buttonPress = UiUtils.getInstance().getPressedButton();
@@ -63,6 +71,21 @@ public class ToggleButton  extends  ElectronicElement{
     @Override
     public void onValueChanged() {
 
+    }
+
+    @Override
+    public String getType() {
+        return "Button";
+    }
+
+    @Override
+    public double getX() {
+        return vbox.getLayoutX();
+    }
+
+    @Override
+    public double getY() {
+        return vbox.getLayoutY();
     }
 
     public void finalize(){
