@@ -131,9 +131,6 @@ public class SymbolsTable {
     }
 
     public void stopAllLoops(){
-        /*for(int i = looping.size() -1; i >= 0; i--){
-            looping.get(i).looping = false;
-        }*/
         looping.forEach( o -> o.looping = false);
     }
 
@@ -166,5 +163,11 @@ public class SymbolsTable {
     public int getPinNumber(String variableName) throws SemanticException {
         PinSymbol ps = (PinSymbol) getVariable(variableName);
         return ps.getPinNumber();
+    }
+
+    public void clear() {
+        contexts.clear();
+        looping.clear();
+        functionCalled.clear();
     }
 }
