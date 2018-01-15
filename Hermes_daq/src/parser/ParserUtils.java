@@ -2,12 +2,8 @@ package parser;
 
 import parser.parserSettings.ParserSettings;
 import parser.tree.Location;
-import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.*;
 import parser.tree.values.IntValue;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public final class ParserUtils {
     public final static PinType pinType = new PinType();
@@ -17,6 +13,7 @@ public final class ParserUtils {
     public final static SetType setType = new SetType();
     public final static IntValue intValue = new IntValue();
     private ParserSettings parserSettings;
+
     public static synchronized ParserUtils getInstance(){
         if (instance == null) {
             instance =  new ParserUtils();
@@ -39,4 +36,5 @@ public final class ParserUtils {
     public ParserSettings getParserSettings() {
         return parserSettings;
     }
+
 }

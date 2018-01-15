@@ -1,6 +1,6 @@
 {
 	"availableSerialCommunication": false,
-	"availableUiConsole": false,
+	"availableUiConsole": true,
 	"deviceInfoArrayList": [{
 		"deviceName": "Due",
 		"minPin": 0,

@@ -1,0 +1,5 @@
+module {{moduleName}};
+    initial
+        device '';
+    endinitial
+endmodule

@@ -4,7 +4,6 @@ import parser.ParserUtils;
 import parser.exeptions.SemanticException;
 import parser.tree.Location;
 import parser.tree.expression.ExpressionNode;
-import parser.tree.symbolsTable.SymbolsTable;
 import parser.tree.types.*;
 import serialCommunication.SerialCommException;
 
@@ -34,8 +33,14 @@ public class PrintStatementNode extends StatementNode {
 
     @Override
     public void interpret() throws SemanticException, SerialCommException {
-        System.out.println(getExpression().interpret().getValue());
-        /*TODO print in ui console.*/
+            try {
+                Object val = getExpression().interpret().getValue();
+                System.out.println(val);
+            } catch (SemanticException e) {
+                e.printStackTrace();
+            } catch (SerialCommException e) {
+                e.printStackTrace();
+            }
     }
 
     public ExpressionNode getExpression() {

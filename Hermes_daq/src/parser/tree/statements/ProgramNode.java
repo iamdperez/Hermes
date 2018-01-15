@@ -20,7 +20,8 @@ public class ProgramNode {
     private final ArrayList<FunctionDeclaration> functionList;
     private final ParserSettings parserSettings;
     public ProgramNode(Location location, String moduleName,
-                       InitialNode initial, ArrayList<FunctionDeclaration> functionList, ParserSettings parserSettings){
+                       InitialNode initial, ArrayList<FunctionDeclaration> functionList,
+                       ParserSettings parserSettings){
         this.location = location;
         this.moduleName = moduleName;
         this.initial = initial;
