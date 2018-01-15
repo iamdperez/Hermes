@@ -5,7 +5,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import parser.tree.statements.ProgramNode;
 
-public abstract class ElectronicElement {
+import java.io.Serializable;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+public abstract class ElectronicElement implements Serializable{
     private String name;
     protected Label label;
     protected Button button;
@@ -13,14 +17,16 @@ public abstract class ElectronicElement {
     protected ProgramNode ast;
     protected int height;
     protected int width;
+    protected Function<VBox,Boolean> deleteFunction;
 
-    public ElectronicElement(String name){
+    public ElectronicElement(String name, Function<VBox,Boolean> deleteFunction){
         this.name = name;
         label = new Label();
         label.setText(name);
         button = new Button();
         height = 30;
         width = 30;
+        this.deleteFunction = deleteFunction;
     }
     public boolean isValue() {
         return value;

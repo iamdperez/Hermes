@@ -7,7 +7,6 @@ import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.shape.SVGPath;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -66,7 +65,6 @@ public class UiUtils {
         return getSvgButton(svg, 10);
     }
 
-    @NotNull
     private Button getSvgButton(Group svg, int size) {
         Bounds bounds = svg.getBoundsInParent();
         double scale = Math.min(size / bounds.getWidth(), size / bounds.getHeight());
@@ -77,6 +75,7 @@ public class UiUtils {
         btn.setMaxSize(size, size);
         btn.setMinSize(size, size);
         btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        btn.getStyleClass().add("iconButton");
         return btn;
     }
 
@@ -137,7 +136,6 @@ public class UiUtils {
         return getSvgGroup(svg, 60);
     }
 
-    @NotNull
     private Group getSvgGroup(Group svg, int size) {
         Bounds bounds = svg.getBoundsInParent();
         double scale = Math.min(size / bounds.getWidth(), size / bounds.getHeight());

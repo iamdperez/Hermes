@@ -3,18 +3,21 @@ package ui.ElectronicElement;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import jfxtras.labs.util.event.MouseControlUtil;
 import ui.UiUtils;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 public class Led extends ElectronicElement {
     private Group on;
     private Group off;
     private VBox vbox;
-    public Led(String name) throws IOException {
-        super(name);
+    public Led(String name, Function<VBox, Boolean> deleteFunction) throws IOException {
+        super(name, deleteFunction);
         vbox = new VBox(10);
         init();
     }
@@ -31,12 +34,19 @@ public class Led extends ElectronicElement {
         setStyle();
 
         MouseControlUtil.makeDraggable(vbox);
+
+        final ContextMenu contextMenu = new ContextMenu();
+        final MenuItem item1 = new MenuItem("Delete");
+        item1.setOnAction( e -> deleteFunction.apply(vbox));
+        contextMenu.getItems().addAll(item1);
+        vbox.setOnContextMenuRequested( e -> contextMenu.show(button,e.getScreenX(),e.getScreenY()));
     }
 
     private void setStyle() {
         label.setAlignment(Pos.CENTER);
         button.setAlignment(Pos.CENTER);
         vbox.getStyleClass().add("vBoxElectronic");
+        button.getStyleClass().add("iconButton");
     }
 
     @Override
@@ -61,5 +71,12 @@ public class Led extends ElectronicElement {
     @Override
     public void onValueChanged() {
 
+    }
+
+    public void finalize(){
+        button = null;
+        label = null;
+        on = null;
+        off = null;
     }
 }

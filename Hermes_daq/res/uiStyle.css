@@ -43,13 +43,14 @@
 
 }
 
-.button {
+.iconButton {
     -fx-padding: 5;
     -fx-border-style: none;
     -fx-border-width: 0;
     -fx-border-insets: 0;
     -fx-background-color: transparent;
 }
+
 .button .svg {
     -fx-fill: -fill;
     -fx-opacity: -opacity;
@@ -73,3 +74,4 @@
     -fx-smooth: true;
     -fx-border-width: 5%;
 }
+

@@ -4,11 +4,14 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import jfxtras.labs.util.event.MouseControlUtil;
 import ui.UiUtils;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 public class ToggleSwitch extends ElectronicElement {
     private Group switchOn;
@@ -16,8 +19,8 @@ public class ToggleSwitch extends ElectronicElement {
     private VBox vbox;
     private SimpleBooleanProperty switchedOn;
 
-    public ToggleSwitch(String name) throws IOException {
-        super(name);
+    public ToggleSwitch(String name, Function<VBox, Boolean> deleteFunction) throws IOException {
+        super(name, deleteFunction);
         vbox = new VBox(1);
         switchedOn = new SimpleBooleanProperty(false);
         init();
@@ -45,11 +48,18 @@ public class ToggleSwitch extends ElectronicElement {
         setStyle();
 
         MouseControlUtil.makeDraggable(vbox);
+
+        final ContextMenu contextMenu = new ContextMenu();
+        final MenuItem item1 = new MenuItem("Delete");
+        item1.setOnAction( e -> deleteFunction.apply(vbox));
+        contextMenu.getItems().addAll(item1);
+        vbox.setOnContextMenuRequested( e -> contextMenu.show(button,e.getScreenX(),e.getScreenY()));
     }
 
     private void setStyle() {
         label.setAlignment(Pos.CENTER);
         button.setAlignment(Pos.CENTER);
+        button.getStyleClass().add("iconButton");
     }
 
     @Override
@@ -65,5 +75,13 @@ public class ToggleSwitch extends ElectronicElement {
     @Override
     public void onValueChanged() {
 
+    }
+
+    public void finalize(){
+        button = null;
+        label = null;
+        switchedOn = null;
+        switchOff = null;
+        switchOn = null;
     }
 }

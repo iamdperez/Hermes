@@ -75,6 +75,7 @@ public class CodeEditor {
                 })
                 .subscribe(this::applyHighlighting);
         editorArea =  new StackPane(new VirtualizedScrollPane<>(codeArea));
+        editorArea.getStyleClass().add("canvas");
     }
 
     public StackPane getEditorArea() {
