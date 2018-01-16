@@ -19,6 +19,7 @@ public class UiUtils {
     private static UiUtils instance;
     private Gson gSon;
     private Map<String, String> icons;
+    private boolean isRunning;
     public static synchronized UiUtils getInstance() throws IOException {
         if (instance == null) {
             instance =  new UiUtils();
@@ -173,5 +174,11 @@ public class UiUtils {
         return getSvgButton(svg, 10);
     }
 
+    public boolean isRunning() {
+        return isRunning;
+    }
 
+    public void setRunning(boolean running) {
+        isRunning = running;
+    }
 }

@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import parser.exeptions.SemanticException;
 import parser.parserSettings.ParserSettings;
+import parser.tree.interfaces.FunctionDeclaration;
 import parser.tree.statements.ProgramNode;
 
 import java.io.*;
@@ -250,16 +251,28 @@ public class Main extends Application {
                     ProgramNode program = null;
                     try {
                         program = parserCode.getAST();
+                        mappingEventsFunctionsToUiElements(program);
+                        UiUtils.getInstance().setRunning(true);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        try {
+                            UiUtils.getInstance().setRunning(false);
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
                     }
                     System.out.println("program is running");
                     try {
-                        program.interpretCode();
-                    } catch (SemanticException e) {
+                        while (UiUtils.getInstance().isRunning()){
+                            Thread.sleep(20);
+                        }
+                    } catch (IOException | InterruptedException e) {
                         e.printStackTrace();
-                    } catch (SerialCommException e) {
-                        e.printStackTrace();
+                        try {
+                            UiUtils.getInstance().setRunning(false);
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
                     }
                     System.out.println("Program finished...");
                 }).start();
@@ -273,11 +286,38 @@ public class Main extends Application {
         MenuItem stop = new MenuItem("Stop",
                 UiUtils.getInstance().getSvgIcon("stop", "#D46354", "#D46354"));
         stop.setOnAction(actionEvent -> {
-            //TODO stop button
+            try {
+                UiUtils.getInstance().setRunning(false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
         menuBuild.getItems().addAll(run, stop);
         return menuBuild;
+    }
+
+    private void mappingEventsFunctionsToUiElements(ProgramNode program) {
+        mappingButtonClicks(program);
+    }
+
+    private void mappingButtonClicks(ProgramNode program) {
+        program.getFunctionList().forEach( f -> {
+            ElectronicElement ee = getElectronicElement(f.getFunctionName());
+            if(ee != null){
+                ((ToggleButton)ee).setOnClickFunction(f);
+            }
+        });
+    }
+
+    private ElectronicElement getElectronicElement(String functionName) {
+        ElectronicElement ee = null;
+        Optional<ElectronicElement> element = electronicElements.stream()
+                .filter( o -> functionName.equals(o.getName()+"_onClick")).findFirst();
+        if(element.isPresent()){
+            ee = element.get();
+        }
+        return ee;
     }
 
     private Menu getMenuFile(Stage stage) throws IOException {

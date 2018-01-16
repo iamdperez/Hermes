@@ -7,6 +7,9 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import jfxtras.labs.util.event.MouseControlUtil;
+import parser.exeptions.SemanticException;
+import parser.tree.interfaces.FunctionDeclaration;
+import serialCommunication.SerialCommException;
 import ui.UiUtils;
 
 import java.io.IOException;
@@ -16,6 +19,8 @@ public class ToggleButton  extends  ElectronicElement{
     private VBox vbox;
     private Group buttonRest;
     private Group buttonPress;
+    private FunctionDeclaration onClickFunction;
+
     public ToggleButton(String name, Function<String, Boolean> deleteFunction) throws IOException {
         super(name, deleteFunction);
         vbox = new VBox(3);
@@ -40,7 +45,7 @@ public class ToggleButton  extends  ElectronicElement{
         setStyle();
         MouseControlUtil.makeDraggable(vbox);
         button.setOnMousePressed((e) -> button.setGraphic(buttonPress));
-
+        button.setOnMouseClicked(e -> onClick());
         button.setOnMouseReleased((e) -> button.setGraphic(buttonRest));
 
         final ContextMenu contextMenu = new ContextMenu();
@@ -65,7 +70,19 @@ public class ToggleButton  extends  ElectronicElement{
 
     @Override
     public void onClick() {
-
+        try {
+            if(!UiUtils.getInstance().isRunning())
+                return;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new Thread(() -> {
+            try {
+                onClickFunction.interpret();
+            } catch (SemanticException | SerialCommException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     @Override
@@ -98,5 +115,9 @@ public class ToggleButton  extends  ElectronicElement{
         label = null;
         buttonPress = null;
         buttonRest = null;
+    }
+
+    public void setOnClickFunction(FunctionDeclaration onClickFunction) {
+        this.onClickFunction = onClickFunction;
     }
 }

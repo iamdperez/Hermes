@@ -40,10 +40,18 @@ public class MainNode extends StatementNode implements FunctionDeclaration {
 
     @Override
     public void interpret() throws SemanticException, SerialCommException {
+        SymbolsTable.getInstance().pushNewContext();
         if(variables != null)
             variables.interpret();
         for(StatementNode item: statementList){
             item.interpret();
         }
+        SymbolsTable.getInstance().popContext();
     }
+
+    @Override
+    public String getFunctionName() {
+        return "main";
+    }
+
 }

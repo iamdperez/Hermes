@@ -72,13 +72,13 @@ public class ProgramNode {
     public void interpretCode() throws SemanticException, SerialCommException {
         if(initial != null)
             initial.interpret();
-        Optional<FunctionDeclaration> main = functionList.stream().filter( o -> o instanceof MainNode).findFirst();
-        if(main.isPresent()) {
-            MainNode mainNode = (MainNode) main.get();
-            SymbolsTable.getInstance().pushNewContext();
-            mainNode.interpret();
-            SymbolsTable.getInstance().popContext();
-        }
-        SymbolsTable.getInstance().popContext();
+//        Optional<FunctionDeclaration> main = functionList.stream().filter( o -> o instanceof MainNode).findFirst();
+//        if(main.isPresent()) {
+//            MainNode mainNode = (MainNode) main.get();
+//            SymbolsTable.getInstance().pushNewContext();
+//            mainNode.interpret();
+//            SymbolsTable.getInstance().popContext();
+//        }
+//        SymbolsTable.getInstance().popContext();
     }
 }
