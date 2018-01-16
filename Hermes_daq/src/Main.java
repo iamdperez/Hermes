@@ -288,6 +288,7 @@ public class Main extends Application {
                     ProgramNode program = null;
                     try {
                         program = parserCode.getAST();
+                        program.interpretCode();
                         mappingEventsFunctionsToUiElements(program);
                         UiUtils.getInstance().setRunning(true);
                     } catch (Exception e) {
