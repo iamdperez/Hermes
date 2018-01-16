@@ -7,6 +7,7 @@ import parser.tree.Location;
 import parser.tree.interfaces.Symbol;
 import parser.tree.statements.globalVariables.IO;
 import parser.tree.types.Type;
+import parser.tree.values.PinValue;
 import parser.tree.values.Value;
 import serialCommunication.SerialCommException;
 
@@ -169,5 +170,11 @@ public class SymbolsTable {
         contexts.clear();
         looping.clear();
         functionCalled.clear();
+    }
+
+    public void updateVariableValue(String name, boolean value) throws SemanticException, SerialCommException {
+        PinSymbol var = (PinSymbol) getVariable(name);
+        PinValue val = (PinValue)var.getValue();
+        val.setValue( value ? 1 : 0);
     }
 }

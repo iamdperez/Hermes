@@ -254,11 +254,11 @@ public class Main extends Application {
                         mappingEventsFunctionsToUiElements(program);
                         UiUtils.getInstance().setRunning(true);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                         try {
                             UiUtils.getInstance().setRunning(false);
                         } catch (IOException e1) {
-                            e1.printStackTrace();
+                            System.out.println(e1.getMessage());
                         }
                     }
                     System.out.println("program is running");
@@ -267,19 +267,18 @@ public class Main extends Application {
                             Thread.sleep(20);
                         }
                     } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                         try {
                             UiUtils.getInstance().setRunning(false);
                         } catch (IOException e1) {
-                            e1.printStackTrace();
+                            System.out.println(e1.getMessage());
                         }
                     }
                     System.out.println("Program finished...");
                 }).start();
 
             } catch (Exception e) {
-                System.out.println(e.toString());
-                //TODO: show error
+                System.out.println(e.getMessage());
             }
         });
 
@@ -289,7 +288,7 @@ public class Main extends Application {
             try {
                 UiUtils.getInstance().setRunning(false);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         });
 
@@ -299,6 +298,16 @@ public class Main extends Application {
 
     private void mappingEventsFunctionsToUiElements(ProgramNode program) {
         mappingButtonClicks(program);
+        mappingSwitchesChanged(program);
+    }
+
+    private void mappingSwitchesChanged(ProgramNode program) {
+        program.getFunctionList().forEach( f -> {
+            ElectronicElement ee = getElectronicElement(f.getFunctionName(), "_onValueChanged");
+            if(ee != null){
+                ((ToggleSwitch)ee).setOnValueChangedFunction(f);
+            }
+        });
     }
 
     private void mappingButtonClicks(ProgramNode program) {
@@ -322,7 +331,6 @@ public class Main extends Application {
 
     public Boolean onValueEvent(String name, boolean value){
         ElectronicElement ee = getElectronicElement(name, "");
-        System.out.println(name + " "+ value);
         if(ee == null)
             return false;
         if (Platform.isFxApplicationThread()) {
@@ -363,7 +371,7 @@ public class Main extends Application {
                     writeCodeFile(file.getAbsolutePath());
                     writeUiFile(file.getAbsolutePath());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
                 }
             }
         });
@@ -396,7 +404,7 @@ public class Main extends Application {
             bw.write(content);
             bw.close();
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
@@ -416,7 +424,7 @@ public class Main extends Application {
             bw.write(content);
             bw.close();
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
     private void writeCodeFile(String filePath) throws IOException {
@@ -493,7 +501,7 @@ public class Main extends Application {
             fileIn.close();
 
          } catch (Exception ex) {
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
         }
     }
 

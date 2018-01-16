@@ -45,11 +45,23 @@ public class ToggleButton  extends  ElectronicElement{
         setStyle();
         MouseControlUtil.makeDraggable(vbox);
         button.setOnMousePressed((e) -> {
+            try {
+                if(!UiUtils.getInstance().isRunning())
+                    return;
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
             button.setGraphic(buttonPress);
             value = true;
         });
         button.setOnMouseClicked(e -> onClick());
         button.setOnMouseReleased((e) -> {
+            try {
+                if(!UiUtils.getInstance().isRunning())
+                    return;
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
             button.setGraphic(buttonRest);
             value = false;
         });
@@ -80,13 +92,13 @@ public class ToggleButton  extends  ElectronicElement{
             if(!UiUtils.getInstance().isRunning())
                 return;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         new Thread(() -> {
             try {
                 onClickFunction.interpret();
             } catch (SemanticException | SerialCommException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }).start();
     }
