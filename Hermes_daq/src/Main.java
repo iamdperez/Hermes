@@ -42,20 +42,33 @@ public class Main extends Application {
     private Pane _canvas;
     private ArrayList<ElectronicElement> electronicElements;
     private Gson gSon;
-    private boolean _workSpaceSetted;
+    private boolean _workSpaceSet;
 
     public Main() throws IOException {
         codeEditor = new CodeEditor();
-        _workSpaceSetted = false;
+        _workSpaceSet = false;
         ParserUtils.getInstance().setOnValueEvent(this::onValueEvent);
         gSon = new Gson();
         _canvas = new Pane();
         electronicElements = new ArrayList<>();
+        _parserSettings = loadParserSettings();
 
+    }
+
+    private ParserSettings loadParserSettings() throws IOException {
+        File file = new File("parserSettings.json");
         Type parserSettingsType = new TypeToken<ParserSettings>() {
         }.getType();
-        _parserSettings = gSon.fromJson(
-                UiUtils.getInstance().loadResource("/parserSettings.json"), parserSettingsType);
+        ParserSettings ps;
+        String json;
+        if(file.exists() && !file.isDirectory()) {
+            json = readFile("parserSettings.json", true);
+        }else{
+            json = UiUtils.getInstance().loadResource("/parserSettings.json");
+            writeFile("parserSettings.json",json);
+        }
+        ps = gSon.fromJson(json, parserSettingsType);
+        return ps;
     }
 
     public static void main(String[] args) {
@@ -142,7 +155,7 @@ public class Main extends Application {
             } catch (IOException e1) {
                 System.out.println(e1.getMessage());
             }
-            if (!_workSpaceSetted) {
+            if (!_workSpaceSet) {
                 showError("You must open a project before");
                 return;
             }
@@ -262,7 +275,7 @@ public class Main extends Application {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
-            if (!_workSpaceSetted) {
+            if (!_workSpaceSet) {
                 showError("You must open a project before");
                 return;
             }
@@ -407,7 +420,7 @@ public class Main extends Application {
                 UiUtils.getInstance().getSaveIcon());
         saveProject.setOnAction(actionEvent -> {
             try {
-                if(!_workSpaceSetted){
+                if(!_workSpaceSet){
                     showError("You must open a project before.");
                     return;
                 }
@@ -559,10 +572,10 @@ public class Main extends Application {
             in.close();
             fileIn.close();
 
-            _workSpaceSetted = true;
+            _workSpaceSet = true;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            _workSpaceSetted = false;
+            _workSpaceSet = false;
         }
     }
 
