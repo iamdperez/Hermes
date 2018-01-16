@@ -11,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import parser.ParserUtils;
 import parser.parserSettings.ParserSettings;
 import parser.tree.statements.ProgramNode;
@@ -34,7 +33,6 @@ public class Main extends Application {
     private final int windowsHeight = 768;
     private final int windowsWidth = 1366;
     private CodeEditor codeEditor;
-
     private String _currentProjectPath;
     private ProjectStructure _currentProjectStructure;
     private TreeItem<String> _rootTreeVItem;
@@ -44,10 +42,12 @@ public class Main extends Application {
     private Pane _canvas;
     private ArrayList<ElectronicElement> electronicElements;
     private Gson gSon;
+    private boolean _workSpaceSetted;
 
     public Main() throws IOException {
         codeEditor = new CodeEditor();
-        ParserUtils.getInstance().setOnValueEvent((s, v) -> onValueEvent(s, v));
+        _workSpaceSetted = false;
+        ParserUtils.getInstance().setOnValueEvent(this::onValueEvent);
         gSon = new Gson();
         _canvas = new Pane();
         electronicElements = new ArrayList<>();
@@ -135,6 +135,17 @@ public class Main extends Application {
 
         Button button = new Button("Add");
         button.setOnAction(e -> {
+            try {
+                if (UiUtils.getInstance().isRunning()) {
+                    return;
+                }
+            } catch (IOException e1) {
+                System.out.println(e1.getMessage());
+            }
+            if (!_workSpaceSetted) {
+                showError("You must open a project before");
+                return;
+            }
             String item = (String) cb.getSelectionModel().getSelectedItem();
             if (item == null)
                 return;
@@ -142,13 +153,13 @@ public class Main extends Application {
                 ElectronicElement ee = null;
                 switch (item) {
                     case "Led":
-                        ee = new Led(name.getText(), o -> removeElectronicElement(o));
+                        ee = new Led(name.getText(), this::removeElectronicElement);
                         break;
                     case "Switch":
-                        ee = new ToggleSwitch(name.getText(), o -> removeElectronicElement(o));
+                        ee = new ToggleSwitch(name.getText(), this::removeElectronicElement);
                         break;
                     case "Push Button":
-                        ee = new ToggleButton(name.getText(), o -> removeElectronicElement(o));
+                        ee = new ToggleButton(name.getText(), this::removeElectronicElement);
                         break;
                 }
                 _canvas.getChildren().add(ee.drawElement());
@@ -170,13 +181,13 @@ public class Main extends Application {
             ElectronicElement ee = null;
             switch (element.getType()) {
                 case "Led":
-                    ee = new Led(element.getName(), s -> removeElectronicElement(s), element.getX(), element.getY());
+                    ee = new Led(element.getName(), this::removeElectronicElement, element.getX(), element.getY());
                     break;
                 case "Switch":
-                    ee = new ToggleSwitch(element.getName(), s -> removeElectronicElement(s), element.getX(), element.getY());
+                    ee = new ToggleSwitch(element.getName(), this::removeElectronicElement, element.getX(), element.getY());
                     break;
                 case "Button":
-                    ee = new ToggleButton(element.getName(), s -> removeElectronicElement(s), element.getX(), element.getY());
+                    ee = new ToggleButton(element.getName(), this::removeElectronicElement, element.getX(), element.getY());
                     break;
             }
             _canvas.getChildren().add(ee.drawElement());
@@ -187,7 +198,7 @@ public class Main extends Application {
         }
     }
 
-    public boolean removeElectronicElement(String name) {
+    private boolean removeElectronicElement(String name) {
 
         Optional<ElectronicElement> element = electronicElements.stream().filter(o -> o.getName().equals(name)).findFirst();
         if (!element.isPresent())
@@ -244,6 +255,18 @@ public class Main extends Application {
                 UiUtils.getInstance().getSvgIcon("play", "green", "darkgreen"));
         run.setOnAction(actionEvent -> {
             try {
+                if (UiUtils.getInstance().isRunning()) {
+                    showWarning("Project is already running.");
+                    return;
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+            if (!_workSpaceSetted) {
+                showError("You must open a project before");
+                return;
+            }
+            try {
                 new Thread(() -> {
                     _consoleArea.clear();
                     System.out.println("Compiling " + LocalDateTime.now());
@@ -287,6 +310,8 @@ public class Main extends Application {
                 UiUtils.getInstance().getSvgIcon("stop", "#D46354", "#D46354"));
         stop.setOnAction(actionEvent -> {
             try {
+                if (!UiUtils.getInstance().isRunning())
+                    return;
                 UiUtils.getInstance().setRunning(false);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -330,7 +355,7 @@ public class Main extends Application {
         return ee;
     }
 
-    public Boolean onValueEvent(String name, boolean value) {
+    private Boolean onValueEvent(String name, boolean value) {
         ElectronicElement ee = getElectronicElement(name, "");
         if (ee == null)
             return false;
@@ -382,6 +407,10 @@ public class Main extends Application {
                 UiUtils.getInstance().getSaveIcon());
         saveProject.setOnAction(actionEvent -> {
             try {
+                if(!_workSpaceSetted){
+                    showError("You must open a project before.");
+                    return;
+                }
                 saveCode();
                 saveUi();
                 showInfo("Project saved successfully.");
@@ -408,6 +437,10 @@ public class Main extends Application {
 
     private void showInfo(String message) {
         showAlert(Alert.AlertType.INFORMATION, "Info", message);
+    }
+
+    private void showWarning(String message) {
+        showAlert(Alert.AlertType.WARNING, "Warning", message);
     }
 
 
@@ -465,7 +498,7 @@ public class Main extends Application {
 
     private String getElectronicElementsJson() {
         ArrayList<ElementSerialized> elements = new ArrayList<>();
-        electronicElements.stream().forEach(o ->
+        electronicElements.forEach(o ->
                 elements.add(new ElementSerialized(o.getName(), o.getX(), o.getY(), o.getType())));
         return gSon.toJson(elements);
     }
@@ -519,15 +552,17 @@ public class Main extends Application {
             Type listElements = new TypeToken<ArrayList<ElementSerialized>>() {
             }.getType();
             ArrayList<ElementSerialized> es = gSon.fromJson(electronicJson, listElements);
-            es.forEach(o -> addElementToCanvas(o));
+            es.forEach(this::addElementToCanvas);
 
             parserCode = new ParserCode(Paths.get(_currentProjectPath + "\\"
                     + _currentProjectStructure.getCodeFile() + ".hc").toString(), _parserSettings);
             in.close();
             fileIn.close();
 
+            _workSpaceSetted = true;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
+            _workSpaceSetted = false;
         }
     }
 
