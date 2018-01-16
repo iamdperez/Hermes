@@ -13,8 +13,10 @@ import javafx.scene.layout.StackPane;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.reactfx.collection.LiveList;
 
 public class CodeEditor {
 
@@ -130,5 +132,19 @@ public class CodeEditor {
 
     public void setText(String text){
         codeArea.replaceText(0, 0, text);
+    }
+
+    public void appendText(String eventsFunctions) {
+       LiveList<Paragraph<Collection<String>,String , Collection<String>>> paragraphs =  codeArea.getParagraphs();
+       int index = 0;
+       for (int i = 0; i < paragraphs.size(); i++){
+           if(paragraphs.get(i).getText().equals("endmodule")){
+               index = i;
+               break;
+           }
+       }
+       codeArea.insertText(index,0,eventsFunctions);
+//       codeArea.insertText(index, eventsFunctions);
+//        codeArea.appendText(eventsFunctions);
     }
 }

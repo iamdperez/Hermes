@@ -96,6 +96,11 @@ public class Led extends ElectronicElement {
         return "Led";
     }
 
+    @Override
+    public String getEventsFunctions() {
+        return "";
+    }
+
     public void finalize(){
         button = null;
         label = null;

@@ -88,6 +88,11 @@ public class ToggleButton  extends  ElectronicElement{
         return vbox.getLayoutY();
     }
 
+    @Override
+    public String getEventsFunctions() {
+        String v = "\nfunction "+name+"_onClick()\n\nendfunction\n\n";
+        return v;
+    }
     public void finalize(){
         button = null;
         label = null;

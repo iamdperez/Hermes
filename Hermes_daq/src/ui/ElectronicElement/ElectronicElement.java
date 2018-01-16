@@ -69,4 +69,5 @@ public abstract class ElectronicElement implements Serializable{
     public abstract void onClick();
     public abstract void onValueChanged();
     public abstract String getType();
+    public abstract String getEventsFunctions();
 }

@@ -42,6 +42,10 @@ public class UiUtils {
     }
 
     public String loadResource(String filePath) throws IOException {
+        return loadResource(filePath,false);
+    }
+
+    public String loadResource(String filePath, boolean eof) throws IOException {
         InputStream res = UiUtils.class.getResourceAsStream(filePath);
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(res));
@@ -49,6 +53,8 @@ public class UiUtils {
         String line = null;
         while ((line = reader.readLine()) != null) {
             sb.append(line);
+            if(eof);
+            sb.append("\r\n");
         }
         reader.close();
         return sb.toString();

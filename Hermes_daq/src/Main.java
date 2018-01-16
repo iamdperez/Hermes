@@ -151,6 +151,7 @@ public class Main extends Application {
                 }
                 _canvas.getChildren().add(ee.drawElement());
                 electronicElements.add(ee);
+                codeEditor.appendText(ee.getEventsFunctions());
 
             } catch (IOException e1) {
                 System.out.println(e1.getMessage());
@@ -364,7 +365,7 @@ public class Main extends Application {
         }
     }
     private void writeCodeFile(String filePath) throws IOException {
-        String content = UiUtils.getInstance().loadResource("/projectFormat.txt");
+        String content = UiUtils.getInstance().loadResource("/projectFormat.txt", true);
         String p = filePath + "/code.hc";
         Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
     }

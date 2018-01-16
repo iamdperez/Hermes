@@ -109,6 +109,12 @@ public class ToggleSwitch extends ElectronicElement {
         return vbox.getLayoutY();
     }
 
+    @Override
+    public String getEventsFunctions() {
+        String v = "\nfunction "+name+"_onValueChange(value)\n\nendfunction\n\n";
+        return v;
+    }
+
     public void finalize(){
         button = null;
         label = null;
