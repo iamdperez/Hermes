@@ -144,7 +144,9 @@ public class CodeEditor {
            }
        }
        codeArea.insertText(index,0,eventsFunctions);
-//       codeArea.insertText(index, eventsFunctions);
-//        codeArea.appendText(eventsFunctions);
+    }
+
+    public void clear() {
+        codeArea.clear();
     }
 }

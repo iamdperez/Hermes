@@ -44,6 +44,7 @@ public class Main extends Application {
     private Pane _canvas;
     private ArrayList<ElectronicElement> electronicElements;
     private Gson gSon;
+
     public Main() throws IOException {
         codeEditor = new CodeEditor();
         ParserUtils.getInstance().setOnValueEvent((s, v) -> onValueEvent(s, v));
@@ -164,18 +165,18 @@ public class Main extends Application {
         return vbox;
     }
 
-    private void addElementToCanvas(ElementSerialized element){
+    private void addElementToCanvas(ElementSerialized element) {
         try {
             ElectronicElement ee = null;
             switch (element.getType()) {
                 case "Led":
-                    ee = new Led(element.getName(),s -> removeElectronicElement(s),element.getX(),element.getY());
+                    ee = new Led(element.getName(), s -> removeElectronicElement(s), element.getX(), element.getY());
                     break;
                 case "Switch":
-                    ee = new ToggleSwitch(element.getName(),s -> removeElectronicElement(s),element.getX(),element.getY());
+                    ee = new ToggleSwitch(element.getName(), s -> removeElectronicElement(s), element.getX(), element.getY());
                     break;
                 case "Button":
-                    ee = new ToggleButton(element.getName(),s -> removeElectronicElement(s),element.getX(),element.getY());
+                    ee = new ToggleButton(element.getName(), s -> removeElectronicElement(s), element.getX(), element.getY());
                     break;
             }
             _canvas.getChildren().add(ee.drawElement());
@@ -186,10 +187,10 @@ public class Main extends Application {
         }
     }
 
-    public boolean removeElectronicElement(String name){
+    public boolean removeElectronicElement(String name) {
 
         Optional<ElectronicElement> element = electronicElements.stream().filter(o -> o.getName().equals(name)).findFirst();
-        if(!element.isPresent())
+        if (!element.isPresent())
             return false;
         ElectronicElement mainNode = element.get();
         _canvas.getChildren().remove(mainNode.drawElement());
@@ -263,7 +264,7 @@ public class Main extends Application {
                     }
                     System.out.println("program is running");
                     try {
-                        while (UiUtils.getInstance().isRunning()){
+                        while (UiUtils.getInstance().isRunning()) {
                             Thread.sleep(20);
                         }
                     } catch (IOException | InterruptedException e) {
@@ -302,19 +303,19 @@ public class Main extends Application {
     }
 
     private void mappingSwitchesChanged(ProgramNode program) {
-        program.getFunctionList().forEach( f -> {
+        program.getFunctionList().forEach(f -> {
             ElectronicElement ee = getElectronicElement(f.getFunctionName(), "_onValueChanged");
-            if(ee != null){
-                ((ToggleSwitch)ee).setOnValueChangedFunction(f);
+            if (ee != null) {
+                ((ToggleSwitch) ee).setOnValueChangedFunction(f);
             }
         });
     }
 
     private void mappingButtonClicks(ProgramNode program) {
-        program.getFunctionList().forEach( f -> {
+        program.getFunctionList().forEach(f -> {
             ElectronicElement ee = getElectronicElement(f.getFunctionName(), "_onClick");
-            if(ee != null){
-                ((ToggleButton)ee).setOnClickFunction(f);
+            if (ee != null) {
+                ((ToggleButton) ee).setOnClickFunction(f);
             }
         });
     }
@@ -322,21 +323,20 @@ public class Main extends Application {
     private ElectronicElement getElectronicElement(String functionName, String customSuffix) {
         ElectronicElement ee = null;
         Optional<ElectronicElement> element = electronicElements.stream()
-                .filter( o -> functionName.equals(o.getName()+customSuffix)).findFirst();
-        if(element.isPresent()){
+                .filter(o -> functionName.equals(o.getName() + customSuffix)).findFirst();
+        if (element.isPresent()) {
             ee = element.get();
         }
         return ee;
     }
 
-    public Boolean onValueEvent(String name, boolean value){
+    public Boolean onValueEvent(String name, boolean value) {
         ElectronicElement ee = getElectronicElement(name, "");
-        if(ee == null)
+        if (ee == null)
             return false;
         if (Platform.isFxApplicationThread()) {
             ee.setValue(value);
-        }
-        else {
+        } else {
             Platform.runLater(() -> ee.setValue(value));
         }
 
@@ -368,8 +368,10 @@ public class Main extends Application {
                     file.mkdir();
                     ProjectStructure ps = new ProjectStructure("code", "ui", file.getName());
                     writeFileObject(file, ".hdaq", ps);
-                    writeCodeFile(file.getAbsolutePath());
+                    writeCodeFile(file.getAbsolutePath(), file.getName());
                     writeUiFile(file.getAbsolutePath());
+                    File openFile = new File(file.getPath() + "/" + file.getName() + ".hdaq");
+                    openFile(openFile);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -379,12 +381,33 @@ public class Main extends Application {
         MenuItem saveProject = new MenuItem("Save Project",
                 UiUtils.getInstance().getSaveIcon());
         saveProject.setOnAction(actionEvent -> {
-            saveCode();
-            saveUi();
+            try {
+                saveCode();
+                saveUi();
+                showInfo("Project saved successfully.");
+            } catch (Exception e) {
+                showError("Error saving the project.");
+            }
         });
 
         menuFile.getItems().addAll(openProject, newProject, saveProject);
         return menuFile;
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String message) {
+        showAlert(Alert.AlertType.ERROR, "Error", message);
+    }
+
+    private void showInfo(String message) {
+        showAlert(Alert.AlertType.INFORMATION, "Info", message);
     }
 
 
@@ -408,7 +431,7 @@ public class Main extends Application {
         }
     }
 
-    private void saveUi(){
+    private void saveUi() {
         try {
 
             String content = getElectronicElementsJson();
@@ -427,22 +450,23 @@ public class Main extends Application {
             System.out.println(e.getMessage());
         }
     }
-    private void writeCodeFile(String filePath) throws IOException {
+
+    private void writeCodeFile(String filePath, String moduleName) throws IOException {
         String content = UiUtils.getInstance().loadResource("/projectFormat.txt", true);
-        String p = filePath + "/code.hc";
+        content = content.replace("{{moduleName}}", moduleName);
         Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
     }
 
-    private void writeUiFile(String filePath) throws IOException{
+    private void writeUiFile(String filePath) throws IOException {
         String content = getElectronicElementsJson();
         String p = filePath + "/ui.hu";
-        writeFile(p,content);
+        writeFile(p, content);
     }
 
-    private String getElectronicElementsJson(){
+    private String getElectronicElementsJson() {
         ArrayList<ElementSerialized> elements = new ArrayList<>();
-        electronicElements.stream().forEach( o ->
-                elements.add(new ElementSerialized(o.getName(), o.getX(),o.getY(), o.getType())));
+        electronicElements.stream().forEach(o ->
+                elements.add(new ElementSerialized(o.getName(), o.getX(), o.getY(), o.getType())));
         return gSon.toJson(elements);
     }
 
@@ -468,6 +492,7 @@ public class Main extends Application {
 
     private void openFile(File file) {
         try {
+            cleanWorkSpace();
             FileInputStream fileIn = new FileInputStream(file.getAbsolutePath());
             String path = file.getAbsolutePath().substring(0, file.getAbsolutePath().indexOf(file.getName()));
             _currentProjectPath = path;
@@ -491,20 +516,30 @@ public class Main extends Application {
             String electronicJson = readFile(_currentProjectPath + "/"
                     + _currentProjectStructure.getUiFile() + ".hu", true);
 
-            Type listElements = new TypeToken<ArrayList<ElementSerialized>>(){}.getType();
-            ArrayList<ElementSerialized> es = gSon.fromJson(electronicJson,listElements);
-            es.forEach( o -> addElementToCanvas(o));
+            Type listElements = new TypeToken<ArrayList<ElementSerialized>>() {
+            }.getType();
+            ArrayList<ElementSerialized> es = gSon.fromJson(electronicJson, listElements);
+            es.forEach(o -> addElementToCanvas(o));
 
             parserCode = new ParserCode(Paths.get(_currentProjectPath + "\\"
                     + _currentProjectStructure.getCodeFile() + ".hc").toString(), _parserSettings);
             in.close();
             fileIn.close();
 
-         } catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
 
+    private void cleanWorkSpace() {
+        _currentProjectPath = "";
+        _currentProjectStructure = null;
+        _rootTreeVItem.getChildren().clear();
+        codeEditor.clear();
+        parserCode = null;
+        _canvas.getChildren().clear();
+        electronicElements.clear();
+    }
 
     private AnchorPane addAnchorPane(Node uiElement) {
         AnchorPane anchorpane = new AnchorPane();
@@ -522,7 +557,7 @@ public class Main extends Application {
         return sb.toString();
     }
 
-    private void writeFile(String path, String content) throws IOException{
+    private void writeFile(String path, String content) throws IOException {
         File file = new File(path);
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(content);
