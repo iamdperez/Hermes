@@ -7,6 +7,9 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import jfxtras.labs.util.event.MouseControlUtil;
+import parser.exeptions.SemanticException;
+import parser.tree.interfaces.FunctionDeclaration;
+import serialCommunication.SerialCommException;
 import ui.UiUtils;
 
 import java.io.IOException;
@@ -16,6 +19,8 @@ public class ToggleButton  extends  ElectronicElement{
     private VBox vbox;
     private Group buttonRest;
     private Group buttonPress;
+    private FunctionDeclaration onClickFunction;
+
     public ToggleButton(String name, Function<String, Boolean> deleteFunction) throws IOException {
         super(name, deleteFunction);
         vbox = new VBox(3);
@@ -39,9 +44,27 @@ public class ToggleButton  extends  ElectronicElement{
         button.setGraphic(buttonRest);
         setStyle();
         MouseControlUtil.makeDraggable(vbox);
-        button.setOnMousePressed((e) -> button.setGraphic(buttonPress));
-
-        button.setOnMouseReleased((e) -> button.setGraphic(buttonRest));
+        button.setOnMousePressed((e) -> {
+            try {
+                if(!UiUtils.getInstance().isRunning())
+                    return;
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+            button.setGraphic(buttonPress);
+            value = true;
+        });
+        button.setOnMouseClicked(e -> onClick());
+        button.setOnMouseReleased((e) -> {
+            try {
+                if(!UiUtils.getInstance().isRunning())
+                    return;
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+            button.setGraphic(buttonRest);
+            value = false;
+        });
 
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem item1 = new MenuItem("Delete");
@@ -65,7 +88,24 @@ public class ToggleButton  extends  ElectronicElement{
 
     @Override
     public void onClick() {
-
+        try {
+            if(!UiUtils.getInstance().isRunning())
+                return;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        new Thread(() -> {
+            try {
+                onClickFunction.interpret();
+            } catch (SemanticException | SerialCommException e) {
+                System.out.println(e.getMessage());
+                try {
+                    UiUtils.getInstance().setRunning(false);
+                } catch (IOException e1) {
+                    System.out.println(e1.getMessage());
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -88,10 +128,19 @@ public class ToggleButton  extends  ElectronicElement{
         return vbox.getLayoutY();
     }
 
+    @Override
+    public String getEventsFunctions() {
+        String v = "\nfunction "+name+"_onClick()\n\nendfunction\n\n";
+        return v;
+    }
     public void finalize(){
         button = null;
         label = null;
         buttonPress = null;
         buttonRest = null;
+    }
+
+    public void setOnClickFunction(FunctionDeclaration onClickFunction) {
+        this.onClickFunction = onClickFunction;
     }
 }

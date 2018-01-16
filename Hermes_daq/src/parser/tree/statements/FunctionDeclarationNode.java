@@ -72,8 +72,17 @@ public class FunctionDeclarationNode extends StatementNode implements FunctionDe
     }
 
     @Override
-    public void interpret() {
-        //do nothing
+    public void interpret() throws SemanticException, SerialCommException {
+        if(variables != null)
+            variables.interpret();
+        for(StatementNode item: statementList){
+            item.interpret();
+        }
+    }
+
+    @Override
+    public String getFunctionName() {
+        return name;
     }
 
     public void firstPassDeclaration() throws SemanticException{

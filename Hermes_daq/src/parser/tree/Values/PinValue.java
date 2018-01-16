@@ -45,6 +45,7 @@ public class PinValue extends Value {
     @Override
     public void setValue(Object value) throws SemanticException, SerialCommException {
         this.value = (int)value > 0 ? 1 : 0;
+        ParserUtils.getInstance().executeValueEvent(variableRef, this.value > 0);
         if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()){
             int pinNumber = SymbolsTable.getInstance().getPinNumber(variableRef);
             Command command = this.value == 0 ? Command.SET_VALUE_LOW : Command.SET_VALUE_HIGH;

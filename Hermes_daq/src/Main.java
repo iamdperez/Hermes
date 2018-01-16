@@ -11,7 +11,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import parser.exeptions.SemanticException;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import parser.ParserUtils;
 import parser.parserSettings.ParserSettings;
 import parser.tree.statements.ProgramNode;
 
@@ -23,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import serialCommunication.SerialCommException;
 import ui.*;
 import ui.Console;
 import ui.ElectronicElement.*;
@@ -46,6 +46,7 @@ public class Main extends Application {
     private Gson gSon;
     public Main() throws IOException {
         codeEditor = new CodeEditor();
+        ParserUtils.getInstance().setOnValueEvent((s, v) -> onValueEvent(s, v));
         gSon = new Gson();
         _canvas = new Pane();
         electronicElements = new ArrayList<>();
@@ -151,6 +152,7 @@ public class Main extends Application {
                 }
                 _canvas.getChildren().add(ee.drawElement());
                 electronicElements.add(ee);
+                codeEditor.appendText(ee.getEventsFunctions());
 
             } catch (IOException e1) {
                 System.out.println(e1.getMessage());
@@ -249,34 +251,96 @@ public class Main extends Application {
                     ProgramNode program = null;
                     try {
                         program = parserCode.getAST();
+                        mappingEventsFunctionsToUiElements(program);
+                        UiUtils.getInstance().setRunning(true);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println(e.getMessage());
+                        try {
+                            UiUtils.getInstance().setRunning(false);
+                        } catch (IOException e1) {
+                            System.out.println(e1.getMessage());
+                        }
                     }
                     System.out.println("program is running");
                     try {
-                        program.interpretCode();
-                    } catch (SemanticException e) {
-                        e.printStackTrace();
-                    } catch (SerialCommException e) {
-                        e.printStackTrace();
+                        while (UiUtils.getInstance().isRunning()){
+                            Thread.sleep(20);
+                        }
+                    } catch (IOException | InterruptedException e) {
+                        System.out.println(e.getMessage());
+                        try {
+                            UiUtils.getInstance().setRunning(false);
+                        } catch (IOException e1) {
+                            System.out.println(e1.getMessage());
+                        }
                     }
                     System.out.println("Program finished...");
                 }).start();
 
             } catch (Exception e) {
-                System.out.println(e.toString());
-                //TODO: show error
+                System.out.println(e.getMessage());
             }
         });
 
         MenuItem stop = new MenuItem("Stop",
                 UiUtils.getInstance().getSvgIcon("stop", "#D46354", "#D46354"));
         stop.setOnAction(actionEvent -> {
-            //TODO stop button
+            try {
+                UiUtils.getInstance().setRunning(false);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
         });
 
         menuBuild.getItems().addAll(run, stop);
         return menuBuild;
+    }
+
+    private void mappingEventsFunctionsToUiElements(ProgramNode program) {
+        mappingButtonClicks(program);
+        mappingSwitchesChanged(program);
+    }
+
+    private void mappingSwitchesChanged(ProgramNode program) {
+        program.getFunctionList().forEach( f -> {
+            ElectronicElement ee = getElectronicElement(f.getFunctionName(), "_onValueChanged");
+            if(ee != null){
+                ((ToggleSwitch)ee).setOnValueChangedFunction(f);
+            }
+        });
+    }
+
+    private void mappingButtonClicks(ProgramNode program) {
+        program.getFunctionList().forEach( f -> {
+            ElectronicElement ee = getElectronicElement(f.getFunctionName(), "_onClick");
+            if(ee != null){
+                ((ToggleButton)ee).setOnClickFunction(f);
+            }
+        });
+    }
+
+    private ElectronicElement getElectronicElement(String functionName, String customSuffix) {
+        ElectronicElement ee = null;
+        Optional<ElectronicElement> element = electronicElements.stream()
+                .filter( o -> functionName.equals(o.getName()+customSuffix)).findFirst();
+        if(element.isPresent()){
+            ee = element.get();
+        }
+        return ee;
+    }
+
+    public Boolean onValueEvent(String name, boolean value){
+        ElectronicElement ee = getElectronicElement(name, "");
+        if(ee == null)
+            return false;
+        if (Platform.isFxApplicationThread()) {
+            ee.setValue(value);
+        }
+        else {
+            Platform.runLater(() -> ee.setValue(value));
+        }
+
+        return true;
     }
 
     private Menu getMenuFile(Stage stage) throws IOException {
@@ -307,7 +371,7 @@ public class Main extends Application {
                     writeCodeFile(file.getAbsolutePath());
                     writeUiFile(file.getAbsolutePath());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
                 }
             }
         });
@@ -340,7 +404,7 @@ public class Main extends Application {
             bw.write(content);
             bw.close();
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
@@ -360,11 +424,11 @@ public class Main extends Application {
             bw.write(content);
             bw.close();
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
     private void writeCodeFile(String filePath) throws IOException {
-        String content = UiUtils.getInstance().loadResource("/projectFormat.txt");
+        String content = UiUtils.getInstance().loadResource("/projectFormat.txt", true);
         String p = filePath + "/code.hc";
         Files.write(Paths.get(filePath + "/code.hc"), content.getBytes());
     }
@@ -437,7 +501,7 @@ public class Main extends Application {
             fileIn.close();
 
          } catch (Exception ex) {
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
         }
     }
 
