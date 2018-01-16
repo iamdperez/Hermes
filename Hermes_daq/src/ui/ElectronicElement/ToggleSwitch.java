@@ -121,6 +121,11 @@ public class ToggleSwitch extends ElectronicElement {
                 onValueChangedFunction.interpret();
             } catch (SemanticException | SerialCommException e) {
                 System.out.println(e.getMessage());
+                try {
+                    UiUtils.getInstance().setRunning(false);
+                } catch (IOException e1) {
+                    System.out.println(e1.getMessage());
+                }
             }
         }).start();
     }
