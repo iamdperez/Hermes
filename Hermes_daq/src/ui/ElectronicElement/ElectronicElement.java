@@ -47,7 +47,7 @@ public abstract class ElectronicElement implements Serializable{
 
     public void setValue(boolean value) {
         this.value = value;
-    }
+     }
 
     public boolean  getValue(){
         return value;

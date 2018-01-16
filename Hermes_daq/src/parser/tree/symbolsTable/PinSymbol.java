@@ -36,6 +36,7 @@ public class PinSymbol implements Symbol {
     @Override
     public void setValue(Value value) {
         this.value = (PinValue)value;
+//        ParserUtils.getInstance().executeValueEvent(variableRef,true);
     }
 
     public int getPinNumber() {

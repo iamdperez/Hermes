@@ -44,9 +44,15 @@ public class ToggleButton  extends  ElectronicElement{
         button.setGraphic(buttonRest);
         setStyle();
         MouseControlUtil.makeDraggable(vbox);
-        button.setOnMousePressed((e) -> button.setGraphic(buttonPress));
+        button.setOnMousePressed((e) -> {
+            button.setGraphic(buttonPress);
+            value = true;
+        });
         button.setOnMouseClicked(e -> onClick());
-        button.setOnMouseReleased((e) -> button.setGraphic(buttonRest));
+        button.setOnMouseReleased((e) -> {
+            button.setGraphic(buttonRest);
+            value = false;
+        });
 
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem item1 = new MenuItem("Delete");

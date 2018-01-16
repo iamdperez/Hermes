@@ -36,7 +36,7 @@ public class TernaryOperatorNode extends ExpressionNode {
         Type condition = getCondition().evaluateSemantic();
         if(!typeIsValid(condition)){
             throw new SemanticException(
-                    ParserUtils.getInstance().getLineErrorMessage("Condition must be a IntType not "
+                    ParserUtils.getInstance().getLineErrorMessage("Condition must be a [IntType, PinType, SetType] not "
                             +condition+".",getLocation())
             );
         }

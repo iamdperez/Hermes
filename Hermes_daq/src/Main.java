@@ -11,9 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import parser.exeptions.SemanticException;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import parser.ParserUtils;
 import parser.parserSettings.ParserSettings;
-import parser.tree.interfaces.FunctionDeclaration;
 import parser.tree.statements.ProgramNode;
 
 import java.io.*;
@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import serialCommunication.SerialCommException;
 import ui.*;
 import ui.Console;
 import ui.ElectronicElement.*;
@@ -47,6 +46,7 @@ public class Main extends Application {
     private Gson gSon;
     public Main() throws IOException {
         codeEditor = new CodeEditor();
+        ParserUtils.getInstance().setOnValueEvent((s, v) -> onValueEvent(s, v));
         gSon = new Gson();
         _canvas = new Pane();
         electronicElements = new ArrayList<>();
@@ -303,21 +303,36 @@ public class Main extends Application {
 
     private void mappingButtonClicks(ProgramNode program) {
         program.getFunctionList().forEach( f -> {
-            ElectronicElement ee = getElectronicElement(f.getFunctionName());
+            ElectronicElement ee = getElectronicElement(f.getFunctionName(), "_onClick");
             if(ee != null){
                 ((ToggleButton)ee).setOnClickFunction(f);
             }
         });
     }
 
-    private ElectronicElement getElectronicElement(String functionName) {
+    private ElectronicElement getElectronicElement(String functionName, String customSuffix) {
         ElectronicElement ee = null;
         Optional<ElectronicElement> element = electronicElements.stream()
-                .filter( o -> functionName.equals(o.getName()+"_onClick")).findFirst();
+                .filter( o -> functionName.equals(o.getName()+customSuffix)).findFirst();
         if(element.isPresent()){
             ee = element.get();
         }
         return ee;
+    }
+
+    public Boolean onValueEvent(String name, boolean value){
+        ElectronicElement ee = getElectronicElement(name, "");
+        System.out.println(name + " "+ value);
+        if(ee == null)
+            return false;
+        if (Platform.isFxApplicationThread()) {
+            ee.setValue(value);
+        }
+        else {
+            Platform.runLater(() -> ee.setValue(value));
+        }
+
+        return true;
     }
 
     private Menu getMenuFile(Stage stage) throws IOException {
