@@ -326,6 +326,7 @@ public class Main extends Application {
                 if (!UiUtils.getInstance().isRunning())
                     return;
                 UiUtils.getInstance().setRunning(false);
+                electronicElements.forEach( o -> o.setValue(false));
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }

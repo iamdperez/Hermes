@@ -12,8 +12,6 @@
     <orderEntry type="library" name="java-cup-11b-runtime" level="project" />
     <orderEntry type="library" name="gson-2.8.0" level="project" />
     <orderEntry type="library" name="org.fxmisc.richtext:richtextfx:0.8.1" level="project" />
-    <orderEntry type="library" name="jgraphx" level="project" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="jfxtras-labs" level="project" />
   </component>
 </module>
