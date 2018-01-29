@@ -10,8 +10,11 @@ import parser.tree.types.Type;
 import parser.tree.values.PinValue;
 import parser.tree.values.Value;
 import serialCommunication.SerialCommException;
+import ui.ElectronicElement.ElectronicElement;
+import ui.ElectronicElement.ToggleSwitch;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class SymbolsTable {
     private static SymbolsTable instance;
@@ -19,6 +22,8 @@ public class SymbolsTable {
     private final ArrayList<Looping> looping;
     private final ArrayList<FunctionCalled> functionCalled;
     private static DeviceInfo deviceInfo;
+    private ArrayList<ElectronicElement> electronicsElements;
+
     private SymbolsTable(){
         contexts = new ArrayList<>();
         looping = new ArrayList<>();
@@ -176,5 +181,28 @@ public class SymbolsTable {
         PinSymbol var = (PinSymbol) getVariable(name);
         PinValue val = (PinValue)var.getValue();
         val.setValue( value ? 1 : 0);
+    }
+
+    public void setElectronicsElements(ArrayList<ElectronicElement> electronicsElements) {
+        this.electronicsElements = electronicsElements;
+    }
+
+    public boolean isInstanceOfSwitch(String name){
+        if(electronicsElements == null || electronicsElements.size() <= 0)
+            return false;
+        ElectronicElement ee = getElectronicElement(name);
+        if(ee == null)
+            return false;
+        return ee instanceof ToggleSwitch;
+    }
+
+    private ElectronicElement getElectronicElement(String variable) {
+        ElectronicElement ee = null;
+        Optional<ElectronicElement> element = electronicsElements.stream()
+                .filter(o -> variable.equals(o.getName())).findFirst();
+        if (element.isPresent()) {
+            ee = element.get();
+        }
+        return ee;
     }
 }

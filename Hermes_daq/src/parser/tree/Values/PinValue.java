@@ -34,24 +34,26 @@ public class PinValue extends Value {
             value = 1;
         }else if(variableRef.equals("LOW")){
             value = 0;
-        }else if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()){
+        }else if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()
+                && !SymbolsTable.getInstance().isInstanceOfSwitch(variableRef)){
             int pinNumber = SymbolsTable.getInstance().getPinNumber(variableRef);
             boolean v = SerialCommunication.getInstance().getValue(pinNumber);
             value = v ? 1 : 0;
         }
-        ParserUtils.getInstance().executeValueEvent(variableRef, value > 0);
+//        ParserUtils.getInstance().executeValueEvent(variableRef, value > 0);
         return value;
     }
 
     @Override
     public void setValue(Object value) throws SemanticException, SerialCommException {
         this.value = (int)value > 0 ? 1 : 0;
+        ParserUtils.getInstance().executeValueEvent(variableRef, this.value > 0);
         if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()){
             int pinNumber = SymbolsTable.getInstance().getPinNumber(variableRef);
             Command command = this.value == 0 ? Command.SET_VALUE_LOW : Command.SET_VALUE_HIGH;
             SerialCommunication.getInstance().setValue(command,pinNumber);
         }
-        ParserUtils.getInstance().executeValueEvent(variableRef, this.value > 0);
+
     }
 
     @Override

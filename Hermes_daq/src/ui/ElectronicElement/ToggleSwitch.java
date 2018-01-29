@@ -33,8 +33,12 @@ public class ToggleSwitch extends ElectronicElement {
         switchedOn.addListener((a,b,c) -> {
             if(c){
                 button.setGraphic(switchOn);
+                value = true;
+                onValueChanged();
             }else{
                 button.setGraphic(switchOff);
+                value = false;
+                onValueChanged();
             }
         });
     }
@@ -132,6 +136,8 @@ public class ToggleSwitch extends ElectronicElement {
 
     @Override
     public void setValue(boolean value){
+        if(this.value == value)
+            return;
         this.value = value;
         switchedOn.set(value);
     }

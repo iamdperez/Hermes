@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import parser.tree.symbolsTable.SymbolsTable;
 import ui.*;
 import ui.Console;
 import ui.ElectronicElement.*;
@@ -61,11 +62,11 @@ public class Main extends Application {
         }.getType();
         ParserSettings ps;
         String json;
-        if(file.exists() && !file.isDirectory()) {
+        if (file.exists() && !file.isDirectory()) {
             json = readFile("parserSettings.json", true);
-        }else{
+        } else {
             json = UiUtils.getInstance().loadResource("/parserSettings.json");
-            writeFile("parserSettings.json",json);
+            writeFile("parserSettings.json", json);
         }
         ps = gSon.fromJson(json, parserSettingsType);
         return ps;
@@ -290,6 +291,7 @@ public class Main extends Application {
                         program = parserCode.getAST();
                         program.interpretCode();
                         mappingEventsFunctionsToUiElements(program);
+                        SymbolsTable.getInstance().setElectronicsElements(electronicElements);
                         UiUtils.getInstance().setRunning(true);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
@@ -327,7 +329,7 @@ public class Main extends Application {
                 if (!UiUtils.getInstance().isRunning())
                     return;
                 UiUtils.getInstance().setRunning(false);
-                electronicElements.forEach( o -> o.setValue(false));
+                electronicElements.forEach(o -> o.setValue(false));
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -377,7 +379,9 @@ public class Main extends Application {
         if (Platform.isFxApplicationThread()) {
             ee.setValue(value);
         } else {
-            Platform.runLater(() -> ee.setValue(value));
+            Platform.runLater(
+                    () -> ee.setValue(value)
+            );
         }
 
         return true;
@@ -422,7 +426,7 @@ public class Main extends Application {
                 UiUtils.getInstance().getSaveIcon());
         saveProject.setOnAction(actionEvent -> {
             try {
-                if(!_workSpaceSet){
+                if (!_workSpaceSet) {
                     showError("You must open a project before.");
                     return;
                 }
@@ -614,4 +618,5 @@ public class Main extends Application {
         fileWriter.flush();
         fileWriter.close();
     }
+
 }

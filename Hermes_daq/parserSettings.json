@@ -1,5 +1,5 @@
 {
-	"availableSerialCommunication": false,
+	"availableSerialCommunication": true,
 	"availableUiConsole": true,
 	"deviceInfoArrayList": [{
 		"deviceName": "Due",
