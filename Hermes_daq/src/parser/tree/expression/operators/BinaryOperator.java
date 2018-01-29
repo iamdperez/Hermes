@@ -93,9 +93,17 @@ public abstract class BinaryOperator extends ExpressionNode {
 
         validateIdNode(getRightNode());
         validateIdNode(getLeftNode());
-        if(isIntType(left) && isIntType(right))
+        if(typeIsValid(left,right))
             return left;
         String errorMessage = getSemanticErrorMessage(operator+ " bitwise operator", left, right);
         throw new SemanticException(errorMessage);
+    }
+
+    private boolean typeIsValid(Type left, Type right){
+        return (isIntType(left) && isIntType(right))
+                || (isPinType(left) && isPinType(right))
+                || (isSetType(left) && isSetType(right))
+                || (isPinType(left) && isSetType(right))
+                || (isSetType(left) && isPinType(right));
     }
 }

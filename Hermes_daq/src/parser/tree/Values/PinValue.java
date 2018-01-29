@@ -34,11 +34,13 @@ public class PinValue extends Value {
             value = 1;
         }else if(variableRef.equals("LOW")){
             value = 0;
-        }else if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()){
+        }else if(ParserUtils.getInstance().getParserSettings().isAvailableSerialCommunication()
+                && !SymbolsTable.getInstance().isInstanceOfSwitch(variableRef)){
             int pinNumber = SymbolsTable.getInstance().getPinNumber(variableRef);
             boolean v = SerialCommunication.getInstance().getValue(pinNumber);
             value = v ? 1 : 0;
         }
+//        ParserUtils.getInstance().executeValueEvent(variableRef, value > 0);
         return value;
     }
 
@@ -51,6 +53,7 @@ public class PinValue extends Value {
             Command command = this.value == 0 ? Command.SET_VALUE_LOW : Command.SET_VALUE_HIGH;
             SerialCommunication.getInstance().setValue(command,pinNumber);
         }
+
     }
 
     @Override
